@@ -1,0 +1,337 @@
+/**
+ * iPin Modern — Admin Options Page
+ * Tabbed settings UI styles, loaded only in wp-admin.
+ */
+
+/* ── Page wrapper ── */
+#ipin-settings-wrap {
+  max-width: 860px;
+  margin: 28px 20px 0 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+#ipin-settings-wrap .ipin-admin-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+#ipin-settings-wrap .ipin-admin-logo {
+  font-size: 1.6rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+
+#ipin-settings-wrap .ipin-admin-version {
+  font-size: .75rem;
+  font-weight: 600;
+  background: #f0edf6;
+  color: #784BA0;
+  border: 1px solid #d4c8e8;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+
+/* ── Tab nav ── */
+.ipin-tabs-nav {
+  display: flex;
+  gap: 2px;
+  border-bottom: 2px solid #e2ddf0;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.ipin-tabs-nav li { margin: 0; }
+
+.ipin-tabs-nav button {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  padding: 10px 18px;
+  font-size: .875rem;
+  font-weight: 600;
+  color: #6b6878;
+  cursor: pointer;
+  border-radius: 8px 8px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: color .15s, background .15s, border-color .15s;
+  white-space: nowrap;
+}
+
+.ipin-tabs-nav button:hover {
+  color: #784BA0;
+  background: #f8f5ff;
+}
+
+.ipin-tabs-nav button.active {
+  color: #784BA0;
+  border-bottom-color: #784BA0;
+  background: #fff;
+}
+
+.ipin-tabs-nav button .tab-icon {
+  font-size: 1rem;
+  opacity: .75;
+}
+
+/* ── Tab panels ── */
+.ipin-tab-panel {
+  display: none;
+  background: #fff;
+  border: 1px solid #e2ddf0;
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 28px 32px 32px;
+}
+
+.ipin-tab-panel.active { display: block; }
+
+/* ── Section heading inside a panel ── */
+.ipin-section-title {
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: #a09db0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e2ddf0;
+  margin: 24px 0 16px;
+}
+
+.ipin-section-title:first-child { margin-top: 0; }
+
+/* ── Field rows ── */
+.ipin-field {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px 20px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.ipin-field label {
+  font-size: .875rem;
+  font-weight: 600;
+  color: #3c3847;
+  padding-top: 8px;
+  line-height: 1.3;
+}
+
+.ipin-field .ipin-field-desc {
+  font-size: .78rem;
+  color: #a09db0;
+  margin-top: 3px;
+  grid-column: 2;
+}
+
+.ipin-field input[type="text"],
+.ipin-field input[type="url"],
+.ipin-field input[type="number"],
+.ipin-field select {
+  width: 100%;
+  max-width: 400px;
+  padding: 8px 12px;
+  border: 1.5px solid #d4c8e8;
+  border-radius: 8px;
+  font-size: .875rem;
+  color: #1a1025;
+  background: #faf8fd;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+
+.ipin-field input:focus,
+.ipin-field select:focus {
+  border-color: #784BA0;
+  box-shadow: 0 0 0 3px rgba(120,75,160,.12);
+}
+
+.ipin-field input[type="number"] { max-width: 100px; }
+
+/* ── Colour scheme picker ── */
+.ipin-scheme-picker {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ipin-scheme-swatch {
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: .75rem;
+  font-weight: 700;
+  color: #6b6878;
+  background: #faf8fd;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+  min-width: 80px;
+  text-align: center;
+}
+
+.ipin-scheme-swatch:hover {
+  border-color: #784BA0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(120,75,160,.18);
+}
+
+.ipin-scheme-swatch.selected {
+  border-color: #784BA0;
+  background: #f3eeff;
+  color: #784BA0;
+  box-shadow: 0 4px 14px rgba(120,75,160,.18);
+}
+
+.ipin-scheme-swatch .swatch-grad {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.swatch-vivid   { background: linear-gradient(135deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%); }
+.swatch-ocean   { background: linear-gradient(135deg, #00C9B1 0%, #0077B6 100%); }
+.swatch-ember   { background: linear-gradient(135deg, #FF4D00 0%, #E63946 100%); }
+.swatch-forest  { background: linear-gradient(135deg, #2D6A4F 0%, #52B788 100%); }
+.swatch-mono    { background: linear-gradient(135deg, #111111 0%, #555555 100%); }
+
+/* Hidden radio inputs behind swatches */
+.ipin-scheme-picker input[type="radio"] { display: none; }
+
+/* ── Toggle / checkbox row ── */
+.ipin-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ipin-toggle {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.ipin-toggle input { opacity: 0; width: 0; height: 0; }
+
+.ipin-toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: #d4c8e8;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s;
+}
+
+.ipin-toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: #fff;
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform .2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.18);
+}
+
+.ipin-toggle input:checked + .ipin-toggle-slider {
+  background: #784BA0;
+}
+
+.ipin-toggle input:checked + .ipin-toggle-slider::before {
+  transform: translateX(18px);
+}
+
+.ipin-toggle-label {
+  font-size: .875rem;
+  font-weight: 600;
+  color: #3c3847;
+}
+
+.ipin-toggle-desc {
+  font-size: .78rem;
+  color: #a09db0;
+}
+
+/* ── Submit / save button ── */
+.ipin-save-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #e2ddf0;
+}
+
+.ipin-save-bar .button-primary {
+  background: linear-gradient(135deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%) !important;
+  border-color: transparent !important;
+  border-radius: 999px !important;
+  padding: 8px 24px !important;
+  font-size: .9rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: opacity .15s !important;
+  height: auto !important;
+  line-height: 1.5 !important;
+}
+
+.ipin-save-bar .button-primary:hover {
+  opacity: .88 !important;
+}
+
+.ipin-saved-notice {
+  font-size: .85rem;
+  color: #2D6A4F;
+  font-weight: 600;
+  display: none;
+}
+
+.ipin-saved-notice.visible { display: block; }
+
+/* ── Info / help box ── */
+.ipin-info-box {
+  background: #f8f5ff;
+  border: 1px solid #d4c8e8;
+  border-left: 3px solid #784BA0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: .85rem;
+  color: #4a3f6b;
+  margin-bottom: 20px;
+  line-height: 1.55;
+}
+
+.ipin-info-box strong { color: #784BA0; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .ipin-field {
+    grid-template-columns: 1fr;
+  }
+
+  .ipin-field label { padding-top: 0; }
+
+  .ipin-field .ipin-field-desc { grid-column: 1; }
+
+  .ipin-tab-panel { padding: 20px 18px 24px; }
+}

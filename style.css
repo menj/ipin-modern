@@ -1,0 +1,28 @@
+/*
+Theme Name: iPin Modern
+Theme URI: https://github.com/ipin-wp
+Author: Genkisan (modernised)
+Author URI: #
+Description: A bold, colorful Pinterest-inspired masonry theme. PHP 8.x compatible, Bootstrap-free, fully modular CSS, dark mode, configurable colour schemes, tabbed admin settings.
+Version: 4.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Tags: pinterest, photo, gallery, portfolio, masonry, dark-mode, responsive, custom-colors
+Text Domain: ipin
+*/
+
+/*
+ * ─────────────────────────────────────────────────────────
+ *  NOTE: This file contains only the required WordPress
+ *  theme header comment. All styles are in /css/:
+ *
+ *    css/tokens.css   — Design tokens & colour schemes
+ *    css/base.css     — Reset, typography, utilities
+ *    css/nav.css      — Top navigation & hamburger
+ *    css/masonry.css  — Grid cards, loaders, pagination
+ *    css/single.css   — Posts, pages, sidebar, comments
+ *    css/admin.css    — Admin options page (admin-only)
+ *
+ *  All files are enqueued via functions.php.
+ * ─────────────────────────────────────────────────────────
+ */
