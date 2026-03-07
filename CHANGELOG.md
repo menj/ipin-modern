@@ -4,9 +4,190 @@ All notable changes to **iPin Modern** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [4.1.2] — 2026-03 — Navigation Bar Redesign
+
+User-facing redesign of the top navigation bar for a bolder, more airy feel.
+
+### Changed — `assets/css/nav.css` + `assets/css/tokens.css`
+- `--nav-height` token: `64px` → `96px`. Body `padding-top` and the mobile
+  dropdown `top` offset both derive from this token and update automatically.
+  **Child themes** using `var(--nav-height)` for vertical positioning should
+  be reviewed.
+- `.nav-inner` horizontal padding: `24px` → `40px` each side.
+- `.nav-inner` element gap: `12px` → `28px`.
+- `.navbar-brand` font-size: `1.4rem` → `1.75rem`; added `letter-spacing: -.01em`.
+- Custom logo image height (`.navbar-brand--logo img`): `40px` → `52px`.
+- Nav link padding: `6px 13px` → `9px 18px`; font-size `0.875rem` → `0.95rem`;
+  font-weight `600` → `700`.
+- Search bar input width: `130px` → `180px`; padding and button enlarged.
+- Social icon and dark-mode toggle size: `44px` → `48px`; font-size `1rem` → `1.1rem`.
+- Icon group gap: `2px` → `6px`.
+- Nav border-bottom: `2px` → `3px`.
+- Nav `box-shadow`: `shadow-sm` → `shadow-md`.
+- Mobile drawer padding: `16px` → `20px`; gap `10px` → `12px`.
+
+### Bumped
+- `style.css`: Version 4.1.1 → 4.1.2
+
 ---
 
-## [4.0.0] — 2025-03 — Design Edition
+## [4.1.1] — 2026-03 — WCAG 2.2 AA Audit Fixes
+
+Manual WCAG 2.2 AA audit conducted across all templates, CSS and JS. Five
+issues found and resolved.
+
+### Fixed — `header.php` (WCAG 4.1.1 Parsing)
+- **Nested `<a>` elements when a custom logo is active.** `the_custom_logo()`
+  already outputs `<a href="..."><img></a>`, but the theme wrapped it in a
+  second `<a class="navbar-brand">`. Nested anchors are invalid HTML and
+  produce undefined behaviour in AT. Fixed: custom logo is now wrapped in a
+  `<span class="navbar-brand navbar-brand--logo">` instead. The text fallback
+  (no custom logo) still uses the `<a>` wrapper as before.
+
+### Fixed — `inc/admin-options.php` (WCAG 4.1.2 Name, Role, Value)
+- **`aria-hidden="true"` on `.ipin-scheme-card__inner`** made the scheme name
+  invisible to screen readers. The containing `<label>` had no other text, so
+  the radio button had an empty accessible name. Removed `aria-hidden`.
+
+### Fixed — `assets/js/lightbox.js` (WCAG 2.1.2 No Keyboard Trap)
+- **Close, Previous, and Next buttons were appended to `<body>`**, outside the
+  `$overlay` element that `trapFocus()` operated on. Tab could escape the open
+  dialog. All three buttons are now appended inside `$overlay` so the focus
+  trap correctly contains them.
+
+### Fixed — `assets/js/lightbox.js` (Bug)
+- **`hideLlighting()` typo** — the function called on AJAX failure did not
+  exist. The loading spinner never cleared when a pin failed to load. Corrected
+  to `hideLoading()`.
+
+### Fixed — `assets/js/ipin.custom.js` + `footer.php` (WCAG 4.1.3 Status Messages)
+- **"Copied!" confirmation was not announced to screen readers.** A
+  `role="status" aria-live="polite"` region (`#ipin-live-region`) is now
+  present in `footer.php`. The copy-link handler writes the confirmation text
+  to it so AT announces "Link copied to clipboard." without moving focus.
+
+### Confirmed passing (no changes needed)
+- Skip link (WCAG 2.4.1) ✓
+- `<main id="main-content" tabindex="-1">` skip target ✓
+- `<nav aria-label>` landmarks ✓
+- All toggle controls: `aria-pressed`, `aria-expanded` updated by JS ✓
+- Focus trap closes on Escape + returns focus to trigger ✓
+- `prefers-reduced-motion` respected in base.css and lightbox.css ✓
+- `forced-colors: active` overrides in base.css ✓
+- `prefers-contrast: more` overrides in base.css ✓
+- All text contrast ratios (tokens.css) ≥ 4.5:1 in both light + dark ✓
+- Touch targets ≥ 44×44 px on all interactive nav elements ✓
+- `<time datetime="...">` on post dates ✓
+- `<img alt="...">` — featured image gets post title as alt ✓
+- Infinite scroll announces grid-ready via `aria-busy="false"` ✓
+
+### Bumped
+- `style.css`: Version 4.1.0 → 4.1.1
+
+---
+
+## [4.1.0] — 2026-03 — Design System UI
+
+Complete rewrite of the admin settings UI to the `modern_settings_ui` design
+system spec v1.0.0.
+
+### Changed — `assets/css/admin.css`
+- All styles now scoped exclusively to `.plugin-settings-root` — zero rules
+  outside the wrapper, no `:root` overrides, no generic-tag selectors.
+- Tokens renamed to `--plugin-accent`, `--plugin-surface`, `--plugin-border`,
+  `--plugin-focus` — inheriting from `--wp-admin-theme-color` as the default
+  accent so the UI automatically matches the WP admin colour scheme.
+- Internal shorthand tokens use `--ipin-` prefix and are also wrapper-scoped.
+- No hardcoded hex palette is set as a default — existing host colours are
+  fully preserved.
+
+### Changed — `inc/admin-options.php` render function
+- Root wrapper class changed to `.plugin-settings-root` (spec requirement).
+- All boolean controls (show avatars, dark mode, rounded cards, RSS, manual
+  ads, per-slot enabled) converted from plain checkboxes to the
+  `.ipin-switch` toggle component (track + thumb + CSS transition).
+- Colour scheme picker converted to `.ipin-scheme-grid` of visual selector
+  cards — each scheme is a clickable card with a gradient swatch preview.
+- Card width control converted to `input[type="range"]` slider with a live
+  `<span aria-live="polite">` value display.
+- All sections grouped into `.ipin-card` containers.
+- Tab buttons now use `ipin-active` class and correct `tabindex` management
+  for ARIA roving-tabindex keyboard pattern.
+- Version badge reads live from `wp_get_theme()->get('Version')`.
+- Footer added: "Developed by MENJ" + GitHub link, styled with
+  `--plugin-accent` link colour and top divider.
+- Emoji icons replaced with HTML entity codes to avoid encoding issues.
+
+### Changed — `assets/js/ipin.admin.js`
+- All event binding scoped to `.plugin-settings-root` — no global listeners.
+- Tab switching implements ARIA roving tabindex with ArrowLeft/ArrowRight
+  keyboard navigation as required by the ARIA Tabs pattern.
+- Colour scheme radio change updates `aria-checked` on `.ipin-scheme-card__inner`.
+- Range slider live-updates `#ipin_card_width_val` on `input` event.
+- Global ads switch and per-slot toggles use `ipin-active` / `ipin-visible`
+  classes consistent with the CSS system.
+- AJAX save uses `fetch()` + `FormData`, restores original button label on
+  completion or error. No dependency on `admin`-only jQuery patterns.
+
+### Version bump
+- `style.css`: Version 4.0.2 → 4.1.0
+
+---
+
+## [4.0.2] — 2026-03 — Manual Ad Slot Toggles
+
+### Added
+- **Global manual ads switch** in the Ads admin tab. One click disables
+  all manual slot output without deleting any code — ideal for handing
+  placement over to Google Site Kit Auto Ads and switching back later.
+- **Per-slot enable/disable checkbox** on each of the 8 ad slots.
+  Each slot shows an Active / Paused badge that updates live. Paused
+  slots are visually dimmed in the admin; their code is preserved.
+- When the global switch is off, the per-slot section is dimmed and
+  non-interactive to make the hierarchy clear.
+- `ipin_manual_ads_on()` and `ipin_ad_slot_enabled()` helpers in
+  `inc/ads.php`. Both `ipin_render_ad()` and `ipin_get_grid_ads()`
+  now check both conditions before outputting any HTML.
+- `ipin_manual_ads_enabled` and `{slot}_enabled` options registered
+  and saved through the AJAX save handler.
+- Toggle and badge styles added to `assets/css/admin.css`.
+- Live badge/dim JS added to `assets/js/ipin.admin.js`.
+
+### Bumped
+- `style.css`: Version 4.0.1 → 4.0.2
+
+---
+
+## [4.0.1] — 2026-03 — Google Site Kit / AdSense Compatibility
+
+### Fixed
+- **Ad slots were never actually saved.** The AJAX save handler
+  (`ipin_ajax_save_options`) did not include ad slot fields — they were
+  registered via the Settings API (`register_setting`) but the form
+  submits via AJAX, bypassing that path entirely. All eight ad slot
+  values now save correctly on every settings page submission.
+- **`wp_kses_post` was stripping AdSense code.** The previous sanitizer
+  removed `<script>` tags and `data-*` attributes from `<ins>` elements,
+  silently discarding all pasted ad code. Replaced with a new
+  `ipin_sanitize_ad_code()` function in `inc/ads.php` that preserves
+  the raw content for `manage_options` users and returns an empty string
+  for anyone else (defence-in-depth — only admins can reach the field).
+
+### Added
+- **Google Site Kit compatibility.** The theme already had `wp_head()`
+  and `wp_body_open()` in the correct positions, so Site Kit's script
+  injection and site verification work out of the box. The Ads tab info
+  box now explains both paths:
+  - **Auto Ads**: install Site Kit, connect AdSense, enable Auto Ads —
+    the script is injected automatically, no slot code needed.
+  - **Manual units**: paste the full `<ins>` + `<script>` block from
+    AdSense directly into any slot — script tags are now preserved.
+- Ads tab placeholder text encoding fixed (garbled UTF-8 em-dash
+  replaced with plain ASCII double-dash).
+
+---
+
+## [4.0.0] — 2026-03 — Design Edition
 
 The fourth major release. Adds every visual feature from the iPin Pro
 spec — sort bar, lightbox, share buttons, sideblog, ads — while keeping

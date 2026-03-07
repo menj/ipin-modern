@@ -2,6 +2,22 @@
 
 Migration guides for each major version jump, plus the future roadmap.
 
+## Upgrading to 4.1.2 (from any 4.1.x or 4.0.x)
+
+**Drop-in upgrade** — no settings migration, no database changes, no template changes.
+
+One token changed that may affect custom CSS:
+
+| Token | Old value | New value |
+|---|---|---|
+| `--nav-height` | `64px` | `96px` |
+
+If your child theme or custom CSS uses `var(--nav-height)` to offset fixed or sticky
+elements (hero sections, sticky sidebars, scroll anchors), check and adjust those
+rules after upgrading.
+
+All other 4.1.x patches (4.1.0 and 4.1.1) are also drop-in. No action required.
+
 ---
 
 ## Upgrading from v3.x to v4.0
@@ -144,6 +160,28 @@ See the Installation section in `_README.txt`. Summary:
 
 ## Known issues
 
+### Ad slots not saving
+- This was a bug fixed in v4.0.1. If you are on v4.0.0, upgrade to
+  v4.0.1 — the AJAX save handler was missing all eight ad slot fields.
+
+### AdSense code appears blank after saving
+- This was a bug fixed in v4.0.1. `wp_kses_post` was stripping
+  `<script>` tags from pasted ad code. Upgrade to v4.0.1.
+
+### Google Site Kit — site not verified
+- Confirm `wp_head()` is present in your `header.php`. It is in the
+  default theme but custom child themes may have removed it.
+- Site Kit verification injects a `<meta>` tag via `wp_head`. If
+  verification fails, check that no caching plugin is stripping meta
+  tags from the `<head>`.
+
+### Google Site Kit — Auto Ads not showing
+- Auto Ads requires the AdSense account to be approved and Auto Ads
+  enabled inside the AdSense dashboard, not just in Site Kit.
+- The AdSense script is injected via `wp_head()` — if a caching layer
+  is serving stale HTML without the script tag, purge the cache after
+  connecting Site Kit.
+
 ### Masonry layout not initialising
 - Confirm jQuery is loading. Go to a front-end page, open browser
   DevTools Console, type `jQuery.fn.jquery` — should show a version.
@@ -173,6 +211,177 @@ See the Installation section in `_README.txt`. Summary:
   Open DevTools → Elements and look at the `<html>` tag.
 - Confirm `ipin_dynamic_css_and_scheme()` is hooked: it runs on
   `wp_head` at priority 1 via `inc/enqueue.php`.
+
+---
+
+## Theme Directory Architecture
+
+Reference for the canonical file/folder layout at each major version.
+Consult this when writing migration scripts, building child themes,
+or verifying that an install is complete.
+
+---
+
+### v4.0 — Current
+
+```
+ipin-modern/
+│
+├── style.css                         WordPress theme header (Version: 4.0)
+├── functions.php                     Bootstrap: setup, sidebars, require /inc/
+├── index.php                         Masonry grid + popular posts sort bar
+├── single.php                        Single post + ad slots + share buttons
+├── page.php                          Standard page (right sidebar)
+├── page_full_width.php               Page template: Full Width
+├── page_left_sidebar.php             Page template: Left Sidebar
+├── header.php                        Skip link, navbar, flash-free scheme init
+├── footer.php                        Footer, scroll-to-top button
+├── comments.php                      Comments list + form
+├── sidebar-left.php                  Left sidebar widget area
+├── sidebar-right.php                 Right sidebar widget area
+├── searchform.php                    Accessible search form
+├── 404.php                           Error page
+├── favicon.ico
+├── screenshot.png
+├── readme.txt                        User-facing documentation
+├── CHANGELOG.md                      Full version history
+├── UPGRADING.md                      Migration guides + architecture (this file)
+│
+├── inc/
+│   ├── template-tags.php             ipin_option(), ipin_human_time_diff(),
+│   │                                 comment callback, RSS filter,
+│   │                                 ipin_lightbox_data AJAX handler
+│   ├── nav-walker.php                Ipin_Nav_Walker, accessible nav filters
+│   ├── post-types.php                ipin_article CPT (Sideblog)
+│   ├── popular-posts.php             ipin_get_popular_posts(), pre_get_posts,
+│   │                                 iPin_Popular_Posts_Widget
+│   ├── ads.php                       Slot definitions, ipin_ad(),
+│   │                                 ipin_grid_ad_at(), setting registration
+│   ├── enqueue.php                   All wp_enqueue_style/script, dynamic CSS,
+│   │                                 flash-free scheme + dark-mode init
+│   ├── admin-options.php             Tabbed settings page (5 tabs), AJAX save
+│   └── customizer.php                WP Customizer (logo, background)
+│
+├── assets/
+│   ├── css/
+│   │   ├── tokens.css                CSS custom properties, 5 colour schemes,
+│   │   │                             dark mode overrides, --focus-ring
+│   │   ├── base.css                  Reset, typography, skip link, sr-only,
+│   │   │                             reduced-motion, forced-colors
+│   │   ├── nav.css                   Navbar, dropdowns, hamburger,
+│   │   │                             dark mode toggle, social icons
+│   │   ├── masonry.css               Grid cards, hover bar, loaders,
+│   │   │                             pagination, sort bar
+│   │   ├── single.css                Post layout, sidebar, comments,
+│   │   │                             scroll-to-top, share buttons
+│   │   ├── lightbox.css              Lightbox overlay, panels, share buttons
+│   │   ├── admin.css                 Admin settings page (wp-admin only)
+│   │   └── editor-style.css          Block editor matching styles
+│   │
+│   ├── js/
+│   │   ├── ipin.custom.js            Dark mode, hamburger, scroll-to-top,
+│   │   │                             masonry init, infinite scroll init,
+│   │   │                             copy-link share button
+│   │   ├── ipin.admin.js             Tabs, swatch picker, AJAX save
+│   │   ├── lightbox.js               Open/close, prev/next, keyboard nav,
+│   │   │                             focus trap, AJAX data load, share buttons
+│   │   ├── jquery.masonry.min.js     iPin custom masonry engine v1.0.0
+│   │   ├── jquery.imagesloaded.min.js  iPin custom images-loaded detector v1.0.0
+│   │   └── jquery.infinitescroll.min.js  iPin custom infinite scroll v1.0.0
+│   │
+│   ├── img/                          Reserved — theme images
+│   └── fonts/                        Reserved — self-hosted fonts
+│
+├── languages/                        Translation-ready (.pot goes here)
+└── template-parts/                   Reserved — future partial templates
+```
+
+**Google Site Kit / AdSense compatibility (v4.0.1):**
+`wp_head()` and `wp_body_open()` are present in the correct positions.
+Site Kit auto-verification and Auto Ads work without any theme changes.
+Manual ad unit code (including `<script>` tags) is preserved by
+`ipin_sanitize_ad_code()` in `inc/ads.php`.
+
+**Admin tabs (v4.0):** ⚙️ General · 🎨 Appearance · 🔗 Social · 💰 Ads · 📐 Layout
+
+**Custom post types (v4.0):** `ipin_article` (Sideblog)
+
+**Custom DB tables (v4.0):** None
+
+**Registered settings (v4.0):**
+`ipin_frontpage_comments`, `ipin_posts_per_page`, `ipin_colour_scheme`,
+`ipin_dark_mode_default`, `ipin_card_width`, `ipin_rounded_cards`,
+`ipin_twitter_url`, `ipin_facebook_url`, `ipin_instagram_url`,
+`ipin_rss_visible`, `ipin_show_avatars_grid`, `ipin_sidebar_position`,
+`ipin_footer_text`, `ipin_ad_header`, `ipin_ad_grid_1–5`,
+`ipin_ad_above_photo`, `ipin_ad_below_photo`
+
+**Enqueue handles (v4.0):**
+CSS: `ipin-google-fonts`, `ipin-font-awesome`, `ipin-tokens`, `ipin-base`,
+`ipin-nav`, `ipin-single`, `ipin-lightbox`, `ipin-masonry-css` (non-singular),
+`ipin-style`
+JS: `ipin-masonry`, `ipin-imagesloaded`, `ipin-infinitescroll` (non-singular),
+`ipin-custom`, `ipin-lightbox` (non-singular), `ipin-admin-css`,
+`ipin-admin-js` (admin page only)
+
+---
+
+### v3.0
+
+```
+ipin-modern/
+├── style.css  functions.php  *.php templates  favicon.ico  screenshot.png
+├── _README.txt
+├── inc/
+│   ├── template-tags.php   nav-walker.php   enqueue.php
+│   ├── admin-options.php   customizer.php
+└── assets/
+    ├── css/  tokens.css  base.css  nav.css  masonry.css  single.css
+    │         admin.css  editor-style.css
+    ├── js/   ipin.custom.js  ipin.admin.js
+    │         jquery.masonry.min.js *    jquery.imagesloaded.min.js *
+    │         jquery.infinitescroll.min.js *
+    ├── img/
+    └── fonts/
+```
+`*` — required but not bundled; user must supply.
+Admin tabs: ⚙️ General · 🎨 Appearance · 🔗 Social · 📐 Layout (4 tabs)
+Custom post types: none. Custom DB tables: none.
+
+---
+
+### v2.0
+
+```
+ipin-modern/
+├── style.css  functions.php  *.php templates  favicon.ico  screenshot.png
+├── css/
+│   ├── tokens.css  base.css  nav.css  masonry.css  single.css
+│   └── admin.css  editor-style.css
+└── js/
+    ├── ipin.custom.js  ipin.admin.js
+    └── jquery.masonry.min.js *  jquery.imagesloaded.min.js *
+        jquery.infinitescroll.min.js *
+```
+`*` — required but not bundled; user must supply.
+Admin tabs: ⚙️ General · 🎨 Appearance · 🔗 Social · 📐 Layout (4 tabs)
+All logic in `functions.php`. No `/inc/` directory.
+
+---
+
+### v1.0
+
+```
+ipin-modern/
+├── style.css  functions.php  *.php templates  favicon.ico  screenshot.png
+├── css/  (single bundled stylesheet, no modules)
+└── js/   ipin.custom.js
+          jquery.masonry.min.js *  jquery.imagesloaded.min.js *
+          jquery.infinitescroll.min.js *
+```
+`*` — required but not bundled; user must supply.
+No admin settings page. No `/inc/` directory.
+All configuration via WP Customizer only.
 
 ---
 
