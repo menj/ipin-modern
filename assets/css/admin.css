@@ -1,0 +1,605 @@
+/**
+ * iPin Modern — Admin Settings UI
+ * Design system v1.0.0  |  spec: modern_settings_ui
+ *
+ * Spec rules enforced:
+ *   - ALL styles scoped to .plugin-settings-root
+ *   - No :root overrides
+ *   - No generic-tag rules without wrapper prefix
+ *   - No !important
+ *   - Tokens: --plugin-* only
+ *   - Classes: ipin- namespaced
+ */
+
+/* ── Wrapper & token defaults ─────────────────────────────────
+   Token chain: plugin-set value -> WP admin theme -> literal fallback.
+   No new palette defined as default. No :root changes.
+   ─────────────────────────────────────────────────────────── */
+.plugin-settings-root {
+  --plugin-accent:  var(--wp-admin-theme-color, currentColor);
+  --plugin-surface: #ffffff;
+  --plugin-border:  rgba(0, 0, 0, 0.08);
+  --plugin-focus:   rgba(0, 0, 0, 0.18);
+
+  --ipin-r:     8px;
+  --ipin-r-sm:  5px;
+  --ipin-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --ipin-dur:   .15s;
+  --ipin-muted: rgba(0, 0, 0, .62);   /* #636363 equiv — 5.9:1 on white, AA pass */
+
+  font-family: inherit;
+  color: inherit;
+  max-width: 900px;
+  margin: 20px 0;
+  box-sizing: border-box;
+}
+
+.plugin-settings-root *,
+.plugin-settings-root *::before,
+.plugin-settings-root *::after { box-sizing: inherit; }
+
+
+/* ── Header ───────────────────────────────────────────────── */
+.plugin-settings-root .ipin-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  background: var(--plugin-surface);
+  border: 1px solid var(--plugin-border);
+  border-radius: var(--ipin-r);
+  box-shadow: var(--ipin-shadow);
+  margin-bottom: 4px;
+}
+
+.plugin-settings-root .ipin-header__icon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.plugin-settings-root .ipin-header__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.plugin-settings-root .ipin-header__title {
+  margin: 0 0 3px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: inherit;
+}
+
+.plugin-settings-root .ipin-header__desc {
+  margin: 0;
+  font-size: .82rem;
+  color: var(--ipin-muted);
+}
+
+.plugin-settings-root .ipin-header__badge {
+  flex-shrink: 0;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  background: rgba(0,0,0,.06);
+  color: var(--ipin-muted);
+}
+
+
+/* ── Tab navigation ──────────────────────────────────────── */
+.plugin-settings-root .ipin-tabs-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-bottom: 2px solid var(--plugin-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.plugin-settings-root .ipin-tabs-nav::-webkit-scrollbar { display: none; }
+
+.plugin-settings-root .ipin-tabs-nav li { margin: 0; padding: 0; }
+
+.plugin-settings-root .ipin-tabs-nav button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-size: .85rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: var(--ipin-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  transition: color var(--ipin-dur), border-color var(--ipin-dur);
+}
+
+.plugin-settings-root .ipin-tabs-nav button:hover { color: inherit; }
+
+.plugin-settings-root .ipin-tabs-nav button.ipin-active,
+.plugin-settings-root .ipin-tabs-nav button[aria-selected="true"] {
+  color: var(--plugin-accent);
+  border-bottom-color: var(--plugin-accent);
+}
+
+.plugin-settings-root .ipin-tabs-nav button:focus-visible {
+  outline: 2px solid var(--plugin-focus);
+  outline-offset: -2px;
+  border-radius: 3px;
+}
+
+.plugin-settings-root .ipin-tab-icon { font-size: .95rem; }
+
+
+/* ── Tab panels ──────────────────────────────────────────── */
+.plugin-settings-root .ipin-tab-panel { display: none; }
+.plugin-settings-root .ipin-tab-panel.ipin-active { display: block; }
+
+
+/* ── Cards ───────────────────────────────────────────────── */
+.plugin-settings-root .ipin-card {
+  background: var(--plugin-surface);
+  border: 1px solid var(--plugin-border);
+  border-radius: var(--ipin-r);
+  box-shadow: var(--ipin-shadow);
+  padding: 20px 24px;
+  margin-top: 16px;
+}
+
+.plugin-settings-root .ipin-card__title {
+  margin: 0 0 4px;
+  font-size: .75rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--ipin-muted);
+}
+
+.plugin-settings-root .ipin-card__desc {
+  margin: 0 0 16px;
+  font-size: .82rem;
+  color: var(--ipin-muted);
+  line-height: 1.5;
+}
+
+
+/* ── Info box ─────────────────────────────────────────────── */
+.plugin-settings-root .ipin-info-box {
+  background: rgba(0,0,0,.03);
+  border-left: 3px solid var(--plugin-accent);
+  border-radius: 0 var(--ipin-r-sm) var(--ipin-r-sm) 0;
+  padding: 12px 14px;
+  font-size: .82rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+
+/* ── Field row ────────────────────────────────────────────── */
+.plugin-settings-root .ipin-field {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 8px 20px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--plugin-border);
+}
+
+.plugin-settings-root .ipin-field:last-child { border-bottom: none; padding-bottom: 0; }
+
+.plugin-settings-root .ipin-field > label {
+  padding-top: 7px;
+  font-size: .85rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.plugin-settings-root .ipin-field input[type="text"],
+.plugin-settings-root .ipin-field input[type="url"],
+.plugin-settings-root .ipin-field input[type="number"],
+.plugin-settings-root .ipin-field select,
+.plugin-settings-root .ipin-field textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--plugin-border);
+  border-radius: var(--ipin-r-sm);
+  font-size: .85rem;
+  font-family: inherit;
+  color: inherit;
+  background: var(--plugin-surface);
+  transition: border-color var(--ipin-dur), box-shadow var(--ipin-dur);
+}
+
+.plugin-settings-root .ipin-field input[type="number"] { max-width: 120px; }
+
+.plugin-settings-root .ipin-field input:focus,
+.plugin-settings-root .ipin-field select:focus,
+.plugin-settings-root .ipin-field textarea:focus {
+  outline: none;
+  border-color: var(--plugin-accent);
+  box-shadow: 0 0 0 3px var(--plugin-focus);
+}
+
+.plugin-settings-root .ipin-field-desc {
+  margin: 6px 0 0;
+  font-size: .78rem;
+  color: var(--ipin-muted);
+  line-height: 1.5;
+}
+
+
+/* ── Toggle row ───────────────────────────────────────────── */
+.plugin-settings-root .ipin-toggle-row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 8px 20px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--plugin-border);
+}
+
+.plugin-settings-root .ipin-toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.plugin-settings-root .ipin-toggle-cell {
+  display: flex;
+  align-items: center;
+}
+
+/* Switch component */
+.plugin-settings-root .ipin-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.plugin-settings-root .ipin-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+}
+
+.plugin-settings-root .ipin-switch__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.18);
+  transition: background var(--ipin-dur);
+}
+
+.plugin-settings-root .ipin-switch input:checked ~ .ipin-switch__track {
+  background: var(--plugin-accent);
+}
+
+.plugin-settings-root .ipin-switch__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.25);
+  transition: transform var(--ipin-dur);
+  pointer-events: none;
+}
+
+.plugin-settings-root .ipin-switch input:checked ~ .ipin-switch__thumb {
+  transform: translateX(20px);
+}
+
+.plugin-settings-root .ipin-switch input:focus-visible ~ .ipin-switch__track {
+  outline: 2px solid var(--plugin-focus);
+  outline-offset: 3px;
+}
+
+/* Small switch for slot headers */
+.plugin-settings-root .ipin-switch--sm {
+  width: 34px;
+  height: 18px;
+}
+
+.plugin-settings-root .ipin-switch--sm .ipin-switch__thumb {
+  width: 12px;
+  height: 12px;
+  top: 3px;
+  left: 3px;
+}
+
+.plugin-settings-root .ipin-switch--sm input:checked ~ .ipin-switch__thumb {
+  transform: translateX(16px);
+}
+
+.plugin-settings-root .ipin-toggle-body { line-height: 1; }
+
+.plugin-settings-root .ipin-toggle-label {
+  display: block;
+  font-size: .85rem;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+.plugin-settings-root .ipin-toggle-desc {
+  margin: 0;
+  font-size: .78rem;
+  color: var(--ipin-muted);
+  line-height: 1.5;
+}
+
+
+/* ── Visual selector — colour scheme ──────────────────────── */
+.plugin-settings-root .ipin-scheme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.plugin-settings-root .ipin-scheme-card { cursor: pointer; }
+
+.plugin-settings-root .ipin-scheme-card input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.plugin-settings-root .ipin-scheme-card__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 10px;
+  border: 2px solid var(--plugin-border);
+  border-radius: var(--ipin-r);
+  background: var(--plugin-surface);
+  font-size: .8rem;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color var(--ipin-dur), box-shadow var(--ipin-dur);
+}
+
+.plugin-settings-root .ipin-scheme-card:hover .ipin-scheme-card__inner {
+  border-color: rgba(0,0,0,.2);
+}
+
+.plugin-settings-root .ipin-scheme-card input:checked + .ipin-scheme-card__inner {
+  border-color: var(--plugin-accent);
+  box-shadow: 0 0 0 3px var(--plugin-focus);
+}
+
+.plugin-settings-root .ipin-scheme-card input:focus-visible + .ipin-scheme-card__inner {
+  outline: 2px solid var(--plugin-focus);
+  outline-offset: 2px;
+}
+
+.plugin-settings-root .ipin-swatch {
+  width: 48px;
+  height: 28px;
+  border-radius: 6px;
+  display: block;
+}
+
+.plugin-settings-root .swatch-vivid  { background: linear-gradient(135deg,#e8006a,#7b00d4,#00b4ff); }
+.plugin-settings-root .swatch-ocean  { background: linear-gradient(135deg,#00897b,#0097a7,#1a237e); }
+.plugin-settings-root .swatch-ember  { background: linear-gradient(135deg,#e65100,#e53935,#b71c1c); }
+.plugin-settings-root .swatch-forest { background: linear-gradient(135deg,#558b2f,#2e7d32,#f9a825); }
+.plugin-settings-root .swatch-mono   { background: linear-gradient(135deg,#212121,#424242,#757575); }
+
+
+/* ── Range slider ─────────────────────────────────────────── */
+.plugin-settings-root .ipin-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.plugin-settings-root .ipin-slider-wrap input[type="range"] {
+  flex: 1;
+  accent-color: var(--plugin-accent);
+  cursor: pointer;
+}
+
+.plugin-settings-root .ipin-slider-value {
+  min-width: 52px;
+  text-align: right;
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--plugin-accent);
+}
+
+
+/* ── Ad slot cards ────────────────────────────────────────── */
+.plugin-settings-root .ipin-ad-slot-card {
+  border: 1px solid var(--plugin-border);
+  border-radius: var(--ipin-r);
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: rgba(0,0,0,.015);
+  transition: opacity var(--ipin-dur);
+}
+
+.plugin-settings-root .ipin-ad-slot-card--paused { opacity: .45; }
+
+.plugin-settings-root .ipin-ad-slot-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.plugin-settings-root .ipin-ad-slot-card__label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: .85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.plugin-settings-root .ipin-ad-slot-card textarea {
+  width: 100%;
+  font-family: monospace;
+  font-size: .8rem;
+  padding: 8px 10px;
+  border: 1px solid var(--plugin-border);
+  border-radius: var(--ipin-r-sm);
+  background: var(--plugin-surface);
+  color: inherit;
+  resize: vertical;
+}
+
+.plugin-settings-root .ipin-ad-slot-card textarea:focus {
+  outline: none;
+  border-color: var(--plugin-accent);
+  box-shadow: 0 0 0 3px var(--plugin-focus);
+}
+
+/* Dims entire slot section when global switch is off */
+.plugin-settings-root #ipin-ad-slots-wrap.ipin-slots-globally-off {
+  opacity: .35;
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* ── Badge ────────────────────────────────────────────────── */
+.plugin-settings-root .ipin-badge {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.plugin-settings-root .ipin-badge--on  { background: #d4edda; color: #155724; }
+.plugin-settings-root .ipin-badge--off { background: rgba(0,0,0,.07); color: var(--ipin-muted); }
+
+
+/* ── Save bar ─────────────────────────────────────────────── */
+.plugin-settings-root .ipin-save-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 24px;
+  margin-top: 16px;
+  background: var(--plugin-surface);
+  border: 1px solid var(--plugin-border);
+  border-radius: var(--ipin-r);
+  box-shadow: var(--ipin-shadow);
+}
+
+.plugin-settings-root .ipin-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 20px;
+  background: var(--plugin-accent);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--ipin-r-sm);
+  font-size: .85rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: 1;
+  transition: opacity var(--ipin-dur);
+}
+
+.plugin-settings-root .ipin-btn-primary:hover  { opacity: .88; }
+.plugin-settings-root .ipin-btn-primary:active { opacity: .72; }
+
+.plugin-settings-root .ipin-btn-primary:focus-visible {
+  outline: 2px solid var(--plugin-focus);
+  outline-offset: 2px;
+}
+
+.plugin-settings-root .ipin-btn-primary[disabled] {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.plugin-settings-root .ipin-saved-notice {
+  font-size: .82rem;
+  color: #155724;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity .3s;
+}
+
+.plugin-settings-root .ipin-saved-notice.ipin-visible { opacity: 1; }
+
+
+/* ── Footer ───────────────────────────────────────────────── */
+.plugin-settings-root .ipin-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 14px 24px;
+  border-top: 1px solid var(--plugin-border);
+  font-size: .78rem;
+  color: var(--ipin-muted);
+}
+
+.plugin-settings-root .ipin-footer a {
+  color: var(--plugin-accent);
+  text-decoration: none;
+}
+
+.plugin-settings-root .ipin-footer a:hover { text-decoration: underline; }
+
+.plugin-settings-root .ipin-footer a:focus-visible {
+  outline: 2px solid var(--plugin-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+
+/* ── Responsive — 782px (WP admin breakpoint) ─────────────── */
+@media (max-width: 782px) {
+  .plugin-settings-root .ipin-header    { flex-wrap: wrap; padding: 16px; }
+  .plugin-settings-root .ipin-card      { padding: 16px; }
+  .plugin-settings-root .ipin-save-bar  { padding: 14px 16px; }
+
+  .plugin-settings-root .ipin-field,
+  .plugin-settings-root .ipin-toggle-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .plugin-settings-root .ipin-field > label { padding-top: 0; }
+  .plugin-settings-root .ipin-field input[type="number"] { max-width: 100%; }
+
+  .plugin-settings-root .ipin-scheme-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+
+  .plugin-settings-root .ipin-tabs-nav button { padding: 10px 12px; font-size: .78rem; }
+
+  .plugin-settings-root .ipin-footer {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
