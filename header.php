@@ -49,7 +49,9 @@
 		<button class="navbar-toggle"
 		        aria-label="<?php esc_attr_e( 'Open navigation menu', 'ipin' ); ?>"
 		        aria-expanded="false"
-		        aria-controls="nav-main">
+		        aria-controls="nav-main"
+		        data-label-open="<?php esc_attr_e( 'Open navigation menu', 'ipin' ); ?>"
+		        data-label-close="<?php esc_attr_e( 'Close navigation menu', 'ipin' ); ?>">
 			<span class="icon-bar" aria-hidden="true"></span>
 			<span class="icon-bar" aria-hidden="true"></span>
 			<span class="icon-bar" aria-hidden="true"></span>
@@ -64,6 +66,7 @@
 					'menu_class'     => 'nav-list',
 					'depth'          => 3,
 					'container'      => false,
+					'walker'         => new Ipin_Nav_Walker(),
 					'items_wrap'     => '<ul id="%1$s" class="%2$s" role="list">%3$s</ul>',
 				] ); ?>
 			<?php else : ?>

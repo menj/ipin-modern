@@ -110,6 +110,55 @@
 
 
   /* ========================================================
+     2b. SUBMENU DISCLOSURE BUTTONS
+     WCAG 4.1.2: each button reports aria-expanded. Opening one
+     closes its open siblings; Escape and outside clicks close
+     all, returning focus to the button that owned the submenu.
+  ======================================================== */
+  function setSubmenu(btn, open) {
+    var li = btn.parentElement;
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    li.classList.toggle('submenu-open', open);
+    if (!open) {
+      // Collapsing a parent collapses everything beneath it.
+      li.querySelectorAll('.submenu-toggle[aria-expanded="true"]').forEach(function (child) {
+        setSubmenu(child, false);
+      });
+    }
+  }
+
+  function closeAllSubmenus(except) {
+    document.querySelectorAll('#nav-main .submenu-toggle[aria-expanded="true"]').forEach(function (btn) {
+      if (!except || !btn.parentElement.contains(except)) setSubmenu(btn, false);
+    });
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('#nav-main .submenu-toggle');
+    if (btn) {
+      var open = btn.getAttribute('aria-expanded') !== 'true';
+      // Close other branches, keep this item's ancestors open.
+      closeAllSubmenus(btn.parentElement);
+      setSubmenu(btn, open);
+      return;
+    }
+    if (!e.target.closest('#nav-main ul.nav-list')) closeAllSubmenus(null);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    var openLi = e.target.closest && e.target.closest('#nav-main li.submenu-open');
+    if (!openLi) return;
+    var btn = openLi.querySelector(':scope > .submenu-toggle');
+    if (btn) {
+      setSubmenu(btn, false);
+      btn.focus();
+      e.stopPropagation();   // capture phase: the mobile panel's own Escape handler must not also fire
+    }
+  }, true);
+
+
+  /* ========================================================
      3. SCROLL-TO-TOP
      A <button> (WCAG 2.1.1). Uses hidden + aria-hidden until
      the page is scrolled; shown progressively.
