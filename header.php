@@ -15,12 +15,12 @@
 <?php wp_body_open(); ?>
 
 <!-- Skip to main content (WCAG 2.4.1) -->
-<a class="skip-link" href="#main-content"><?php esc_html_e( 'Skip to main content', 'ipin' ); ?></a>
+<a class="skip-link" href="#main-content"><?php esc_html_e( 'Skip to main content', 'ipin-modern' ); ?></a>
 
 <!-- =======================================================
      TOP NAVIGATION  (landmark: <nav>, WCAG 1.3.6 / 4.1.2)
      ======================================================= -->
-<nav id="topmenu" aria-label="<?php esc_attr_e( 'Main navigation', 'ipin' ); ?>">
+<nav id="topmenu" aria-label="<?php esc_attr_e( 'Main navigation', 'ipin-modern' ); ?>">
 	<div class="nav-inner">
 
 		<!-- Brand —
@@ -37,12 +37,12 @@
 		   rel="home"
 		   aria-label="<?php echo esc_attr( sprintf(
 		   		/* translators: %s = site name */
-		   		__( '%s — go to homepage', 'ipin' ),
+		   		__( '%s — go to homepage', 'ipin-modern' ),
 		   		get_bloginfo( 'name' )
 		   ) ); ?>">
 			<span class="navbar-brand__icon" aria-hidden="true"><?php
-				// Same pin mark as favicon.svg — one source of truth for the brand glyph.
-				echo file_get_contents( get_template_directory() . '/favicon.svg' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+				// Same pin mark as the favicon — one source of truth for the brand glyph.
+				echo file_get_contents( get_template_directory() . '/assets/img/favicon.svg' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 			?></span>
 			<span aria-hidden="true"><?php bloginfo( 'name' ); ?></span>
 		</a>
@@ -50,11 +50,11 @@
 
 		<!-- Hamburger (WCAG 4.1.2: name, role, value — aria-expanded updated by JS) -->
 		<button class="navbar-toggle"
-		        aria-label="<?php esc_attr_e( 'Open navigation menu', 'ipin' ); ?>"
+		        aria-label="<?php esc_attr_e( 'Open navigation menu', 'ipin-modern' ); ?>"
 		        aria-expanded="false"
 		        aria-controls="nav-main"
-		        data-label-open="<?php esc_attr_e( 'Open navigation menu', 'ipin' ); ?>"
-		        data-label-close="<?php esc_attr_e( 'Close navigation menu', 'ipin' ); ?>">
+		        data-label-open="<?php esc_attr_e( 'Open navigation menu', 'ipin-modern' ); ?>"
+		        data-label-close="<?php esc_attr_e( 'Close navigation menu', 'ipin-modern' ); ?>">
 			<span class="icon-bar" aria-hidden="true"></span>
 			<span class="icon-bar" aria-hidden="true"></span>
 			<span class="icon-bar" aria-hidden="true"></span>
@@ -75,6 +75,12 @@
 			<?php else : ?>
 				<ul class="nav-list" role="list">
 					<?php wp_list_pages( [ 'title_li' => '', 'depth' => 1, 'sort_column' => 'menu_order' ] ); ?>
+					<?php if ( ipin_has_articles() ) :
+						$ipin_in_sideblog = is_post_type_archive( 'ipin_article' ) || is_singular( 'ipin_article' ); ?>
+					<li class="page_item<?php echo $ipin_in_sideblog ? ' current_page_item' : ''; ?>">
+						<a href="<?php echo esc_url( get_post_type_archive_link( 'ipin_article' ) ); ?>"<?php echo $ipin_in_sideblog ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Articles', 'ipin-modern' ); ?></a>
+					</li>
+					<?php endif; ?>
 				</ul>
 			<?php endif; ?>
 
@@ -83,82 +89,92 @@
 			      method="get"
 			      action="<?php echo esc_url( home_url( '/' ) ); ?>"
 			      role="search"
-			      aria-label="<?php esc_attr_e( 'Site search', 'ipin' ); ?>">
+			      aria-label="<?php esc_attr_e( 'Site search', 'ipin-modern' ); ?>">
 				<label for="nav-search-input" class="sr-only">
-					<?php esc_html_e( 'Search', 'ipin' ); ?>
+					<?php esc_html_e( 'Search', 'ipin-modern' ); ?>
 				</label>
 				<input
 					type="search"
 					id="nav-search-input"
 					name="s"
-					placeholder="<?php esc_attr_e( 'Search…', 'ipin' ); ?>"
+					placeholder="<?php esc_attr_e( 'Search…', 'ipin-modern' ); ?>"
 					value="<?php echo esc_attr( get_search_query() ); ?>"
 					autocomplete="off"
 				>
 				<button type="submit">
 					<?php echo ipin_icon( 'search' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					<span class="sr-only"><?php esc_html_e( 'Search', 'ipin' ); ?></span>
+					<span class="sr-only"><?php esc_html_e( 'Search', 'ipin-modern' ); ?></span>
 				</button>
 			</form>
 
-			<!-- Social links (WCAG 2.4.6: each has a descriptive label) -->
-			<div class="topmenu-social-wrap"
-			     role="list"
-			     aria-label="<?php esc_attr_e( 'Social links', 'ipin' ); ?>">
+			<div class="topmenu-social-wrap">
+
+				<!-- Social links (WCAG 2.4.6: each has a descriptive label).
+				     role="list" keeps list semantics in Safari, which drops
+				     them from lists styled with list-style: none. -->
+				<ul class="topmenu-social-list"
+				    role="list"
+				    aria-label="<?php esc_attr_e( 'Social links', 'ipin-modern' ); ?>">
 
 				<?php if ( (int) ipin_option( 'ipin_rss_visible', 1 ) ) : ?>
-				<a href="<?php bloginfo( 'rss2_url' ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'RSS feed (opens in new tab)', 'ipin' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener">
-					<?php echo ipin_icon( 'rss' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-				</a>
+				<li>
+					<a href="<?php bloginfo( 'rss2_url' ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'RSS feed (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener">
+						<?php echo ipin_icon( 'rss' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					</a>
+				</li>
 				<?php endif; ?>
 
 				<?php $twitter = ipin_option( 'ipin_twitter_url' ); if ( $twitter ) : ?>
-				<a href="<?php echo esc_url( $twitter ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'Follow us on X / Twitter (opens in new tab)', 'ipin' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener noreferrer">
-					<?php echo ipin_social_icon( 'x' ); ?>
-				</a>
+				<li>
+					<a href="<?php echo esc_url( $twitter ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'Follow us on X / Twitter (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener noreferrer">
+						<?php echo ipin_social_icon( 'x' ); ?>
+					</a>
+				</li>
 				<?php endif; ?>
 
 				<?php $facebook = ipin_option( 'ipin_facebook_url' ); if ( $facebook ) : ?>
-				<a href="<?php echo esc_url( $facebook ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'Follow us on Facebook (opens in new tab)', 'ipin' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener noreferrer">
-					<?php echo ipin_social_icon( 'facebook' ); ?>
-				</a>
+				<li>
+					<a href="<?php echo esc_url( $facebook ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'Follow us on Facebook (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener noreferrer">
+						<?php echo ipin_social_icon( 'facebook' ); ?>
+					</a>
+				</li>
 				<?php endif; ?>
 
 				<?php $instagram = ipin_option( 'ipin_instagram_url' ); if ( $instagram ) : ?>
-				<a href="<?php echo esc_url( $instagram ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'Follow us on Instagram (opens in new tab)', 'ipin' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener noreferrer">
-					<?php echo ipin_social_icon( 'instagram' ); ?>
-				</a>
+				<li>
+					<a href="<?php echo esc_url( $instagram ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'Follow us on Instagram (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener noreferrer">
+						<?php echo ipin_social_icon( 'instagram' ); ?>
+					</a>
+				</li>
 				<?php endif; ?>
+
+				</ul>
 
 				<!-- Dark-mode toggle: sun/moon pill switch with sliding
 				     gradient thumb (WCAG 4.1.2: aria-pressed + aria-label
 				     updated by JS via the data-label-* attributes) -->
 				<button id="dark-mode-toggle"
 				        class="mode-switch"
-				        aria-label="<?php esc_attr_e( 'Switch to dark mode', 'ipin' ); ?>"
+				        aria-label="<?php esc_attr_e( 'Switch to dark mode', 'ipin-modern' ); ?>"
 				        aria-pressed="false"
-				        data-label-dark="<?php esc_attr_e( 'Switch to dark mode', 'ipin' ); ?>"
-				        data-label-light="<?php esc_attr_e( 'Switch to light mode', 'ipin' ); ?>">
+				        data-label-dark="<?php esc_attr_e( 'Switch to dark mode', 'ipin-modern' ); ?>"
+				        data-label-light="<?php esc_attr_e( 'Switch to light mode', 'ipin-modern' ); ?>">
 					<span class="mode-switch__thumb" aria-hidden="true"></span>
 					<span class="mode-switch__icon mode-switch__icon--sun" aria-hidden="true">
 						<svg viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-15a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 17a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1ZM2 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1Zm17-1a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2h-2ZM4.9 4.9a1 1 0 0 1 1.4 0l1.5 1.5a1 1 0 0 1-1.5 1.4L4.9 6.3a1 1 0 0 1 0-1.4Zm12.3 12.3a1 1 0 0 1 1.4 0l1.5 1.5a1 1 0 0 1-1.4 1.4l-1.5-1.5a1 1 0 0 1 0-1.4Zm1.5-12.3a1 1 0 0 1 0 1.4l-1.5 1.5a1 1 0 1 1-1.4-1.5l1.5-1.4a1 1 0 0 1 1.4 0ZM6.3 17.2a1 1 0 0 1 0 1.4l-1.4 1.5a1 1 0 0 1-1.5-1.4l1.5-1.5a1 1 0 0 1 1.4 0Z"/></svg>
@@ -180,7 +196,7 @@ if ( is_search() || is_category() || is_tag() || is_archive() ) : ?>
 	<?php if ( is_search() ) : ?>
 		<h1><?php printf(
 			/* translators: %s = search query */
-			esc_html__( 'Search results for "%s"', 'ipin' ),
+			esc_html__( 'Search results for "%s"', 'ipin-modern' ),
 			'<em>' . esc_html( get_search_query() ) . '</em>'
 		); ?></h1>
 	<?php elseif ( is_category() ) : ?>
@@ -189,16 +205,18 @@ if ( is_search() || is_category() || is_tag() || is_archive() ) : ?>
 	<?php elseif ( is_tag() ) : ?>
 		<h1><?php printf(
 			/* translators: %s = tag name */
-			esc_html__( 'Tag: %s', 'ipin' ),
+			esc_html__( 'Tag: %s', 'ipin-modern' ),
 			'<em>' . esc_html( single_tag_title( '', false ) ) . '</em>'
 		); ?></h1>
 		<?php if ( tag_description() ) echo '<p>' . wp_kses_post( tag_description() ) . '</p>'; ?>
 	<?php elseif ( is_author() ) : ?>
 		<h1><?php printf(
 			/* translators: %s = author name */
-			esc_html__( 'Posts by %s', 'ipin' ),
+			esc_html__( 'Posts by %s', 'ipin-modern' ),
 			'<em>' . esc_html( get_the_author() ) . '</em>'
 		); ?></h1>
+	<?php elseif ( is_post_type_archive() ) : ?>
+		<h1><?php post_type_archive_title(); ?></h1>
 	<?php else : ?>
 		<h1><?php the_archive_title(); ?></h1>
 	<?php endif; ?>

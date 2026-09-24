@@ -46,11 +46,11 @@ function ipin_settings_schema(): array {
 /** The colour schemes tokens.css defines, slug => label. */
 function ipin_colour_schemes(): array {
 	return [
-		'vivid'  => __( 'Vivid',  'ipin' ),
-		'ocean'  => __( 'Ocean',  'ipin' ),
-		'ember'  => __( 'Ember',  'ipin' ),
-		'forest' => __( 'Forest', 'ipin' ),
-		'mono'   => __( 'Mono',   'ipin' ),
+		'vivid'  => __( 'Vivid',  'ipin-modern' ),
+		'ocean'  => __( 'Ocean',  'ipin-modern' ),
+		'ember'  => __( 'Ember',  'ipin-modern' ),
+		'forest' => __( 'Forest', 'ipin-modern' ),
+		'mono'   => __( 'Mono',   'ipin-modern' ),
 	];
 }
 
@@ -92,7 +92,7 @@ function ipin_ajax_save_options(): void {
 	check_ajax_referer( 'ipin_save_options', 'ipin_nonce' );
 
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( [ 'message' => __( 'You do not have permission to change these settings.', 'ipin' ) ], 403 );
+		wp_send_json_error( [ 'message' => __( 'You do not have permission to change these settings.', 'ipin-modern' ) ], 403 );
 	}
 
 	foreach ( array_keys( ipin_settings_schema() ) as $key ) {
@@ -103,7 +103,7 @@ function ipin_ajax_save_options(): void {
 		}
 	}
 
-	wp_send_json_success( [ 'message' => __( 'Settings saved.', 'ipin' ) ] );
+	wp_send_json_success( [ 'message' => __( 'Settings saved.', 'ipin-modern' ) ] );
 }
 add_action( 'wp_ajax_ipin_save_options', 'ipin_ajax_save_options' );
 
@@ -113,8 +113,8 @@ add_action( 'wp_ajax_ipin_save_options', 'ipin_ajax_save_options' );
    ------------------------------------------------------- */
 function ipin_admin_menu(): void {
 	add_theme_page(
-		__( 'iPin Settings', 'ipin' ),
-		__( 'iPin Settings', 'ipin' ),
+		__( 'iPin Settings', 'ipin-modern' ),
+		__( 'iPin Settings', 'ipin-modern' ),
 		'manage_options',
 		'ipin-settings',
 		'ipin_render_settings_page'
@@ -139,10 +139,10 @@ function ipin_render_settings_page(): void {
 	if ( ! current_user_can( 'manage_options' ) ) return;
 
 	$tabs = [
-		'general'    => [ 'icon' => '&#x2699;&#xfe0f;', 'label' => __( 'General',    'ipin' ) ],
-		'appearance' => [ 'icon' => '&#x1f3a8;',        'label' => __( 'Appearance', 'ipin' ) ],
-		'social'     => [ 'icon' => '&#x1f517;',        'label' => __( 'Social',     'ipin' ) ],
-		'layout'     => [ 'icon' => '&#x1f4d0;',        'label' => __( 'Layout',     'ipin' ) ],
+		'general'    => [ 'icon' => '&#x2699;&#xfe0f;', 'label' => __( 'General',    'ipin-modern' ) ],
+		'appearance' => [ 'icon' => '&#x1f3a8;',        'label' => __( 'Appearance', 'ipin-modern' ) ],
+		'social'     => [ 'icon' => '&#x1f517;',        'label' => __( 'Social',     'ipin-modern' ) ],
+		'layout'     => [ 'icon' => '&#x1f4d0;',        'label' => __( 'Layout',     'ipin-modern' ) ],
 	];
 
 	$scheme  = ipin_get( 'ipin_colour_scheme', 'vivid' );
@@ -154,8 +154,8 @@ function ipin_render_settings_page(): void {
 	<div class="ipin-header">
 		<span class="ipin-header__icon" aria-hidden="true">&#x1f4cc;</span>
 		<div class="ipin-header__body">
-			<h1 class="ipin-header__title"><?php esc_html_e( 'iPin Modern', 'ipin' ); ?></h1>
-			<p class="ipin-header__desc"><?php esc_html_e( 'Pinterest-style masonry theme settings', 'ipin' ); ?></p>
+			<h1 class="ipin-header__title"><?php esc_html_e( 'iPin Modern', 'ipin-modern' ); ?></h1>
+			<p class="ipin-header__desc"><?php esc_html_e( 'Pinterest-style masonry theme settings', 'ipin-modern' ); ?></p>
 		</div>
 		<span class="ipin-header__badge">v<?php echo esc_html( $version ); ?></span>
 	</div>
@@ -191,35 +191,35 @@ function ipin_render_settings_page(): void {
 		<div id="ipin-tab-general" class="ipin-tab-panel ipin-active" role="tabpanel" aria-labelledby="ipin-tab-btn-general">
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Homepage Grid', 'ipin' ); ?></p>
-				<p class="ipin-card__desc"><?php esc_html_e( 'Control how posts appear on your grid homepage.', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Homepage Grid', 'ipin-modern' ); ?></p>
+				<p class="ipin-card__desc"><?php esc_html_e( 'Control how posts appear on your grid homepage.', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-field">
-					<label for="ipin_frontpage_comments"><?php esc_html_e( 'Comments per card', 'ipin' ); ?></label>
+					<label for="ipin_frontpage_comments"><?php esc_html_e( 'Comments per card', 'ipin-modern' ); ?></label>
 					<div>
 						<input type="number" id="ipin_frontpage_comments" name="ipin_frontpage_comments"
 							value="<?php echo esc_attr( ipin_get( 'ipin_frontpage_comments', 3 ) ); ?>" min="0" max="10">
-						<p class="ipin-field-desc"><?php esc_html_e( 'Number of recent comments per card. Set to 0 to hide.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Number of recent comments per card. Set to 0 to hide.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 
 				<div class="ipin-field">
-					<label for="ipin_posts_per_page"><?php esc_html_e( 'Posts per page', 'ipin' ); ?></label>
+					<label for="ipin_posts_per_page"><?php esc_html_e( 'Posts per page', 'ipin-modern' ); ?></label>
 					<div>
 						<input type="number" id="ipin_posts_per_page" name="ipin_posts_per_page"
 							value="<?php echo esc_attr( ipin_get( 'ipin_posts_per_page', 12 ) ); ?>" min="1" max="100">
-						<p class="ipin-field-desc"><?php esc_html_e( 'Pins per batch on the homepage, archives and search; infinite scroll loads the next batch. Overrides "Blog pages show at most" in Settings > Reading.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Pins per batch on the homepage, archives and search; infinite scroll loads the next batch. Overrides "Blog pages show at most" in Settings > Reading.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 			</div>
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Display', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Display', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-toggle-row">
 					<div class="ipin-toggle-cell">
 						<label class="ipin-switch" for="ipin_show_avatars_grid"
-							aria-label="<?php esc_html_e( 'Show author avatars on grid cards', 'ipin' ); ?>">
+							aria-label="<?php esc_html_e( 'Show author avatars on grid cards', 'ipin-modern' ); ?>">
 							<input type="hidden" name="ipin_show_avatars_grid" value="0">
 							<input type="checkbox" id="ipin_show_avatars_grid" name="ipin_show_avatars_grid" value="1"
 								<?php checked( 1, (int) ipin_get( 'ipin_show_avatars_grid', 1 ) ); ?>>
@@ -228,22 +228,22 @@ function ipin_render_settings_page(): void {
 						</label>
 					</div>
 					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Show author avatars on grid cards', 'ipin' ); ?></span>
-						<p class="ipin-toggle-desc"><?php esc_html_e( 'Requires "Show Avatars" enabled in Settings > Discussion.', 'ipin' ); ?></p>
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show author avatars on grid cards', 'ipin-modern' ); ?></span>
+						<p class="ipin-toggle-desc"><?php esc_html_e( 'Requires "Show Avatars" enabled in Settings > Discussion.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 			</div>
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Footer', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Footer', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-field">
-					<label for="ipin_footer_text"><?php esc_html_e( 'Footer text', 'ipin' ); ?></label>
+					<label for="ipin_footer_text"><?php esc_html_e( 'Footer text', 'ipin-modern' ); ?></label>
 					<div>
 						<input type="text" id="ipin_footer_text" name="ipin_footer_text"
 							value="<?php echo esc_attr( ipin_get( 'ipin_footer_text', '' ) ); ?>"
-							placeholder="<?php esc_attr_e( 'Optional custom footer text...', 'ipin' ); ?>">
-						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the default site name + tagline.', 'ipin' ); ?></p>
+							placeholder="<?php esc_attr_e( 'Optional custom footer text...', 'ipin-modern' ); ?>">
+						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the default site name + tagline.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -258,8 +258,8 @@ function ipin_render_settings_page(): void {
 		<div id="ipin-tab-appearance" class="ipin-tab-panel" role="tabpanel" aria-labelledby="ipin-tab-btn-appearance">
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Colour Scheme', 'ipin' ); ?></p>
-				<p class="ipin-card__desc"><?php esc_html_e( 'Pick a palette. All accents and interactive colours update automatically. Dark mode is available on all schemes.', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Colour Scheme', 'ipin-modern' ); ?></p>
+				<p class="ipin-card__desc"><?php esc_html_e( 'Pick a palette. All accents and interactive colours update automatically. Dark mode is available on all schemes.', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-scheme-grid">
 					<?php foreach ( ipin_colour_schemes() as $slug => $label ) : ?>
@@ -277,12 +277,12 @@ function ipin_render_settings_page(): void {
 			</div>
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Dark Mode', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Dark Mode', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-toggle-row">
 					<div class="ipin-toggle-cell">
 						<label class="ipin-switch" for="ipin_dark_mode_default"
-							aria-label="<?php esc_html_e( 'Default to dark mode', 'ipin' ); ?>">
+							aria-label="<?php esc_html_e( 'Default to dark mode', 'ipin-modern' ); ?>">
 							<input type="hidden" name="ipin_dark_mode_default" value="0">
 							<input type="checkbox" id="ipin_dark_mode_default" name="ipin_dark_mode_default" value="1"
 								<?php checked( 1, (int) ipin_get( 'ipin_dark_mode_default', 0 ) ); ?>>
@@ -291,17 +291,17 @@ function ipin_render_settings_page(): void {
 						</label>
 					</div>
 					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Default to dark mode', 'ipin' ); ?></span>
-						<p class="ipin-toggle-desc"><?php esc_html_e( 'Serves dark mode by default. Visitor can still toggle. When off, follows OS preference.', 'ipin' ); ?></p>
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Default to dark mode', 'ipin-modern' ); ?></span>
+						<p class="ipin-toggle-desc"><?php esc_html_e( 'Serves dark mode by default. Visitor can still toggle. When off, follows OS preference.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 			</div>
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Cards', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Cards', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-field">
-					<label for="ipin_card_width"><?php esc_html_e( 'Card width', 'ipin' ); ?></label>
+					<label for="ipin_card_width"><?php esc_html_e( 'Card width', 'ipin-modern' ); ?></label>
 					<div>
 						<div class="ipin-slider-wrap">
 							<input type="range" id="ipin_card_width" name="ipin_card_width"
@@ -309,14 +309,14 @@ function ipin_render_settings_page(): void {
 							<span class="ipin-slider-value" id="ipin_card_width_val"
 								aria-live="polite"><?php echo esc_html( ipin_get( 'ipin_card_width', 220 ) ); ?>px</span>
 						</div>
-						<p class="ipin-field-desc"><?php esc_html_e( 'Width of each pin card. 180-240 px recommended.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Width of each pin card. 180-240 px recommended.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 
 				<div class="ipin-toggle-row">
 					<div class="ipin-toggle-cell">
 						<label class="ipin-switch" for="ipin_rounded_cards"
-							aria-label="<?php esc_html_e( 'Rounded card corners', 'ipin' ); ?>">
+							aria-label="<?php esc_html_e( 'Rounded card corners', 'ipin-modern' ); ?>">
 							<input type="hidden" name="ipin_rounded_cards" value="0">
 							<input type="checkbox" id="ipin_rounded_cards" name="ipin_rounded_cards" value="1"
 								<?php checked( 1, (int) ipin_get( 'ipin_rounded_cards', 1 ) ); ?>>
@@ -325,8 +325,8 @@ function ipin_render_settings_page(): void {
 						</label>
 					</div>
 					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Rounded card corners', 'ipin' ); ?></span>
-						<p class="ipin-toggle-desc"><?php esc_html_e( 'Disable for a sharper, more editorial look.', 'ipin' ); ?></p>
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Rounded card corners', 'ipin-modern' ); ?></span>
+						<p class="ipin-toggle-desc"><?php esc_html_e( 'Disable for a sharper, more editorial look.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -341,8 +341,8 @@ function ipin_render_settings_page(): void {
 		<div id="ipin-tab-social" class="ipin-tab-panel" role="tabpanel" aria-labelledby="ipin-tab-btn-social">
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Social Profiles', 'ipin' ); ?></p>
-				<p class="ipin-card__desc"><?php esc_html_e( 'Icons appear in the top navigation bar. Leave blank to hide that icon.', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Social Profiles', 'ipin-modern' ); ?></p>
+				<p class="ipin-card__desc"><?php esc_html_e( 'Icons appear in the top navigation bar. Leave blank to hide that icon.', 'ipin-modern' ); ?></p>
 
 				<?php
 				$social = [
@@ -360,32 +360,32 @@ function ipin_render_settings_page(): void {
 				<?php endforeach; ?>
 
 				<div class="ipin-field">
-					<label for="ipin_fediverse_creator"><?php esc_html_e( 'Mastodon / fediverse handle', 'ipin' ); ?></label>
+					<label for="ipin_fediverse_creator"><?php esc_html_e( 'Mastodon / fediverse handle', 'ipin-modern' ); ?></label>
 					<div>
 						<input type="text" id="ipin_fediverse_creator" name="ipin_fediverse_creator"
 							value="<?php echo esc_attr( ipin_get( 'ipin_fediverse_creator', '' ) ); ?>"
 							placeholder="@you@mastodon.social" autocomplete="off" spellcheck="false">
-						<p class="ipin-field-desc"><?php esc_html_e( 'Credits you on Mastodon link previews (fediverse:creator), adds a rel="me" link so Mastodon can verify this site on your profile, and joins your sameAs links. A profile URL works too.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Credits you on Mastodon link previews (fediverse:creator), adds a rel="me" link so Mastodon can verify this site on your profile, and joins your sameAs links. A profile URL works too.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 
 				<div class="ipin-field">
-					<label for="ipin_author_sameas"><?php esc_html_e( 'Also-me profile URLs (schema.org sameAs)', 'ipin' ); ?></label>
+					<label for="ipin_author_sameas"><?php esc_html_e( 'Also-me profile URLs (schema.org sameAs)', 'ipin-modern' ); ?></label>
 					<div>
 						<textarea id="ipin_author_sameas" name="ipin_author_sameas" rows="4"
 							placeholder="https://menj.bio&#10;https://menj.blog"><?php echo esc_textarea( ipin_get( 'ipin_author_sameas', '' ) ); ?></textarea>
-						<p class="ipin-field-desc"><?php esc_html_e( 'One URL per line. Added to the author Person schema (together with the profiles above) so search engines link this site to your other properties.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'One URL per line. Added to the author Person schema (together with the profiles above) so search engines link this site to your other properties.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 			</div>
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'RSS', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'RSS', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-toggle-row">
 					<div class="ipin-toggle-cell">
 						<label class="ipin-switch" for="ipin_rss_visible"
-							aria-label="<?php esc_html_e( 'Show RSS icon in navigation', 'ipin' ); ?>">
+							aria-label="<?php esc_html_e( 'Show RSS icon in navigation', 'ipin-modern' ); ?>">
 							<input type="hidden" name="ipin_rss_visible" value="0">
 							<input type="checkbox" id="ipin_rss_visible" name="ipin_rss_visible" value="1"
 								<?php checked( 1, (int) ipin_get( 'ipin_rss_visible', 1 ) ); ?>>
@@ -394,7 +394,7 @@ function ipin_render_settings_page(): void {
 						</label>
 					</div>
 					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Show RSS icon in navigation', 'ipin' ); ?></span>
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show RSS icon in navigation', 'ipin-modern' ); ?></span>
 					</div>
 				</div>
 			</div>
@@ -409,13 +409,13 @@ function ipin_render_settings_page(): void {
 		<div id="ipin-tab-layout" class="ipin-tab-panel" role="tabpanel" aria-labelledby="ipin-tab-btn-layout">
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Homepage Hero', 'ipin' ); ?></p>
-				<p class="ipin-card__desc"><?php esc_html_e( 'Statement heading and lede paragraph shown above the grid on the first page of the homepage.', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Homepage Hero', 'ipin-modern' ); ?></p>
+				<p class="ipin-card__desc"><?php esc_html_e( 'Statement heading and lede paragraph shown above the grid on the first page of the homepage.', 'ipin-modern' ); ?></p>
 
 				<div class="ipin-toggle-row">
 					<div class="ipin-toggle-cell">
 						<label class="ipin-switch" for="ipin_hero_enabled"
-							aria-label="<?php esc_html_e( 'Show homepage hero', 'ipin' ); ?>">
+							aria-label="<?php esc_html_e( 'Show homepage hero', 'ipin-modern' ); ?>">
 							<input type="hidden" name="ipin_hero_enabled" value="0">
 							<input type="checkbox" id="ipin_hero_enabled" name="ipin_hero_enabled" value="1"
 								<?php checked( 1, (int) ipin_get( 'ipin_hero_enabled', 1 ) ); ?>>
@@ -424,14 +424,14 @@ function ipin_render_settings_page(): void {
 						</label>
 					</div>
 					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Show homepage hero', 'ipin' ); ?></span>
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show homepage hero', 'ipin-modern' ); ?></span>
 					</div>
 				</div>
 
 				<div class="ipin-toggle-row">
 					<div class="ipin-toggle-cell">
 						<label class="ipin-switch" for="ipin_hero_bento"
-							aria-label="<?php esc_html_e( 'Show featured-pin bento panel', 'ipin' ); ?>">
+							aria-label="<?php esc_html_e( 'Show featured-pin bento panel', 'ipin-modern' ); ?>">
 							<input type="hidden" name="ipin_hero_bento" value="0">
 							<input type="checkbox" id="ipin_hero_bento" name="ipin_hero_bento" value="1"
 								<?php checked( 1, (int) ipin_get( 'ipin_hero_bento', 1 ) ); ?>>
@@ -440,27 +440,27 @@ function ipin_render_settings_page(): void {
 						</label>
 					</div>
 					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Show featured-pin bento panel', 'ipin' ); ?></span>
-						<span class="ipin-toggle-desc"><?php esc_html_e( 'Featured pin (first sticky post, or the newest pin) plus board stats beside the hero text.', 'ipin' ); ?></span>
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show featured-pin bento panel', 'ipin-modern' ); ?></span>
+						<span class="ipin-toggle-desc"><?php esc_html_e( 'Featured pin (first sticky post, or the newest pin) plus board stats beside the hero text.', 'ipin-modern' ); ?></span>
 					</div>
 				</div>
 
 				<div class="ipin-field">
-					<label for="ipin_hero_title"><?php esc_html_e( 'Hero heading', 'ipin' ); ?></label>
+					<label for="ipin_hero_title"><?php esc_html_e( 'Hero heading', 'ipin-modern' ); ?></label>
 					<div>
 						<input type="text" id="ipin_hero_title" name="ipin_hero_title"
 							value="<?php echo esc_attr( ipin_get( 'ipin_hero_title', '' ) ); ?>"
 							placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
-						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site title. Wrap one word in *asterisks* to give it the gradient accent.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site title. Wrap one word in *asterisks* to give it the gradient accent.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 
 				<div class="ipin-field">
-					<label for="ipin_hero_lede"><?php esc_html_e( 'Lede paragraph', 'ipin' ); ?></label>
+					<label for="ipin_hero_lede"><?php esc_html_e( 'Lede paragraph', 'ipin-modern' ); ?></label>
 					<div>
 						<textarea id="ipin_hero_lede" name="ipin_hero_lede" rows="3"
 							placeholder="<?php echo esc_attr( get_bloginfo( 'description' ) ); ?>"><?php echo esc_textarea( ipin_get( 'ipin_hero_lede', '' ) ); ?></textarea>
-						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site tagline. Basic HTML (links, emphasis) is allowed.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site tagline. Basic HTML (links, emphasis) is allowed.', 'ipin-modern' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -472,7 +472,7 @@ function ipin_render_settings_page(): void {
 
 	<!-- Footer -->
 	<div class="ipin-footer">
-		<span><?php esc_html_e( 'Developed by', 'ipin' ); ?> <a href="https://github.com/menj" target="_blank" rel="noopener noreferrer">MENJ</a></span>
+		<span><?php esc_html_e( 'Developed by', 'ipin-modern' ); ?> <a href="https://github.com/menj" target="_blank" rel="noopener noreferrer">MENJ</a></span>
 		<span><a href="https://github.com/menj" target="_blank" rel="noopener noreferrer">GitHub</a></span>
 	</div>
 
@@ -487,8 +487,8 @@ function ipin_render_settings_page(): void {
 function ipin_render_save_bar(): void {
 	?>
 	<div class="ipin-save-bar">
-		<button type="submit" class="ipin-btn-primary"><?php esc_html_e( 'Save Settings', 'ipin' ); ?></button>
-		<span class="ipin-saved-notice" aria-live="polite">&#x2713; <?php esc_html_e( 'Settings saved!', 'ipin' ); ?></span>
+		<button type="submit" class="ipin-btn-primary"><?php esc_html_e( 'Save Settings', 'ipin-modern' ); ?></button>
+		<span class="ipin-saved-notice" aria-live="polite">&#x2713; <?php esc_html_e( 'Settings saved!', 'ipin-modern' ); ?></span>
 		<span class="ipin-error-notice" role="alert" hidden></span>
 	</div>
 	<?php

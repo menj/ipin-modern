@@ -2,8 +2,11 @@
 /**
  * iPin Modern — Template Tags & Helper Functions
  *
- * Theme-specific functions used in template files.
- * Keeps functions.php lean and templates readable.
+ * Functions the templates and template-parts/ call: options,
+ * icons, card images and comment previews, timestamps, the
+ * comment callback and form fields, and the 404 page's lines.
+ * RSS output lives in feed.php, the lightbox endpoint in
+ * rest-api.php.
  */
 
 declare( strict_types = 1 );
@@ -19,6 +22,17 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 function ipin_option( string $key, mixed $default = '' ): mixed {
 	$val = get_option( $key, null );
 	return ( null !== $val ) ? $val : get_theme_mod( $key, $default );
+}
+
+
+/* -------------------------------------------------------
+   PLAIN TEXT
+   HTML to plain text: tags stripped, entities decoded. For
+   output that is not HTML, such as JSON-LD and the lightbox
+   REST data, where entities would show up literally.
+   ------------------------------------------------------- */
+function ipin_plain( string $html ): string {
+	return trim( html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
 }
 
 
@@ -178,19 +192,19 @@ function ipin_human_time_diff( int $from, int $to = 0 ): string {
 	if ( $diff <= 3600 ) {
 		$n = max( 1, (int) round( $diff / 60 ) );
 		/* translators: %d = number of minutes */
-		return sprintf( _n( '%d min ago', '%d mins ago', $n, 'ipin' ), $n );
+		return sprintf( _n( '%d min ago', '%d mins ago', $n, 'ipin-modern' ), $n );
 	}
 
 	if ( $diff <= 86400 ) {
 		$n = max( 1, (int) round( $diff / 3600 ) );
 		/* translators: %d = number of hours */
-		return sprintf( _n( '%d hour ago', '%d hours ago', $n, 'ipin' ), $n );
+		return sprintf( _n( '%d hour ago', '%d hours ago', $n, 'ipin-modern' ), $n );
 	}
 
 	if ( $diff <= 31536000 ) {
 		$n = max( 1, (int) round( $diff / 86400 ) );
 		/* translators: %d = number of days */
-		return sprintf( _n( '%d day ago', '%d days ago', $n, 'ipin' ), $n );
+		return sprintf( _n( '%d day ago', '%d days ago', $n, 'ipin-modern' ), $n );
 	}
 
 	return (string) get_the_date();
@@ -214,7 +228,7 @@ function ipin_comment( \WP_Comment $comment, array $args, int $depth ): void {
 
 		<div class="comment-reply-wrap">
 			<?php comment_reply_link( [
-				'reply_text' => __( 'Reply', 'ipin' ),
+				'reply_text' => __( 'Reply', 'ipin-modern' ),
 				'depth'      => $depth,
 				'max_depth'  => $args['max_depth'],
 			] ); ?>
@@ -228,15 +242,15 @@ function ipin_comment( \WP_Comment $comment, array $args, int $depth ): void {
 			// Same test core uses for the li's .bypostauthor class.
 			$post_author = (int) get_post_field( 'post_author', (int) $comment->comment_post_ID );
 			if ( $comment->user_id && (int) $comment->user_id === $post_author ) : ?>
-				<span class="comment-author-badge"><?php esc_html_e( 'Author', 'ipin' ); ?></span>
+				<span class="comment-author-badge"><?php esc_html_e( 'Author', 'ipin-modern' ); ?></span>
 			<?php endif; ?>
 			&mdash;
 			<?php comment_date( 'j M Y g:ia' ); ?>
-			<a href="#comment-<?php comment_ID(); ?>" title="<?php esc_attr_e( 'Permalink', 'ipin' ); ?>">#</a>
-			<?php edit_comment_link( __( 'Edit', 'ipin' ), ' ', '' ); ?>
+			<a href="#comment-<?php comment_ID(); ?>" title="<?php esc_attr_e( 'Permalink', 'ipin-modern' ); ?>">#</a>
+			<?php edit_comment_link( __( 'Edit', 'ipin-modern' ), ' ', '' ); ?>
 
 			<?php if ( '0' === $comment->comment_approved ) : ?>
-				<br><em><?php esc_html_e( 'Your comment is awaiting moderation.', 'ipin' ); ?></em>
+				<br><em><?php esc_html_e( 'Your comment is awaiting moderation.', 'ipin-modern' ); ?></em>
 			<?php endif; ?>
 
 			<?php comment_text(); ?>
@@ -258,19 +272,19 @@ function ipin_comment_form_fields( array $fields ): array {
 
 	$fields['author'] =
 		'<div>'
-		. '<label for="author">' . esc_html__( 'Name', 'ipin' ) . $required . '</label>'
+		. '<label for="author">' . esc_html__( 'Name', 'ipin-modern' ) . $required . '</label>'
 		. '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '"' . $aria . ' autocomplete="name">'
 		. '</div>';
 
 	$fields['email'] =
 		'<div>'
-		. '<label for="email">' . esc_html__( 'Email', 'ipin' ) . $required . '</label>'
+		. '<label for="email">' . esc_html__( 'Email', 'ipin-modern' ) . $required . '</label>'
 		. '<input id="email" name="email" type="email" value="' . esc_attr( $commenter['comment_author_email'] ) . '"' . $aria . ' autocomplete="email">'
 		. '</div>';
 
 	$fields['url'] =
 		'<div>'
-		. '<label for="url">' . esc_html__( 'Website', 'ipin' ) . '</label>'
+		. '<label for="url">' . esc_html__( 'Website', 'ipin-modern' ) . '</label>'
 		. '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ) . '" autocomplete="url">'
 		. '</div>';
 
@@ -286,78 +300,6 @@ add_filter( 'comment_form_default_fields', 'ipin_comment_form_fields' );
 
 
 /* -------------------------------------------------------
-   RSS FEED — PREPEND FEATURED IMAGE
-   ------------------------------------------------------- */
-function ipin_feed_content( string $content ): string {
-	global $post;
-	$img = wp_get_attachment_image_src( get_post_thumbnail_id( $post->ID ), 'medium' );
-	if ( ! empty( $img[0] ) ) {
-		$content = '<p><a href="' . esc_url( get_permalink( $post->ID ) ) . '">'
-			. '<img src="' . esc_url( $img[0] ) . '" alt=""></a></p>'
-			. $content;
-	}
-	return $content;
-}
-add_filter( 'the_excerpt_rss',  'ipin_feed_content' );
-add_filter( 'the_content_feed', 'ipin_feed_content' );
-
-
-/* -------------------------------------------------------
-   RSS FEED — ENCLOSURE
-   One <enclosure> per item so feed readers show the pin's
-   media: the video file for a video pin, otherwise the
-   featured image at 'large' size. The length is taken from
-   the exact file the URL points at (0 when it lives on
-   another host, as RSS allows for an unknown size).
-   ------------------------------------------------------- */
-function ipin_feed_enclosure(): void {
-	$post_id = (int) get_the_ID();
-
-	$video = ipin_post_video( $post_id );
-	if ( $video && 'file' === $video['type'] ) {
-		$path = ipin_local_upload_path( $video['src'] );
-		printf(
-			'<enclosure url="%s" length="%d" type="%s" />' . "\n",
-			esc_url( $video['src'] ),
-			$path ? (int) filesize( $path ) : 0,
-			esc_attr( $video['mime'] )
-		);
-		return;
-	}
-
-	$thumb = (int) get_post_thumbnail_id( $post_id );
-	if ( ! $thumb ) {
-		return;
-	}
-	$src = wp_get_attachment_image_src( $thumb, 'large' );
-	if ( ! $src ) {
-		return;
-	}
-	$path = ipin_local_upload_path( $src[0] );
-	printf(
-		'<enclosure url="%s" length="%d" type="%s" />' . "\n",
-		esc_url( $src[0] ),
-		$path ? (int) filesize( $path ) : 0,
-		esc_attr( (string) get_post_mime_type( $thumb ) )
-	);
-}
-add_action( 'rss2_item', 'ipin_feed_enclosure' );
-
-/** Filesystem path for a URL inside this site's uploads, or '' if it isn't one or doesn't exist. */
-function ipin_local_upload_path( string $url ): string {
-	$uploads = wp_get_upload_dir();
-	$base    = trailingslashit( $uploads['baseurl'] );
-	if ( ! str_starts_with( $url, $base ) ) {
-		return '';
-	}
-	$path = trailingslashit( $uploads['basedir'] ) . rawurldecode( substr( $url, strlen( $base ) ) );
-	$real = realpath( $path );
-	// Guard against ../ escaping the uploads directory.
-	return ( $real && str_starts_with( $real, realpath( $uploads['basedir'] ) ) && is_file( $real ) ) ? $real : '';
-}
-
-
-/* -------------------------------------------------------
    BODY CLASSES
    ------------------------------------------------------- */
 function ipin_body_classes( array $classes ): array {
@@ -370,85 +312,62 @@ add_filter( 'body_class', 'ipin_body_classes' );
 
 
 /* -------------------------------------------------------
-   LIGHTBOX DATA — REST
-   GET /wp-json/ipin/v1/pin/{id} (or ?rest_route= on plain
-   permalinks). Public, read-only and cacheable, unlike the
-   admin-ajax POST it replaces. Text fields are plain text and
-   URLs are raw: the lightbox writes them with textContent and
-   DOM properties, so HTML-escaping here would double-escape.
+   404 PAGE
+   A cheeky headline and line, picked at random on each load.
+   Add your own (or replace these) with the ipin_404_quips
+   filter; each entry is [ 'title' => …, 'text' => … ].
    ------------------------------------------------------- */
-function ipin_plain( string $html ): string {
-	return trim( html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+function ipin_404_quips(): array {
+	$quips = [
+		[
+			'title' => __( 'This pin fell off the board.', 'ipin-modern' ),
+			'text'  => __( 'We checked behind the sofa. Crumbs, one hair tie, no page. Try a search, or slip back to the board before anyone notices.', 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Well, this is awkward.', 'ipin-modern' ),
+			'text'  => __( 'You found the one spot on the board with nothing pinned to it. Honestly? Impressive.', 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Nothing to see here. Literally.', 'ipin-modern' ),
+			'text'  => __( "The page you wanted has left the building and didn't leave a forwarding address. Rude, we know.", 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Somebody un-pinned this.', 'ipin-modern' ),
+			'text'  => __( 'Either the link is wrong or the page took a gap year to find itself. Neither of us is getting it back today.', 'ipin-modern' ),
+		],
+		[
+			'title' => __( "Plot twist: there's no page.", 'ipin-modern' ),
+			'text'  => __( "You clicked with confidence, and we respect that. Sadly, the page didn't turn up to its own party.", 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Blank is the new black.', 'ipin-modern' ),
+			'text'  => __( 'Very minimalist of us. Still, you probably came here for something with pictures in it.', 'ipin-modern' ),
+		],
+	];
+	return (array) apply_filters( 'ipin_404_quips', $quips );
+}
+
+function ipin_404_quip(): array {
+	$quips = array_values( array_filter(
+		ipin_404_quips(),
+		static fn( $q ): bool => is_array( $q ) && '' !== trim( (string) ( $q['title'] ?? '' ) )
+	) );
+	if ( ! $quips ) {
+		return [ 'title' => __( 'Page not found', 'ipin-modern' ), 'text' => '' ];
+	}
+	$quip = $quips[ wp_rand( 0, count( $quips ) - 1 ) ];
+	return [ 'title' => (string) $quip['title'], 'text' => (string) ( $quip['text'] ?? '' ) ];
 }
 
 /**
- * Lightbox data for a publicly viewable pin, or null. Password-
- * protected posts are always refused: a cacheable response must
- * never carry content unlocked by one visitor's password cookie.
+ * Permalink of a random pin from the 50 newest public ones, for the
+ * 404 page's "random pin" button. Empty string when there are none.
  */
-function ipin_lightbox_payload( int $post_id ): ?array {
-	$post = get_post( $post_id );
-	if ( ! $post || ! is_post_publicly_viewable( $post ) || '' !== $post->post_password ) {
-		return null;
-	}
-
-	$img_url = '';
-	if ( has_post_thumbnail( $post ) ) {
-		$src     = wp_get_attachment_image_src( get_post_thumbnail_id( $post ), 'large' );
-		$img_url = $src ? $src[0] : '';
-	}
-
-	$video     = ipin_post_video( $post_id );
-	$author_id = (int) $post->post_author;
-	$author    = get_userdata( $author_id );
-
-	$comments = array_map( static fn( \WP_Comment $c ): array => [
-		'author' => ipin_plain( $c->comment_author ),
-		'text'   => ipin_plain( $c->comment_content ),
-		'avatar' => (string) get_avatar_url( $c->comment_author_email, [ 'size' => 28 ] ),
-	], get_comments( [
-		'post_id' => $post_id,
-		'status'  => 'approve',
-		'number'  => 3,
-	] ) );
-
-	return [
-		'post_id'       => $post_id,
-		'title'         => ipin_plain( get_the_title( $post ) ),
-		'permalink'     => esc_url_raw( (string) get_permalink( $post ) ),
-		'img_url'       => esc_url_raw( $img_url ),
-		'video'         => $video ? [
-			'type' => $video['type'],
-			'src'  => esc_url_raw( $video['src'] ),
-			'mime' => $video['mime'],
-		] : null,
-		'author_name'   => $author ? ipin_plain( $author->display_name ) : '',
-		'author_url'    => esc_url_raw( get_author_posts_url( $author_id ) ),
-		'author_avatar' => esc_url_raw( (string) get_avatar_url( $author_id, [ 'size' => 32 ] ) ),
-		'date'          => ipin_plain( (string) get_the_date( '', $post ) ),
-		'description'   => ipin_plain( get_the_excerpt( $post ) ),
-		'source_url'    => esc_url_raw( (string) get_post_meta( $post_id, '_ipin_source_url', true ) ),
-		'comments'      => $comments,
-	];
-}
-
-function ipin_rest_pin( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
-	$payload = ipin_lightbox_payload( (int) $request['id'] );
-	if ( ! $payload ) {
-		return new \WP_Error( 'ipin_pin_not_found', __( 'Pin not found.', 'ipin' ), [ 'status' => 404 ] );
-	}
-	$response = rest_ensure_response( $payload );
-	$response->header( 'Cache-Control', 'public, max-age=300' );
-	return $response;
-}
-
-add_action( 'rest_api_init', static function (): void {
-	register_rest_route( 'ipin/v1', '/pin/(?P<id>\d+)', [
-		'methods'             => \WP_REST_Server::READABLE,
-		'callback'            => 'ipin_rest_pin',
-		'permission_callback' => '__return_true',   // public data only; see ipin_lightbox_payload()
-		'args'                => [
-			'id' => [ 'validate_callback' => static fn( $v ): bool => is_numeric( $v ) && (int) $v > 0 ],
-		],
+function ipin_random_pin_url(): string {
+	$ids = get_posts( [
+		'numberposts'  => 50,
+		'fields'       => 'ids',
+		'has_password' => false,
 	] );
-} );
+	return $ids ? (string) get_permalink( $ids[ array_rand( $ids ) ] ) : '';
+}

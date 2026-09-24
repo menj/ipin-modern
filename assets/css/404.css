@@ -1,0 +1,155 @@
+/* =========================================================
+   404 PAGE
+   "4 0 4" with a loose pin for the zero, a cheeky headline
+   (picked at random by ipin_404_quip() in inc/template-tags.php),
+   and three ways back. Markup in 404.php. Loaded on 404 views
+   only, from inc/enqueue.php.
+   ========================================================= */
+
+.error-404 {
+  max-width: 660px;
+  margin: 0 auto;
+  padding: clamp(36px, 7vw, 88px) 24px clamp(56px, 9vw, 112px);
+  text-align: center;
+}
+
+/* ── 4 [pin] 4 ── */
+.error-404__art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .12em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(6.5rem, 24vw, 12rem);
+  line-height: .9;
+  letter-spacing: -.02em;
+  user-select: none;
+}
+
+.error-404__digit {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--clr-accent-1); /* fallback when clip-text unsupported */
+}
+
+/* The zero: the brand pin (same path as assets/img/favicon.svg), stuck in by its
+   tip at a lazy angle and wobbling. Masked, so it takes the scheme's
+   gradient in light and dark mode. */
+.error-404__pin {
+  --pin-shape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='17 12 30 40'%3E%3Cpath fill-rule='evenodd' d='M32 12A15 15 0 0 0 17 27c0 9.5 9 16.5 13.9 23.9a1.3 1.3 0 0 0 2.2 0C38 43.5 47 36.5 47 27A15 15 0 0 0 32 12Zm0 9.5a5.5 5.5 0 1 1 0 11 5.5 5.5 0 0 1 0-11Z'/%3E%3C/svg%3E");
+  width: .56em;
+  height: .72em;
+  background: var(--grad-brand);
+  -webkit-mask: var(--pin-shape) center / contain no-repeat;
+          mask: var(--pin-shape) center / contain no-repeat;
+  transform-origin: 50% 100%;
+  rotate: 18deg;
+  translate: -.1em .05em;
+  animation: ipin-404-wobble 2.6s ease-in-out infinite alternate; /* no overshoot: it would hit the 4 */
+}
+
+@keyframes ipin-404-wobble {
+  from { rotate: 10deg; }
+  to   { rotate: 24deg; }
+}
+
+/* ── Copy ── */
+.error-404__eyebrow {
+  margin: 22px 0 10px;
+  font-family: var(--font-accent);
+  font-size: .84rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--txt-secondary);
+}
+
+.error-404__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.9rem, 4.6vw, 2.9rem);
+  line-height: 1.1;
+  letter-spacing: -.01em;
+  color: var(--txt-primary);
+  text-wrap: balance;
+}
+
+.error-404__text {
+  max-width: 46ch;
+  margin: 14px auto 0;
+  font-size: clamp(1rem, 1.4vw, 1.16rem);
+  line-height: 1.62;
+  color: var(--txt-secondary);
+  text-wrap: pretty;
+}
+
+/* ── Ways back ── */
+.error-404__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.error-404__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 10px 26px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  color: var(--txt-primary);
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    transform    var(--dur) var(--ease),
+    border-color var(--dur),
+    color        var(--dur),
+    opacity      var(--dur);
+}
+.error-404__btn:hover {
+  border-color: var(--clr-accent-1);
+  color: var(--clr-accent-1);
+  transform: translateY(-2px);
+}
+
+.error-404__btn--primary {
+  border-color: transparent;
+  background: var(--grad-brand-btn);
+  color: var(--clr-on-fill);
+}
+.error-404__btn--primary:hover {
+  border-color: transparent;
+  color: var(--clr-on-fill);
+  opacity: .9;
+}
+
+.error-404__search {
+  margin-top: 40px;
+  padding-top: 28px;
+  border-top: 1.5px dashed var(--border);
+}
+.error-404__search p {
+  margin: 0 0 12px;
+  font-family: var(--font-accent);
+  font-size: .84rem;
+  letter-spacing: .04em;
+  color: var(--txt-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-404__pin { animation: none; }
+  .error-404__btn,
+  .error-404__btn:hover { transition: none; transform: none; }
+}
+
+@media (forced-colors: active) {
+  .error-404__digit { background: none; -webkit-text-fill-color: CanvasText; }
+  .error-404__pin   { background: CanvasText; }
+  .error-404__btn   { border-color: ButtonText; }
+}

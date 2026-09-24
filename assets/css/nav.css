@@ -229,6 +229,7 @@
 
 /* ── Social icons ── */
 .topmenu-social-wrap { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.topmenu-social-list { display: flex; align-items: center; gap: 6px; margin: 0; padding: 0; list-style: none; }
 
 .topmenu-social {
   display: flex;
@@ -378,5 +379,6 @@
   .submenu-toggle { width: 40px; height: 40px; }
   .nav-search { width: 100%; }
   .nav-search input[type="search"] { width: 100%; flex: 1; }
-  .topmenu-social-wrap { justify-content: flex-start; }
+  .topmenu-social-wrap,
+  .topmenu-social-list { justify-content: flex-start; }
 }

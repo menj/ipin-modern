@@ -2,51 +2,94 @@
 /**
  * iPin Modern — Sideblog post type (ipin_article)
  *
- * Post types are plugin territory: registered by a theme, their content
- * disappears from the admin the moment the theme is switched. The
- * registration therefore lives in the companion plugin at
- * companion/ipin-sideblog/. When that plugin is active it has already
- * defined the post type; when it isn't, the theme loads the very same
- * file so existing sites keep working unchanged.
+ * Articles are longer pieces that sit beside the pin grid: their own
+ * "Sideblog" menu in the admin, an archive at /articles/ and single pages
+ * at /article/{slug}/. The theme registers the post type itself, so the
+ * Sideblog works as soon as the theme is active. Articles stay in the
+ * database if the theme is ever switched, and reappear when it comes back.
  */
 
 declare( strict_types = 1 );
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-if ( ! defined( 'IPIN_SIDEBLOG_LOADED' ) ) {
-	require_once get_template_directory() . '/companion/ipin-sideblog/ipin-sideblog.php';
-}
+function ipin_register_sideblog(): void {
+	// The retired "iPin Sideblog" companion plugin registers the same post
+	// type under the same name. If it is still active, let it; the settings
+	// are identical.
+	if ( post_type_exists( 'ipin_article' ) ) {
+		return;
+	}
 
+	register_post_type( 'ipin_article', [
+		'labels' => [
+			'name'                  => __( 'Articles',               'ipin-modern' ),
+			'singular_name'         => __( 'Article',                'ipin-modern' ),
+			'add_new_item'          => __( 'Add New Article',        'ipin-modern' ),
+			'edit_item'             => __( 'Edit Article',           'ipin-modern' ),
+			'new_item'              => __( 'New Article',            'ipin-modern' ),
+			'view_item'             => __( 'View Article',           'ipin-modern' ),
+			'view_items'            => __( 'View Articles',          'ipin-modern' ),
+			'search_items'          => __( 'Search Articles',        'ipin-modern' ),
+			'not_found'             => __( 'No articles found.',     'ipin-modern' ),
+			'not_found_in_trash'    => __( 'No articles found in Trash.', 'ipin-modern' ),
+			'all_items'             => __( 'All Articles',           'ipin-modern' ),
+			'archives'              => __( 'Article Archives',       'ipin-modern' ),
+			'item_published'        => __( 'Article published.',     'ipin-modern' ),
+			'item_updated'          => __( 'Article updated.',       'ipin-modern' ),
+			'menu_name'             => __( 'Sideblog',               'ipin-modern' ),
+		],
+		'public'          => true,
+		'rewrite'         => [ 'slug' => 'article', 'with_front' => false ],
+		'capability_type' => 'post',
+		'has_archive'     => 'articles',
+		'menu_position'   => 5,
+		'menu_icon'       => 'dashicons-text-page',
+		'supports'        => [ 'title', 'editor', 'author', 'thumbnail', 'excerpt', 'comments', 'revisions' ],
+		'show_in_rest'    => true,
+	] );
+}
+add_action( 'init', 'ipin_register_sideblog' );
+
+// New rewrite rules for /article/ and /articles/ on theme activation.
 add_action( 'after_switch_theme', static function (): void {
-	ipin_sideblog_register();
+	ipin_register_sideblog();
 	flush_rewrite_rules();
 } );
 
 
 /* -------------------------------------------------------
-   RECOMMEND THE COMPANION PLUGIN
-   Shown on the iPin Settings page only (never site-wide),
-   and only while the theme is providing the fallback.
+   HAS ARTICLES
+   True once at least one article is published. The header's
+   fallback navigation uses it to add an "Articles" link, so
+   the Sideblog is reachable before any menu is set up.
    ------------------------------------------------------- */
-function ipin_sideblog_notice(): void {
-	$screen = get_current_screen();
-	if ( ! $screen || 'appearance_page_ipin-settings' !== $screen->id || ! current_user_can( 'install_plugins' ) ) {
+function ipin_has_articles(): bool {
+	return post_type_exists( 'ipin_article' )
+		&& (int) ( wp_count_posts( 'ipin_article' )->publish ?? 0 ) > 0;
+}
+
+
+/* -------------------------------------------------------
+   RETIRED COMPANION PLUGIN
+   5.0 pre-releases shipped the post type as a separate
+   "iPin Sideblog" plugin. It is harmless but no longer
+   needed; say so on the Plugins and iPin Settings screens.
+   ------------------------------------------------------- */
+function ipin_sideblog_plugin_notice(): void {
+	if ( ! defined( 'IPIN_SIDEBLOG_LOADED' ) || ! current_user_can( 'activate_plugins' ) ) {
 		return;
 	}
-	if ( str_starts_with( wp_normalize_path( ( new ReflectionFunction( 'ipin_sideblog_register' ) )->getFileName() ), wp_normalize_path( WP_PLUGIN_DIR ) ) ) {
-		return;   // the plugin is active and owns the post type
+	$screen = get_current_screen();
+	if ( ! $screen || ! in_array( $screen->id, [ 'plugins', 'appearance_page_ipin-settings' ], true ) ) {
+		return;
 	}
 	printf(
 		'<div class="notice notice-info"><p>%s</p></div>',
 		wp_kses(
-			sprintf(
-				/* translators: %s = folder path inside the theme */
-				__( '<strong>Keep your Sideblog articles safe:</strong> copy %s from the iPin Modern theme folder to <code>wp-content/plugins/</code> and activate <em>iPin Sideblog</em>. Your articles then stay available even if you switch themes.', 'ipin' ),
-				'<code>companion/ipin-sideblog</code>'
-			),
-			[ 'strong' => [], 'code' => [], 'em' => [] ]
+			__( 'The Sideblog is now built into iPin Modern. You can deactivate and delete the <em>iPin Sideblog</em> plugin; your articles stay where they are.', 'ipin-modern' ),
+			[ 'em' => [] ]
 		)
 	);
 }
-add_action( 'admin_notices', 'ipin_sideblog_notice' );
+add_action( 'admin_notices', 'ipin_sideblog_plugin_notice' );

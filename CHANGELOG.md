@@ -4,6 +4,199 @@ All notable changes to **iPin Modern** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [5.0.0] - 2026-09-24 - Front-end rebuild
+
+The front end is rebuilt around the 5.0 design: a statement hero, video pins,
+a full-screen lightbox and new type, on a grid engine with no jQuery. It came
+out of a full code review of 4.1.4, and every finding from that review is
+either fixed here or retired with the feature it belonged to.
+Read [UPGRADING.md](UPGRADING.md) before updating a customised site.
+
+### Added
+- Homepage hero: your heading (wrap one word in `*asterisks*` for the gradient
+  accent) and a lede paragraph, set in Settings → Layout. Falls back to the
+  site title and tagline. Shows on the first page only.
+- Featured-pin panel beside the hero: the first sticky post (else the newest
+  pin with an image), board stats and category links. Has its own toggle.
+- Video pins. A "Video pin" box in the post editor takes a direct file link
+  (.mp4, .webm, .ogv, .m4v, .mov) or a YouTube, youtu.be, Shorts or Vimeo
+  link, and says whether the link will play. Files play in a native `<video>`
+  with the featured image as poster; YouTube uses youtube-nocookie.com. Cards
+  get a play badge, single posts show the player, and `VideoObject` schema
+  is emitted. Existing `_ipin_video_embed_url` meta keeps working.
+- `inc/seo.php`: a description meta tag per page, and JSON-LD for `WebSite`,
+  `Article`, `BreadcrumbList`, `VideoObject`, `Person` (with `sameAs`) and
+  `ProfilePage`. Stands down when Yoast SEO, Rank Math, AIOSEO or SEOPress
+  is active.
+- Settings → Social: an "Also-me profile URLs" list for `sameAs`, and a
+  Mastodon handle that outputs `fediverse:creator` and a `rel="me"` link.
+- RSS enclosures: the video file for video pins, otherwise the featured image
+  at `large`, with the byte length of that exact file.
+- Self-hosted fonts in `assets/fonts/` (WOFF2): EB Garamond (display), Sabon
+  Next LT (body), Special Elite (labels, new `--font-accent` token).
+- Pin mark next to the site name and as the default favicon (`favicon.svg`
+  plus a 16/32/48 `favicon.ico`), printed only when no Site Icon is set.
+- Sun/moon pill switch for dark mode.
+- Keyboard-operable dropdown menus: parent items get a disclosure button
+  with `aria-expanded`; Escape closes the open submenu.
+- `ipin/v1/pin/{id}` REST route for lightbox data.
+- The Sideblog is built into the theme and works on activation, with no plugin
+  to install. Articles (`ipin_article`) get an archive at `/articles/` with an
+  "Articles" heading, pages at `/article/{slug}/`, their own editor labels and
+  revisions. With no menu assigned, the top bar lists Articles once one is
+  published. Breadcrumb schema runs Home → Articles → article.
+- Cards are CSS size containers, so their type follows the card width setting.
+- Cards ease in on a CSS scroll-driven timeline (off under reduced motion).
+- Cross-document View Transitions: a card's image morphs into the post's
+  featured image in browsers that support it.
+- A 404 page with some cheek: "4 0 4" with a loose, wobbling pin for the
+  zero, one of six headlines picked at random, and three ways out (back to
+  the board, a random pin, search). Add or replace the lines with the
+  `ipin_404_quips` filter. Its styles live in `404.css`, and the 404 view no
+  longer loads the grid and lightbox CSS or JavaScript.
+- `languages/ipin-modern.pot`.
+
+### Changed
+- jQuery and the three bundled plugins (`jquery.masonry`, `jquery.imagesloaded`,
+  `jquery.infinitescroll`) are replaced by `assets/js/ipin.grid.js`. Layout
+  runs immediately from the images' width and height, so `loading="lazy"`
+  works; columns are recalculated on resize and rotation; the next page loads
+  through `fetch()`. Without JavaScript the grid falls back to CSS columns and
+  the pagination links.
+- `ipin.custom.js` and `lightbox.js` are rewritten without jQuery.
+- Lightbox fills the viewport and shows the whole image (`object-fit: contain`).
+- `tokens.css` is regenerated in OKLCH. Every text and control pairing is
+  checked to WCAG 2.2 AA for all 5 schemes in light and dark mode, with the
+  ratios in comments. Schemes now set only source colours; gradients, washes,
+  borders, shadows and the focus ring derive from them. New tiers:
+  `--clr-fill-*` for solid controls under white labels and `--grad-text` for
+  gradient headings.
+- Settings are declared once in `ipin_settings_schema()`. The AJAX save and a
+  new no-JS save through `options.php` share the same sanitisers. Without
+  JavaScript every settings section shows stacked.
+- Card width and page size are clamped; the colour scheme is validated.
+- Grid images use a new `ipin-card` size (800px) with `srcset`.
+- `single.css` loads only on posts and pages; `masonry.css` and
+  `lightbox.css` only on grid views. Footer, search form and scroll-to-top
+  styles moved to `base.css`.
+- Sort-bar links are built on the Posts page URL, so they work with a static
+  front page.
+- Admin colour swatches read the real scheme gradients from `tokens.css`.
+- `theme-color` follows the active scheme and switches for dark mode.
+- Text domain renamed from `ipin` to `ipin-modern` to match the theme folder.
+- Social icons in the nav and share bar come from a bundled SVG set.
+- File layout. `index.php` loads its hero, sort bar and cards from
+  `template-parts/`, and `single.php` its share bar. Scripts are named after
+  their stylesheets: `theme.js`, `grid.js` (with `grid.css`, formerly
+  `masonry.css`), `lightbox.js`, `admin.js`. Handles follow: `ipin-theme`,
+  `ipin-grid`, `ipin-admin`. Favicons moved to `assets/img/`. The walker is
+  `inc/class-ipin-nav-walker.php`, and RSS and REST code moved out of
+  `template-tags.php` into `inc/feed.php` and `inc/rest-api.php`. The HTML
+  every page renders is unchanged.
+
+### Removed
+- Sidebars: both widget areas, `sidebar-left.php`, `sidebar-right.php`,
+  `page_left_sidebar.php`, `page_full_width.php` and the sidebar setting.
+- The ads system: `inc/ads.php` and the Ads tab. Saved `ipin_ad_*` options are
+  left in the database.
+- The Popular Posts widget (no widget areas remain to hold it).
+- Font Awesome and Google Fonts CDN requests. The theme loads nothing from
+  other servers; avatars still come from Gravatar through core.
+- `admin-ajax` lightbox handler (replaced by the REST route).
+
+### Fixed
+- `index.php` had a fatal parse error in the image-fallback regex, so the
+  blog home, archives and search pages all failed.
+- The nav walker never ran (`??=` against defaults that are not null), so
+  submenus rendered unstyled and always open.
+- Card width and rounded corners had no effect: `tokens.css` printed after the
+  override and won. The override now goes through `wp_add_inline_style()`.
+- "Posts per page" and "Show author avatars on grid cards" were saved but
+  never used.
+- Dark mode: white labels on the active sort pill measured 2.39:1. Filled
+  controls now keep 5:1 labels and at least 3:1 against the page.
+- Gradient headings started on decorative colours as low as 1.9:1.
+- Footer text was about 4.0:1; now at least 6.5:1. Muted text on inputs was
+  4.42:1 in three schemes.
+- Lightbox: prev/next broke after the first page of pins, video pins kept the
+  loading spinner over the player, keyboard focus could leave the dialog, and
+  a failed load left a blank dialog.
+- Dark-mode choice was saved on every page view, so visitors stopped
+  following their OS setting.
+- Copy-link lost its label after a quick double click.
+- Duplicate `id="comments"`; the reply form's `h2` sat inside core's `h3`;
+  the comments heading printed the post title unescaped.
+- Author comments were painted white-on-purple; they now get a thin rule and
+  an "Author" badge.
+- Name, Email and Website sit in the three-column grid the CSS always
+  expected.
+- Search pages called `category_description()`.
+- The comment submit button had no label colour, border or font styles.
+- `add_editor_style()` had no effect without `editor-styles` support.
+- The Customizer notice section had no controls, so WordPress never showed it.
+- Nested links inside each card made browsers restructure the markup.
+- `--dur-fast` was used but never defined, so three button transitions never ran.
+- Lightbox data was HTML-escaped for code that writes plain text, so `&`
+  showed as `&amp;`.
+- JSON-LD names and headlines carried HTML entities (`&#038;` for `&`). They
+  are plain text now, and `<`, `>` and `&` are written as `\u003C`-style
+  escapes, so no title can end the script element or open a comment in it.
+- Cards printed a stray "in", and single views an empty "Categories:", for
+  entries without categories.
+- The header's social links had `role="listitem"`, which replaced their link
+  role for screen readers, and the dark-mode button sat inside that list. They
+  are now a real list, with the button after it.
+
+### Security
+- The lightbox endpoint returned data for password-protected and
+  non-public posts. The REST route refuses both.
+- Video URLs were concatenated into iframe HTML. The lightbox now builds all
+  markup with DOM properties, and URLs are scheme-checked on both ends.
+- The featured-pin panel showed a sticky post's title, image and link after
+  the post was made private, draft or password-protected. Only published
+  posts without a password qualify now.
+
+### Performance
+- Grid comment previews come from one query per page instead of one per card
+  (72 → 60 queries on a 12-card homepage).
+- The fallback card image is cached in post meta instead of queried per card.
+- Lightbox responses are cacheable (`Cache-Control: public, max-age=300`) and
+  remembered in the page.
+- No render-blocking scripts in `<head>`.
+
+### Bumped
+- `style.css`: Version 4.1.4 → 5.0.0; added Requires at least 6.5, Tested up
+  to 7.1, Requires PHP 8.0.
+
+---
+
+## [4.1.4] - 2026-03 - Admin asset fix
+
+### Fixed
+- The admin assets were enqueued twice: `ipin_admin_scripts()` in
+  `admin-options.php` was a stale copy of `ipin_enqueue_admin_assets()` in
+  `enqueue.php`, and both ran on `admin_enqueue_scripts`. The stale copy is
+  removed.
+
+---
+
+## [4.1.3] - 2026-03 - Lightbox and cache-busting fixes
+
+### Fixed
+- The lightbox never opened: cards were missing `data-post-id`, so no post IDs
+  were collected.
+- All assets were versioned as "3.0", so browsers kept old files after
+  updates. Versions now come from the theme header.
+- `add_editor_style()` ran on `wp_enqueue_scripts` and never reached the
+  editor. Moved to `after_setup_theme`.
+- Dropdown lists carried `role="menu"`, which promises keyboard behaviour the
+  nav doesn't have. Removed.
+- The custom logo height hint (50px) now matches the CSS (52px).
+- The sort bar said "This week" while the widget said "Last 7 days". Both now
+  read "Last 7 days".
+
+---
+
 ## [4.1.2] — 2026-03 — Navigation Bar Redesign
 
 User-facing redesign of the top navigation bar for a bolder, more airy feel.

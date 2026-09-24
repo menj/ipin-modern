@@ -2,13 +2,17 @@
 /**
  * iPin Modern — Asset Enqueue
  *
- * All wp_enqueue_style() and wp_enqueue_script() calls.
- * CSS lives in /assets/css/, JS in /assets/js/.
+ * All wp_enqueue_style() and wp_enqueue_script() calls, plus the
+ * <head> output that belongs with them: the pre-paint colour-scheme
+ * script, theme-color and the fallback favicon.
+ * CSS lives in /assets/css/, JS in /assets/js/, images in /assets/img/.
  *
- * Load order:
- *   CSS:  tokens → base → nav → masonry (archive only) → single
- *   JS:   masonry libs (archive, head) → ipin.custom (footer)
- *   Admin: admin.css + ipin.admin.js (admin page only)
+ * Load order (handle: file):
+ *   CSS    ipin-fonts → ipin-tokens → ipin-base → ipin-nav, then one of
+ *          ipin-single (posts, pages) | ipin-404 | ipin-grid + ipin-lightbox
+ *   JS     ipin-theme (every view, footer) → ipin-grid + ipin-lightbox
+ *          (grid views)
+ *   Admin  ipin-tokens + ipin-admin (CSS and JS, settings page only)
  */
 
 declare( strict_types = 1 );
@@ -36,13 +40,16 @@ function ipin_enqueue_assets(): void {
 	wp_enqueue_style( 'ipin-nav',     "$uri/assets/css/nav.css",     [ 'ipin-base' ],         $v );
 
 	// Each view loads only the stylesheet it renders: posts/pages get
-	// single.css; the grid (home, archives, search, 404) gets masonry +
-	// lightbox. Footer, search form and scroll-to-top live in base.css.
+	// single.css; 404 gets 404.css; the grid (home, archives, search)
+	// gets grid + lightbox. Footer, search form and scroll-to-top
+	// live in base.css.
 	if ( is_singular() ) {
 		wp_enqueue_style( 'ipin-single', "$uri/assets/css/single.css", [ 'ipin-base' ], $v );
+	} elseif ( is_404() ) {
+		wp_enqueue_style( 'ipin-404', "$uri/assets/css/404.css", [ 'ipin-base' ], $v );
 	} else {
-		wp_enqueue_style( 'ipin-masonry-css', "$uri/assets/css/masonry.css", [ 'ipin-base' ], $v );
-		wp_enqueue_style( 'ipin-lightbox',    "$uri/assets/css/lightbox.css", [ 'ipin-base' ], $v );
+		wp_enqueue_style( 'ipin-grid',     "$uri/assets/css/grid.css",     [ 'ipin-base' ], $v );
+		wp_enqueue_style( 'ipin-lightbox', "$uri/assets/css/lightbox.css", [ 'ipin-base' ], $v );
 	}
 
 	// Required WP theme stylesheet (header comment only — no actual rules)
@@ -55,8 +62,8 @@ function ipin_enqueue_assets(): void {
 
 	// ── JS: custom theme script — footer, no jQuery ─────
 	wp_enqueue_script(
-		'ipin-custom',
-		"$uri/assets/js/ipin.custom.js",
+		'ipin-theme',
+		"$uri/assets/js/theme.js",
 		[], $v,
 		true  // in footer
 	);
@@ -64,39 +71,39 @@ function ipin_enqueue_assets(): void {
 	// ── JS: grid engine + lightbox — archive pages only ─
 	// Vanilla masonry, infinite scroll, and lightbox; the
 	// bundled jQuery plugin stack is gone.
-	if ( ! is_singular() ) {
+	if ( ! is_singular() && ! is_404() ) {
 		wp_enqueue_script(
 			'ipin-grid',
-			"$uri/assets/js/ipin.grid.js",
-			[ 'ipin-custom' ], $v,   // after ipin-custom so ipinData is localized first
+			"$uri/assets/js/grid.js",
+			[ 'ipin-theme' ], $v,   // after ipin-theme so ipinData is localized first
 			true
 		);
 		wp_enqueue_script(
 			'ipin-lightbox',
 			"$uri/assets/js/lightbox.js",
-			[ 'ipin-custom' ], $v,
+			[ 'ipin-theme' ], $v,
 			true
 		);
 	}
 
 	// PHP → JS data bridge
-	wp_localize_script( 'ipin-custom', 'ipinData', [
-		'allLoaded'   => __( 'All items loaded', 'ipin' ),
-		'loadingText' => __( 'Loading more pins…', 'ipin' ),
+	wp_localize_script( 'ipin-theme', 'ipinData', [
+		'allLoaded'   => __( 'All items loaded', 'ipin-modern' ),
+		'loadingText' => __( 'Loading more pins…', 'ipin-modern' ),
 		'i18n'        => [
-			'comments'      => __( 'Comments', 'ipin' ),
-			'viewAll'       => __( 'View all', 'ipin' ),
-			'view'          => __( 'View', 'ipin' ),
-			'close'         => __( 'Close lightbox', 'ipin' ),
-			'prev'          => __( 'Previous pin', 'ipin' ),
-			'next'          => __( 'Next pin', 'ipin' ),
-			'pinError'      => __( 'This pin could not be loaded.', 'ipin' ),
-			'pinErrorHint'  => __( 'Please try again, or open the post directly.', 'ipin' ),
-			'sharePinterest'=> __( 'Save to Pinterest (opens in new tab)', 'ipin' ),
-			'shareX'        => __( 'Share on X (opens in new tab)', 'ipin' ),
-			'shareFacebook' => __( 'Share on Facebook (opens in new tab)', 'ipin' ),
-			'copied'        => __( 'Copied!', 'ipin' ),
-			'linkCopied'    => __( 'Link copied to clipboard.', 'ipin' ),
+			'comments'      => __( 'Comments', 'ipin-modern' ),
+			'viewAll'       => __( 'View all', 'ipin-modern' ),
+			'view'          => __( 'View', 'ipin-modern' ),
+			'close'         => __( 'Close lightbox', 'ipin-modern' ),
+			'prev'          => __( 'Previous pin', 'ipin-modern' ),
+			'next'          => __( 'Next pin', 'ipin-modern' ),
+			'pinError'      => __( 'This pin could not be loaded.', 'ipin-modern' ),
+			'pinErrorHint'  => __( 'Please try again, or open the post directly.', 'ipin-modern' ),
+			'sharePinterest'=> __( 'Save to Pinterest (opens in new tab)', 'ipin-modern' ),
+			'shareX'        => __( 'Share on X (opens in new tab)', 'ipin-modern' ),
+			'shareFacebook' => __( 'Share on Facebook (opens in new tab)', 'ipin-modern' ),
+			'copied'        => __( 'Copied!', 'ipin-modern' ),
+			'linkCopied'    => __( 'Link copied to clipboard.', 'ipin-modern' ),
 		],
 		'pinUrl'      => esc_url_raw( rest_url( 'ipin/v1/pin/' ) ),
 		'icons'       => [
@@ -124,25 +131,25 @@ function ipin_enqueue_admin_assets( string $hook ): void {
 	// their gradients from it so the picker always matches the site.
 	wp_enqueue_style( 'ipin-tokens', "$uri/assets/css/tokens.css", [], $v );
 	wp_enqueue_style(
-		'ipin-admin-css',
+		'ipin-admin',
 		"$uri/assets/css/admin.css",
 		[ 'ipin-tokens' ],
 		$v
 	);
 
 	wp_enqueue_script(
-		'ipin-admin-js',
-		"$uri/assets/js/ipin.admin.js",
+		'ipin-admin',
+		"$uri/assets/js/admin.js",
 		[],
 		$v,
 		true
 	);
 
-	wp_localize_script( 'ipin-admin-js', 'ipinAdmin', [
+	wp_localize_script( 'ipin-admin', 'ipinAdmin', [
 		'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		'nonce'   => wp_create_nonce( 'ipin_save_options' ),
-		'saving'  => __( 'Saving…', 'ipin' ),
-		'error'   => __( 'Settings could not be saved. Check your connection and try again.', 'ipin' ),
+		'saving'  => __( 'Saving…', 'ipin-modern' ),
+		'error'   => __( 'Settings could not be saved. Check your connection and try again.', 'ipin-modern' ),
 	] );
 }
 add_action( 'admin_enqueue_scripts', 'ipin_enqueue_admin_assets' );
@@ -205,7 +212,7 @@ function ipin_favicon_fallback(): void {
 	if ( has_site_icon() ) {
 		return;
 	}
-	$base = get_template_directory_uri();
+	$base = get_template_directory_uri() . '/assets/img';
 	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.ico' ) . '" sizes="48x48">' . "\n";
 	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.svg' ) . '" type="image/svg+xml" sizes="any">' . "\n";
 }

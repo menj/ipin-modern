@@ -1,13 +1,15 @@
 /**
- * iPin Modern — Custom JS (no jQuery)
+ * iPin Modern — Theme JS (no jQuery), loaded on every view
  *
  * Handles:
  *   1. Dark-mode toggle (WCAG 4.1.2 — aria-pressed, aria-label updated dynamically)
  *   2. Hamburger nav (WCAG 4.1.2 — aria-expanded)
- *   3. Scroll-to-top button (WCAG 2.5.8 — <button>, hidden until needed)
- *   4. Copy-link share button
+ *   3. Submenu disclosure buttons from Ipin_Nav_Walker
+ *   4. Scroll-to-top button (WCAG 2.5.8 — <button>, hidden until needed)
+ *   5. Copy-link share button
  *
- * Grid layout and infinite scroll live in ipin.grid.js.
+ * Grid layout and infinite scroll live in grid.js, the pin lightbox
+ * in lightbox.js; both load on grid views only.
  */
 (function () {
   'use strict';

@@ -1,99 +1,88 @@
 === iPin Modern ===
 Contributors: menj
-Tags: masonry, pinterest, grid, dark-mode, photography, portfolio, responsive, infinite-scroll, lightbox, custom-colors, custom-logo, threaded-comments, translation-ready, accessibility-ready
-Requires at least: 6.3
-Tested up to: 6.7
+Tags: masonry, grid-layout, photography, portfolio, dark-mode
+Requires at least: 6.5
+Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 4.1.4
+Stable tag: 5.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A bold, colorful Pinterest-style masonry theme. PHP 8.x, WCAG 2.2 AA, dark mode, 5 colour schemes, lightbox, infinite scroll, Google Site Kit compatible, zero external dependencies.
+A Pinterest-style masonry theme for images and video. Five colour schemes with dark mode, WCAG 2.2 AA, no jQuery, and no requests to other servers.
 
 == Description ==
 
-iPin Modern is a complete ground-up rewrite of the original iPin Pinterest-clone theme. It preserves the masonry grid aesthetic while replacing every line of legacy code with modern, secure, accessible PHP and CSS.
+iPin Modern lays your posts out as a masonry board of pins. It began as a rewrite of Genkisan's original iPin, and version 5.0 replaces its whole front end.
 
-**Key Features**
+What you get:
 
-* Masonry grid with infinite scroll and frontpage lightbox
-* Popular posts sort bar — Latest, This week, This month, All time (ranked by comment count, no extra DB tables)
-* 5 colour schemes: Vivid, Ocean, Ember, Forest, Mono
-* Flash-free dark mode with localStorage persistence and OS preference detection
-* Social share buttons on every post and inside the lightbox: Pinterest, X (Twitter), Facebook, Copy Link
-* Ad slots: header banner, 5 grid positions, above/below featured photo on single posts
-* Sideblog via the `ipin_article` custom post type (/article/ and /articles/)
-* Popular Posts sidebar widget with configurable period and count
-* Fully tabbed admin settings page with AJAX save (no page reload)
-* Google Site Kit and AdSense compatible — Auto Ads work out of the box; manual ad unit code (including `<script>` tags) is preserved correctly
-* WCAG 2.2 AA compliant: skip link, focus trap in lightbox, aria-modal, 4.5:1 contrast on all text, 44×44px touch targets, prefers-reduced-motion, forced-colors (Windows HCM)
-* Bootstrap-free — native CSS Flex and Grid only
-* Zero external JavaScript dependencies — all three grid libraries (masonry, imagesloaded, infinite scroll) are purpose-built and bundled
-* PHP 8.0+ with strict types throughout
+* A homepage hero with your heading and a short lede, plus an optional panel with a featured pin, board stats and category links. Set it under Appearance → iPin Settings → Layout.
+* A masonry grid in plain JavaScript. It lays out as soon as the page loads, reflows when the window resizes, and loads the next batch as you scroll. With JavaScript off it falls back to CSS columns and ordinary pagination.
+* A full-screen lightbox. Click a pin to see the whole image, or play the video, with the description, share links and latest comments. Arrow keys move between pins and Escape closes it.
+* Video pins from a direct file link (.mp4, .webm, .m4v, .mov or .ogv) or a YouTube or Vimeo link.
+* A Sideblog for longer pieces. Articles have their own admin menu, an archive at `/articles/` and a page each at `/article/your-title/`, and they work as soon as the theme is active.
+* 5 colour schemes (Vivid, Ocean, Ember, Forest and Mono), each with a dark mode. Every text and control colour is checked against WCAG 2.2 AA in both modes.
+* Self-hosted type: EB Garamond for headings, Sabon Next LT for reading, Special Elite for small labels.
+* A sort bar with Latest, Last 7 days, This month and All time, ranked by comment count.
+* A description meta tag on every page and JSON-LD structured data (WebSite, Article, BreadcrumbList, VideoObject, Person, ProfilePage). It switches itself off when Yoast SEO, Rank Math, AIOSEO or SEOPress is active.
+* `sameAs` profile links and a Mastodon handle, so search engines and the fediverse can connect this site to your other profiles.
+* A tabbed settings page that saves without a reload, and still saves with JavaScript off.
+* Accessibility work throughout: a skip link, visible focus, a focus-trapped lightbox, dropdown menus you can use with a keyboard or a touch screen, 24px minimum targets, reduced-motion support and Windows high-contrast mode.
 
-**Bundled JavaScript Libraries (all custom, iPin-authored)**
-
-* `jquery.imagesloaded.min.js` v1.0.0 — proxy Image pattern, jQuery Deferred support
-* `jquery.masonry.min.js` v1.0.0 — shortest-column bin-packing, incremental appended(), debounced resize
-* `jquery.infinitescroll.min.js` v1.0.0 — scroll-proximity trigger, AJAX page fetch, next-href advancement
-
-**Google Site Kit / AdSense**
-
-For Auto Ads: install the Google Site Kit plugin, connect AdSense, and enable Auto Ads. The theme's `wp_head()` and `wp_body_open()` hooks are in the correct positions — no theme changes needed.
-
-For manual ad units: paste the full AdSense code block (the `<ins>` element and the `<script>` push line) into any slot in Appearance → iPin Settings → Ads. Script tags are preserved exactly as pasted.
+The theme ships its own fonts and icons and loads nothing from a CDN. Avatars come from Gravatar, which is part of core WordPress; you can switch them off under Settings → Discussion.
 
 == Installation ==
 
-1. Download the `ipin-modern-4.1.4.zip` file.
-2. In your WordPress admin, go to Appearance → Themes → Add New → Upload Theme.
-3. Choose the zip file and click Install Now.
-4. Click Activate.
-5. Go to Settings → Permalinks and click Save Changes to register the Sideblog rewrite rules.
-6. Go to Appearance → iPin Settings to configure colour scheme, dark mode, ads, and layout.
-7. Optionally assign a menu to Top Navigation via Appearance → Menus.
-8. Optionally add widgets to Right Sidebar or Left Sidebar via Appearance → Widgets.
+1. In WordPress, go to Appearance → Themes → Add New → Upload Theme. Choose `ipin-modern-5.0.0.zip`, click Install Now, then Activate.
+2. Open Appearance → iPin Settings to pick a colour scheme, write the homepage hero and add your social profiles.
+3. Assign a menu to Top Navigation under Appearance → Menus.
+4. To write a longer piece, go to Sideblog → Add New Article. Once one is published, the theme adds an Articles link to the top bar for you, as long as no menu is assigned. With a menu, add it yourself: Appearance → Menus → Articles → View All → All Articles.
 
-**Manual installation (FTP)**
-
-1. Extract `ipin-modern-4.1.4.zip`.
-2. Upload the `ipin-modern/` folder to `/wp-content/themes/`.
-3. Activate the theme in Appearance → Themes.
-4. Follow steps 5–8 above.
+To install over FTP, unzip the file, upload the `ipin-modern/` folder to `wp-content/themes/`, and activate it under Appearance → Themes.
 
 == Frequently Asked Questions ==
 
-= Do I need to install any plugins? =
-No. The theme is self-contained — all JavaScript is bundled and no plugins are required for any core feature.
+= Do I need any plugins? =
+No. Everything ships with the theme, the Sideblog included.
 
-= Is it compatible with Google Site Kit and AdSense? =
-Yes. Auto Ads work immediately after connecting Site Kit — the theme has `wp_head()` and `wp_body_open()` in the correct positions. For manual ad units, paste the full `<ins>` + `<script>` code from AdSense into Appearance → iPin Settings → Ads. Script tags are preserved.
+= How do I make a video pin? =
+Edit the post and paste a link into the Video pin box in the sidebar: a direct file link that ends in .mp4, .webm, .m4v, .mov or .ogv, or a YouTube or Vimeo link. The box tells you straight away whether the link will play. The featured image becomes the video's cover. Some sites refuse to be embedded in frames. Their videos still play here from the file link.
 
-= How do I add a new colour scheme? =
-Add a `[data-scheme="myscheme"] { }` block to `assets/css/tokens.css`, add a `[data-theme="dark"][data-scheme="myscheme"] { }` dark-mode override, then add an entry to the `$schemes` array in `inc/admin-options.php`.
+= Can I open the lightbox from the keyboard? =
+Yes. Tab to a pin's title and press Shift+Enter. Plain Enter opens the post itself.
 
-= How do I use the Popular Posts sort bar? =
-It appears automatically on the homepage. Click Latest, This week, This month, or All time. Sorting is based on WordPress's native comment count — no additional database tables are created. You can also add the iPin Popular Posts widget to any sidebar via Appearance → Widgets.
+= How do I add a colour scheme? =
+Add a `[data-scheme="yourscheme"]` block to `assets/css/tokens.css` with the source colours (the vivid, accent, fill, tint and surface tokens), and a `[data-scheme="yourscheme"][data-theme="dark"]` block for dark mode. Gradients, borders and shadows work themselves out from those. Then add the scheme to `ipin_colour_schemes()` in `inc/admin-options.php` and its browser-bar colours to `ipin_theme_colors()` in `inc/enqueue.php`.
 
-= How do I set up the Sideblog? =
-After activation, a Sideblog menu item appears in the WordPress admin. Create articles there — they are available at `/article/{slug}/` individually and at `/articles/` as an archive.
+= Can I write my own 404 jokes? =
+Yes. The 404 page picks one of six headlines at random. Add yours, or replace them all, with the `ipin_404_quips` filter in a child theme or a small plugin:
 
-= What does the lightbox load? =
-Pin data (image, title, description, author, share links, and latest comments) is fetched via AJAX when a card is clicked. Nothing is pre-loaded in hidden markup — there is no impact on page load time.
+`add_filter( 'ipin_404_quips', fn( $quips ) => [ [ 'title' => 'Lost?', 'text' => 'Same.' ] ] );`
+
+= How does the sort bar work? =
+It re-orders the grid by comment count for the chosen period. It sits on the homepage, or on your Posts page if you use a static front page. WordPress already counts comments, so nothing new goes into the database.
+
+= Does it work with the block editor? =
+Yes. The editor loads the same fonts and colour tokens as the front end.
 
 = Can I use a child theme? =
-Yes. Create a standard WordPress child theme. Override any template by placing a copy in your child theme directory. Override CSS tokens without editing source files by adding a `:root { }` block to your child theme stylesheet.
+Yes. Copy any template into the child theme to override it, or redefine tokens in a `:root { }` block in the child theme's stylesheet.
 
-= Does it work with the block editor (Gutenberg)? =
-Yes. `editor-style.css` is registered so block editor typography and colours match the frontend. Full Site Editing (FSE) template parts are on the roadmap for a future release.
-
-= What PHP version is required? =
-PHP 8.0 or later. The theme uses strict types, union types, match expressions, and arrow functions throughout.
+= What PHP version do I need? =
+PHP 8.0 or later.
 
 = Is it translation-ready? =
-Yes. All user-facing strings use `__()` / `esc_html_e()` with the `ipin` text domain. Generate a `.pot` file with: `wp i18n make-pot . languages/ipin.pot --domain=ipin`
+Yes. Strings use the `ipin-modern` text domain, and `languages/ipin-modern.pot` ships with the theme. To regenerate it: `wp i18n make-pot . languages/ipin-modern.pot --domain=ipin-modern`
 
 == Changelog ==
+
+= 5.0.0 =
+The front end is rebuilt. Full details are in CHANGELOG.md.
+
+* Added: homepage hero and featured-pin panel, video pins, a built-in Sideblog, a full-screen lightbox, structured data with sameAs, a Mastodon handle, feed enclosures, self-hosted fonts, keyboard and touch dropdown menus.
+* Changed: jQuery and its three grid plugins are replaced by a small grid engine in plain JavaScript. Colour tokens are rebuilt in OKLCH, with every pairing checked to WCAG 2.2 AA. Lightbox data comes from a cacheable REST route. The text domain is now `ipin-modern`.
+* Removed: sidebars and their page templates, the Ads tab, the Popular Posts widget, and the Font Awesome and Google Fonts CDNs.
+* Fixed: a fatal error on the blog home, archives and search; dropdown menus; settings that saved but did nothing; dark-mode contrast on buttons; lightbox data leaking from password-protected posts; private sticky posts showing in the featured panel; and the rest of the 5.0 code review.
 
 = 4.1.4 =
 * Fixed: Duplicate admin asset enqueue — ipin_admin_scripts() in admin-options.php was a stale copy of ipin_enqueue_admin_assets() in enqueue.php; both were hooked to admin_enqueue_scripts, double-registering ipin-admin-css and ipin-admin-js and calling wp_localize_script twice. Removed the stale copy from admin-options.php.
@@ -188,6 +177,9 @@ Yes. All user-facing strings use `__()` / `esc_html_e()` with the `ipin` text do
 * Added: ipin.custom.js.
 
 == Upgrade Notice ==
+
+= 5.0.0 =
+Major release. Sidebars, the Ads tab and the Popular Posts widget are gone, and the text domain is now ipin-modern. Read UPGRADING.md before updating a customised site or a child theme.
 
 = 4.1.3 =
 Critical fix: the lightbox was broken since launch — data-post-id was missing from card elements. Also fixes asset cache-busting, block editor styles, and a bad ARIA role on nav dropdowns. Upgrade strongly recommended.
