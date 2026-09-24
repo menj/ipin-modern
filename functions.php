@@ -37,6 +37,7 @@ require_once $ipin_inc . 'ads.php';              // ad slot definitions & render
 
 // ── Assets & UI ───────────────────────────────────────
 require_once $ipin_inc . 'enqueue.php';          // all wp_enqueue_* calls
+require_once $ipin_inc . 'seo.php';              // meta description + JSON-LD structured data
 require_once $ipin_inc . 'admin-options.php';    // tabbed admin settings page
 require_once $ipin_inc . 'customizer.php';       // WP Customizer integration
 

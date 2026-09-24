@@ -95,7 +95,7 @@
 					<?php if ( $has_image ) : ?>
 					<img
 						src="<?php echo esc_url( $img_src ); ?>"
-						alt=""
+						alt="<?php the_title_attribute(); ?>"
 						width="<?php echo esc_attr( $w ); ?>"
 						height="<?php echo esc_attr( $h ); ?>"
 						loading="lazy"
