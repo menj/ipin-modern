@@ -52,6 +52,94 @@ function ipin_social_icon( string $platform ): string {
 
 
 /* -------------------------------------------------------
+   CARD IMAGE
+   The attachment a grid card shows: the featured image, else
+   the first image attached to the post. The fallback lookup is
+   a query, so its answer (an ID, or 0 for none) is kept in
+   post meta — which the main loop already primes — and redone
+   only when the post or its attachments change.
+   ------------------------------------------------------- */
+function ipin_card_image_id( \WP_Post $post ): int {
+	$thumb = (int) get_post_thumbnail_id( $post );
+	if ( $thumb ) {
+		return $thumb;
+	}
+
+	$cached = get_post_meta( $post->ID, '_ipin_card_image', true );
+	if ( '' === $cached ) {
+		$kids   = get_children( [
+			'post_parent'    => $post->ID,
+			'post_type'      => 'attachment',
+			'post_mime_type' => 'image',
+			'numberposts'    => 1,
+			'fields'         => 'ids',
+		] );
+		$cached = $kids ? (int) reset( $kids ) : 0;
+		update_post_meta( $post->ID, '_ipin_card_image', $cached );
+	}
+	return (int) $cached;
+}
+
+function ipin_forget_card_image( int $post_id ): void {
+	delete_post_meta( $post_id, '_ipin_card_image' );
+}
+add_action( 'save_post', 'ipin_forget_card_image' );
+add_action( 'add_attachment', static fn( int $id ) => ipin_forget_card_image( (int) wp_get_post_parent_id( $id ) ) );
+add_action( 'delete_attachment', static fn( int $id ) => ipin_forget_card_image( (int) wp_get_post_parent_id( $id ) ) );
+
+
+/* -------------------------------------------------------
+   GRID COMMENT PREVIEWS
+   The newest $per_post approved comments for every card on
+   the page, fetched together instead of one query per card.
+   Posts with many comments are queried on their own with a
+   limit, so one busy post can't bloat the shared query.
+   Returns [ post_id => WP_Comment[] ].
+   ------------------------------------------------------- */
+function ipin_comment_previews( array $posts, int $per_post ): array {
+	$previews = [];
+	if ( $per_post < 1 ) {
+		return $previews;
+	}
+
+	$batched = [];
+	foreach ( $posts as $p ) {
+		$count = (int) $p->comment_count;   // approved comments only
+		if ( 0 === $count ) {
+			continue;
+		}
+		if ( $count <= 25 ) {
+			$batched[] = (int) $p->ID;
+		} else {
+			$previews[ $p->ID ] = get_comments( [
+				'post_id' => $p->ID,
+				'status'  => 'approve',
+				'number'  => $per_post,
+			] );
+		}
+	}
+
+	if ( $batched ) {
+		$all = get_comments( [
+			'post__in'                  => $batched,
+			'status'                    => 'approve',
+			'orderby'                   => 'comment_date_gmt',
+			'order'                     => 'DESC',
+			'update_comment_meta_cache' => false,
+		] );
+		foreach ( $all as $c ) {
+			$pid = (int) $c->comment_post_ID;
+			if ( count( $previews[ $pid ] ?? [] ) < $per_post ) {
+				$previews[ $pid ][] = $c;
+			}
+		}
+	}
+
+	return $previews;
+}
+
+
+/* -------------------------------------------------------
    RELATIVE HUMAN-READABLE TIMESTAMP
    ------------------------------------------------------- */
 function ipin_human_time_diff( int $from, int $to = 0 ): string {
@@ -207,74 +295,85 @@ add_filter( 'body_class', 'ipin_body_classes' );
 
 
 /* -------------------------------------------------------
-   LIGHTBOX DATA AJAX
-   Returns pin metadata for the lightbox overlay.
-   No social data — design-only build.
+   LIGHTBOX DATA — REST
+   GET /wp-json/ipin/v1/pin/{id} (or ?rest_route= on plain
+   permalinks). Public, read-only and cacheable, unlike the
+   admin-ajax POST it replaces. Text fields are plain text and
+   URLs are raw: the lightbox writes them with textContent and
+   DOM properties, so HTML-escaping here would double-escape.
    ------------------------------------------------------- */
-add_action( 'wp_ajax_ipin_lightbox_data',        'ipin_lightbox_data_handler' );
-add_action( 'wp_ajax_nopriv_ipin_lightbox_data', 'ipin_lightbox_data_handler' );
+function ipin_plain( string $html ): string {
+	return trim( html_entity_decode( wp_strip_all_tags( $html ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ) );
+}
 
-function ipin_lightbox_data_handler(): void {
-	$post_id = (int) ( $_POST['post_id'] ?? 0 );
-	if ( ! $post_id ) {
-		wp_send_json_error( 'Invalid post', 400 );
-	}
-
+/**
+ * Lightbox data for a publicly viewable pin, or null. Password-
+ * protected posts are always refused: a cacheable response must
+ * never carry content unlocked by one visitor's password cookie.
+ */
+function ipin_lightbox_payload( int $post_id ): ?array {
 	$post = get_post( $post_id );
-	if ( ! $post
-		|| ! is_post_publicly_viewable( $post )   // covers status AND post-type visibility
-		|| post_password_required( $post ) ) {
-		wp_send_json_error( 'Not found', 404 );
+	if ( ! $post || ! is_post_publicly_viewable( $post ) || '' !== $post->post_password ) {
+		return null;
 	}
 
-	// Image
 	$img_url = '';
-	if ( has_post_thumbnail( $post_id ) ) {
-		$src     = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), 'large' );
+	if ( has_post_thumbnail( $post ) ) {
+		$src     = wp_get_attachment_image_src( get_post_thumbnail_id( $post ), 'large' );
 		$img_url = $src ? $src[0] : '';
 	}
 
-	// Video pin: normalised, validated source (file or embed) or null
-	$video = ipin_post_video( $post_id );
+	$video     = ipin_post_video( $post_id );
+	$author_id = (int) $post->post_author;
+	$author    = get_userdata( $author_id );
 
-	// Author
-	$author_id     = (int) $post->post_author;
-	$author_data   = get_userdata( $author_id );
-	$author_name   = $author_data ? $author_data->display_name : '';
-	$author_url    = get_author_posts_url( $author_id );
-	$author_avatar = get_avatar_url( $author_id, [ 'size' => 32 ] );
-
-	// Comments (latest 3)
-	$raw_comments = get_comments( [
+	$comments = array_map( static fn( \WP_Comment $c ): array => [
+		'author' => ipin_plain( $c->comment_author ),
+		'text'   => ipin_plain( $c->comment_content ),
+		'avatar' => (string) get_avatar_url( $c->comment_author_email, [ 'size' => 28 ] ),
+	], get_comments( [
 		'post_id' => $post_id,
 		'status'  => 'approve',
 		'number'  => 3,
-		'order'   => 'DESC',
-	] );
-	$comments = array_map( static function ( \WP_Comment $c ): array {
-		return [
-			'author' => esc_html( $c->comment_author ),
-			'text'   => esc_html( wp_strip_all_tags( $c->comment_content ) ),
-			'avatar' => get_avatar_url( $c->comment_author_email, [ 'size' => 28 ] ),
-		];
-	}, $raw_comments );
+	] ) );
 
-	wp_send_json_success( [
+	return [
 		'post_id'       => $post_id,
-		'title'         => get_the_title( $post_id ),
-		'permalink'     => get_permalink( $post_id ),
-		'img_url'       => $img_url,
+		'title'         => ipin_plain( get_the_title( $post ) ),
+		'permalink'     => esc_url_raw( (string) get_permalink( $post ) ),
+		'img_url'       => esc_url_raw( $img_url ),
 		'video'         => $video ? [
 			'type' => $video['type'],
 			'src'  => esc_url_raw( $video['src'] ),
 			'mime' => $video['mime'],
 		] : null,
-		'author_name'   => esc_html( $author_name ),
-		'author_url'    => esc_url( $author_url ),
-		'author_avatar' => esc_url( $author_avatar ),
-		'date'          => get_the_date( get_option( 'date_format' ), $post_id ),
-		'description'   => esc_html( wp_strip_all_tags( get_the_excerpt( $post_id ) ) ),
-		'source_url'    => esc_url( (string) get_post_meta( $post_id, '_ipin_source_url', true ) ),
+		'author_name'   => $author ? ipin_plain( $author->display_name ) : '',
+		'author_url'    => esc_url_raw( get_author_posts_url( $author_id ) ),
+		'author_avatar' => esc_url_raw( (string) get_avatar_url( $author_id, [ 'size' => 32 ] ) ),
+		'date'          => ipin_plain( (string) get_the_date( '', $post ) ),
+		'description'   => ipin_plain( get_the_excerpt( $post ) ),
+		'source_url'    => esc_url_raw( (string) get_post_meta( $post_id, '_ipin_source_url', true ) ),
 		'comments'      => $comments,
-	] );
+	];
 }
+
+function ipin_rest_pin( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
+	$payload = ipin_lightbox_payload( (int) $request['id'] );
+	if ( ! $payload ) {
+		return new \WP_Error( 'ipin_pin_not_found', __( 'Pin not found.', 'ipin' ), [ 'status' => 404 ] );
+	}
+	$response = rest_ensure_response( $payload );
+	$response->header( 'Cache-Control', 'public, max-age=300' );
+	return $response;
+}
+
+add_action( 'rest_api_init', static function (): void {
+	register_rest_route( 'ipin/v1', '/pin/(?P<id>\d+)', [
+		'methods'             => \WP_REST_Server::READABLE,
+		'callback'            => 'ipin_rest_pin',
+		'permission_callback' => '__return_true',   // public data only; see ipin_lightbox_payload()
+		'args'                => [
+			'id' => [ 'validate_callback' => static fn( $v ): bool => is_numeric( $v ) && (int) $v > 0 ],
+		],
+	] );
+} );

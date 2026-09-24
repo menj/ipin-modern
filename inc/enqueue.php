@@ -42,12 +42,15 @@ function ipin_enqueue_assets(): void {
 	wp_add_inline_style( 'ipin-tokens', ":root{--card-width:{$card_width}px;--radius-lg:{$radius_lg};}" );
 	wp_enqueue_style( 'ipin-base',    "$uri/assets/css/base.css",    [ 'ipin-tokens' ],       $v );
 	wp_enqueue_style( 'ipin-nav',     "$uri/assets/css/nav.css",     [ 'ipin-base' ],         $v );
-	wp_enqueue_style( 'ipin-single',  "$uri/assets/css/single.css",  [ 'ipin-base' ],         $v );
-	wp_enqueue_style( 'ipin-lightbox',"$uri/assets/css/lightbox.css",[ 'ipin-base' ],         $v );
 
-	// Masonry grid CSS — archive / search / front-page only
-	if ( ! is_singular() ) {
+	// Each view loads only the stylesheet it renders: posts/pages get
+	// single.css; the grid (home, archives, search, 404) gets masonry +
+	// lightbox. Footer, search form and scroll-to-top live in base.css.
+	if ( is_singular() ) {
+		wp_enqueue_style( 'ipin-single', "$uri/assets/css/single.css", [ 'ipin-base' ], $v );
+	} else {
 		wp_enqueue_style( 'ipin-masonry-css', "$uri/assets/css/masonry.css", [ 'ipin-base' ], $v );
+		wp_enqueue_style( 'ipin-lightbox',    "$uri/assets/css/lightbox.css", [ 'ipin-base' ], $v );
 	}
 
 	// Required WP theme stylesheet (header comment only — no actual rules)
@@ -88,7 +91,7 @@ function ipin_enqueue_assets(): void {
 	wp_localize_script( 'ipin-custom', 'ipinData', [
 		'allLoaded'   => __( 'All items loaded', 'ipin' ),
 		'loadingText' => __( 'Loading more pins…', 'ipin' ),
-		'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+		'pinUrl'      => esc_url_raw( rest_url( 'ipin/v1/pin/' ) ),
 		'icons'       => [
 			'pinterest' => ipin_social_icon( 'pinterest' ),
 			'x'         => ipin_social_icon( 'x' ),

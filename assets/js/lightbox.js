@@ -11,7 +11,9 @@
   'use strict';
 
   var data       = window.ipinData || {};
-  var ajaxUrl    = data.ajaxUrl || '/wp-admin/admin-ajax.php';
+  var pinUrl     = data.pinUrl || '/wp-json/ipin/v1/pin/';
+  var pinCache   = {};  // post ID → response; pins don't change while the page is open
+  var requestSeq = 0;   // only the newest request may render
   var icons      = data.icons || {};
   var overlay    = null;
   var pinIds     = [];
@@ -135,23 +137,26 @@
     showLoading();
     updateNavButtons();
 
-    var body = new URLSearchParams();
-    body.set('action', 'ipin_lightbox_data');
-    body.set('post_id', String(postId));
+    var seq = ++requestSeq;
+    if (pinCache[postId]) {
+      renderPin(pinCache[postId]);
+      return;
+    }
 
-    fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
+    fetch(pinUrl + postId, { credentials: 'same-origin', headers: { Accept: 'application/json' } })
       .then(function (r) {
         if (!r.ok) throw new Error('HTTP ' + r.status);
         return r.json();
       })
-      .then(function (resp) {
-        if (!resp || !resp.success) throw new Error('bad response');
-        renderPin(resp.data || {});
+      .then(function (pin) {
+        pinCache[postId] = pin;
+        if (seq === requestSeq) renderPin(pin);  // user may have moved on already
       })
       .catch(function () {
-        renderError();
+        if (seq === requestSeq) renderError();
       });
   }
+
 
   /* ========================================================
      RENDER

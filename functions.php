@@ -32,7 +32,7 @@ require_once $ipin_inc . 'nav-walker.php';       // Ipin_Nav_Walker + accessible
 
 // ── Design features ───────────────────────────────────
 require_once $ipin_inc . 'post-types.php';       // ipin_article CPT (sideblog)
-require_once $ipin_inc . 'popular-posts.php';    // popular posts by comment count + widget
+require_once $ipin_inc . 'popular-posts.php';    // sort bar: popular-by-comments ordering
 
 // ── Assets & UI ───────────────────────────────────────
 require_once $ipin_inc . 'enqueue.php';          // all wp_enqueue_* calls
@@ -53,6 +53,8 @@ function ipin_setup(): void {
 	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
+	// Grid card rendition: 2x the widest card setting (400px), any height.
+	add_image_size( 'ipin-card', 800, 0, false );
 	add_theme_support( 'html5', [
 		'comment-list',
 		'comment-form',

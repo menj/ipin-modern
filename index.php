@@ -108,24 +108,24 @@
 	?>
 	<nav class="sort-bar" aria-label="<?php esc_attr_e( 'Sort posts', 'ipin' ); ?>">
 		<a class="sort-bar__btn<?php echo ! $current_sort ? ' active' : ''; ?>"
-		   href="<?php echo esc_url( home_url( '/' ) ); ?>"
+		   href="<?php echo esc_url( ipin_popular_sort_url() ); ?>"
 		   aria-current="<?php echo ! $current_sort ? 'page' : 'false'; ?>">
 			<?php esc_html_e( 'Latest', 'ipin' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === '7days' ? ' active' : ''; ?>"
-		   href="<?php echo esc_url( add_query_arg( 'popular', '7days', home_url( '/' ) ) ); ?>"
+		   href="<?php echo esc_url( ipin_popular_sort_url( '7days' ) ); ?>"
 		   aria-current="<?php echo $current_sort === '7days' ? 'page' : 'false'; ?>">
 			<i class="fa fa-fire-alt" aria-hidden="true"></i>
 			<?php esc_html_e( 'Last 7 days', 'ipin' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === '30days' ? ' active' : ''; ?>"
-		   href="<?php echo esc_url( add_query_arg( 'popular', '30days', home_url( '/' ) ) ); ?>"
+		   href="<?php echo esc_url( ipin_popular_sort_url( '30days' ) ); ?>"
 		   aria-current="<?php echo $current_sort === '30days' ? 'page' : 'false'; ?>">
 			<i class="fa fa-chart-line" aria-hidden="true"></i>
 			<?php esc_html_e( 'This month', 'ipin' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === 'all' ? ' active' : ''; ?>"
-		   href="<?php echo esc_url( add_query_arg( 'popular', 'all', home_url( '/' ) ) ); ?>"
+		   href="<?php echo esc_url( ipin_popular_sort_url( 'all' ) ); ?>"
 		   aria-current="<?php echo $current_sort === 'all' ? 'page' : 'false'; ?>">
 			<i class="fa fa-crown" aria-hidden="true"></i>
 			<?php esc_html_e( 'All time', 'ipin' ); ?>
@@ -137,6 +137,10 @@
 
 		<!-- aria-busy cleared by ipin.grid.js after first layout -->
 		<div id="masonry" aria-busy="true">
+			<?php
+			$fp_comments_num = (int) ipin_option( 'ipin_frontpage_comments', 3 );
+			$ipin_previews   = ipin_comment_previews( $GLOBALS['wp_query']->posts, $fp_comments_num );
+			?>
 			<?php while ( have_posts() ) : the_post(); ?>
 
 			<?php $is_video_pin = (bool) ipin_post_video( get_the_ID() ); ?>
@@ -150,52 +154,36 @@
 				   aria-hidden="true"
 				   focusable="false">
 					<?php
-					$img_src    = '';
-					$img_width  = 0;
-					$img_height = 0;
-
-					if ( has_post_thumbnail() ) {
-						$img_data   = wp_get_attachment_image_src( get_post_thumbnail_id( get_the_ID() ), 'medium' );
-						$img_src    = $img_data[0] ?? '';
-						$img_width  = $img_data[1] ?? 0;
-						$img_height = $img_data[2] ?? 0;
-						$has_image  = true;
-					} elseif ( $post_images = get_children( [
-						'post_parent'    => get_the_ID(),
-						'post_type'      => 'attachment',
-						'post_mime_type' => 'image',
-						'numberposts'    => 1,
-					] ) ) {
-						$pi         = reset( $post_images );
-						$img_data   = wp_get_attachment_image_src( $pi->ID, 'medium' );
-						$img_src    = $img_data[0] ?? '';
-						$img_width  = $img_data[1] ?? 0;
-						$img_height = $img_data[2] ?? 0;
-						$has_image  = true;
+					$w        = ipin_sanitize_card_width( get_option( 'ipin_card_width', 220 ) );
+					$img_id   = ipin_card_image_id( get_post() );
+					$img_html = '';
+					if ( $img_id ) {
+						// ipin-card + srcset: the browser picks the file that fits the
+						// card at the screen's density instead of one fixed 'medium'.
+						$img_html = wp_get_attachment_image( $img_id, 'ipin-card', false, [
+							'alt'      => the_title_attribute( [ 'echo' => false ] ),
+							'sizes'    => "(max-width: 420px) calc(100vw - 48px), {$w}px",
+							'loading'  => 'lazy',
+							'decoding' => 'async',
+							'style'    => 'view-transition-name: ipin-media-' . get_the_ID(),
+						] );
 					} elseif ( preg_match( '/<img[^>]+src=["\']([^"\']+)/i', get_the_content(), $match ) ) {
-						$img_src   = $match[1];
-						$has_image = true;
-					} else {
-						$has_image = false;
+						// Last resort: an image hotlinked in the content (size unknown, so square).
+						$img_html = sprintf(
+							'<img src="%1$s" alt="%2$s" width="%3$d" height="%3$d" loading="lazy" decoding="async" style="view-transition-name: ipin-media-%4$d">',
+							esc_url( $match[1] ),
+							the_title_attribute( [ 'echo' => false ] ),
+							$w,
+							get_the_ID()
+						);
 					}
-
-					$w = (int) get_option( 'ipin_card_width', 220 );
-					$h = ( $img_width && $img_height ) ? (int) round( $w / $img_width * $img_height ) : $w;
 
 					// No-image placeholder: first letter of title for the monogram
 					$title_initial = mb_strtoupper( mb_substr( get_the_title(), 0, 1 ) );
 					?>
 
-					<?php if ( $has_image ) : ?>
-					<img
-						src="<?php echo esc_url( $img_src ); ?>"
-						alt="<?php the_title_attribute(); ?>"
-						style="view-transition-name: ipin-media-<?php the_ID(); ?>"
-						width="<?php echo esc_attr( $w ); ?>"
-						height="<?php echo esc_attr( $h ); ?>"
-						loading="lazy"
-						decoding="async"
-					>
+					<?php if ( $img_html ) : ?>
+					<?php echo $img_html; // phpcs:ignore WordPress.Security.EscapeOutput -- core-built or escaped above ?>
 					<?php else : ?>
 					<!-- No-image placeholder: gradient panel with post title monogram -->
 					<div class="thumb-no-image" aria-hidden="true">
@@ -256,13 +244,8 @@
 
 					<!-- Frontpage comments preview -->
 					<?php
-					$fp_comments_num = (int) ipin_option( 'ipin_frontpage_comments', 3 );
 					if ( $fp_comments_num > 0 ) :
-						$comments = get_comments( [
-							'number'  => $fp_comments_num,
-							'post_id' => get_the_ID(),
-							'status'  => 'approve',
-						] );
+						$comments = $ipin_previews[ get_the_ID() ] ?? [];
 						foreach ( $comments as $comment ) :
 					?>
 						<div class="masonry-meta">
