@@ -78,7 +78,7 @@
 						$img_width  = $img_data[1] ?? 0;
 						$img_height = $img_data[2] ?? 0;
 						$has_image  = true;
-					} elseif ( preg_match( '/<img[^>]+src=["\'']([^"\'']+)/i', get_the_content(), $match ) ) {
+					} elseif ( preg_match( '/<img[^>]+src=["\']([^"\']+)/i', get_the_content(), $match ) ) {
 						$img_src   = $match[1];
 						$has_image = true;
 					} else {
