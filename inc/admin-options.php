@@ -9,35 +9,69 @@ declare( strict_types = 1 );
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* -------------------------------------------------------
+   SETTINGS SCHEMA
+   The single place a setting is declared: key => [ sanitizer,
+   default ]. Both save paths below (AJAX and the no-JS
+   options.php post) sanitise through these callbacks, because
+   register_setting() attaches each one to its option's
+   sanitize_option_{$key} filter, which update_option() runs.
+   ------------------------------------------------------- */
+function ipin_settings_schema(): array {
+	return [
+		// General
+		'ipin_frontpage_comments' => [ 'absint',                  3       ],
+		'ipin_posts_per_page'     => [ 'ipin_sanitize_per_page',  12      ],
+		'ipin_show_avatars_grid'  => [ 'absint',                  1       ],
+		'ipin_footer_text'        => [ 'wp_kses_post',            ''      ],
+		// Appearance
+		'ipin_colour_scheme'      => [ 'ipin_sanitize_scheme',    'vivid' ],
+		'ipin_dark_mode_default'  => [ 'absint',                  0       ],
+		'ipin_card_width'         => [ 'ipin_sanitize_card_width', 220    ],
+		'ipin_rounded_cards'      => [ 'absint',                  1       ],
+		// Social
+		'ipin_twitter_url'        => [ 'esc_url_raw',             ''      ],
+		'ipin_facebook_url'       => [ 'esc_url_raw',             ''      ],
+		'ipin_instagram_url'      => [ 'esc_url_raw',             ''      ],
+		'ipin_author_sameas'      => [ 'ipin_sanitize_url_list',  ''      ],
+		'ipin_rss_visible'        => [ 'absint',                  1       ],
+		// Layout — homepage hero
+		'ipin_hero_enabled'       => [ 'absint',                  1       ],
+		'ipin_hero_bento'         => [ 'absint',                  1       ],
+		'ipin_hero_title'         => [ 'sanitize_text_field',     ''      ],
+		'ipin_hero_lede'          => [ 'wp_kses_post',            ''      ],
+	];
+}
+
+/** The colour schemes tokens.css defines, slug => label. */
+function ipin_colour_schemes(): array {
+	return [
+		'vivid'  => __( 'Vivid',  'ipin' ),
+		'ocean'  => __( 'Ocean',  'ipin' ),
+		'ember'  => __( 'Ember',  'ipin' ),
+		'forest' => __( 'Forest', 'ipin' ),
+		'mono'   => __( 'Mono',   'ipin' ),
+	];
+}
+
+function ipin_sanitize_scheme( mixed $value ): string {
+	$value = sanitize_key( (string) $value );
+	return array_key_exists( $value, ipin_colour_schemes() ) ? $value : 'vivid';
+}
+
+function ipin_sanitize_per_page( mixed $value ): int {
+	return max( 1, min( 100, absint( $value ) ) );
+}
+
+function ipin_sanitize_card_width( mixed $value ): int {
+	return max( 140, min( 400, absint( $value ) ) );
+}
+
+
+/* -------------------------------------------------------
    REGISTER SETTINGS
    ------------------------------------------------------- */
 function ipin_register_settings(): void {
-	$settings = [
-		// General
-		'ipin_frontpage_comments' => [ 'absint',      3    ],
-		'ipin_posts_per_page'     => [ 'absint',      12   ],
-		// Appearance
-		'ipin_colour_scheme'      => [ 'sanitize_key', 'vivid' ],
-		'ipin_dark_mode_default'  => [ 'absint',       0   ],
-		'ipin_card_width'         => [ 'absint',       220 ],
-		'ipin_rounded_cards'      => [ 'absint',       1   ],
-		// Social links
-		'ipin_twitter_url'        => [ 'esc_url_raw',  ''  ],
-		'ipin_facebook_url'       => [ 'esc_url_raw',  ''  ],
-		'ipin_instagram_url'      => [ 'esc_url_raw',  ''  ],
-		'ipin_author_sameas'      => [ 'ipin_sanitize_url_list', '' ],
-		'ipin_rss_visible'        => [ 'absint',       1   ],
-		// Layout
-		'ipin_show_avatars_grid'  => [ 'absint',       1   ],
-		'ipin_footer_text'        => [ 'wp_kses_post', ''  ],
-		// Hero
-		'ipin_hero_enabled'       => [ 'absint',              1  ],
-		'ipin_hero_title'         => [ 'sanitize_text_field', '' ],
-		'ipin_hero_lede'          => [ 'wp_kses_post',        '' ],
-		'ipin_hero_bento'         => [ 'absint',              1  ],
-	];
-
-	foreach ( $settings as $key => [ $sanitize, $default ] ) {
+	foreach ( ipin_settings_schema() as $key => [ $sanitize, $default ] ) {
 		register_setting( 'ipin_options_group', $key, [
 			'sanitize_callback' => $sanitize,
 			'default'           => $default,
@@ -49,38 +83,23 @@ add_action( 'admin_init', 'ipin_register_settings' );
 
 /* -------------------------------------------------------
    AJAX SAVE HANDLER
+   Progressive enhancement over the options.php form post.
+   Sanitising happens inside update_option() via the
+   callbacks registered above — nothing is duplicated here.
    ------------------------------------------------------- */
 function ipin_ajax_save_options(): void {
 	check_ajax_referer( 'ipin_save_options', 'ipin_nonce' );
 
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( 'Unauthorized', 403 );
+		wp_send_json_error( [ 'message' => __( 'You do not have permission to change these settings.', 'ipin' ) ], 403 );
 	}
 
-	$fields = [
-		'ipin_frontpage_comments'    => 'absint',
-		'ipin_posts_per_page'        => 'absint',
-		'ipin_colour_scheme'         => 'sanitize_key',
-		'ipin_dark_mode_default'     => 'absint',
-		'ipin_card_width'            => 'absint',
-		'ipin_rounded_cards'         => 'absint',
-		'ipin_twitter_url'           => 'esc_url_raw',
-		'ipin_facebook_url'          => 'esc_url_raw',
-		'ipin_instagram_url'         => 'esc_url_raw',
-		'ipin_author_sameas'         => 'ipin_sanitize_url_list',
-		'ipin_rss_visible'           => 'absint',
-		'ipin_show_avatars_grid'     => 'absint',
-		'ipin_footer_text'           => 'wp_kses_post',
-		'ipin_hero_enabled'          => 'absint',
-		'ipin_hero_title'            => 'sanitize_text_field',
-		'ipin_hero_lede'             => 'wp_kses_post',
-		'ipin_hero_bento'            => 'absint',
-	];
-
-	foreach ( $fields as $key => $cb ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked above
-		$val = isset( $_POST[ $key ] ) ? call_user_func( $cb, wp_unslash( $_POST[ $key ] ) ) : 0;
-		update_option( $key, $val );
+	foreach ( array_keys( ipin_settings_schema() ) as $key ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above
+		if ( array_key_exists( $key, $_POST ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- sanitised by the registered callback
+			update_option( $key, wp_unslash( $_POST[ $key ] ) );
+		}
 	}
 
 	wp_send_json_success( [ 'message' => __( 'Settings saved.', 'ipin' ) ] );
@@ -125,14 +144,6 @@ function ipin_render_settings_page(): void {
 		'layout'     => [ 'icon' => '&#x1f4d0;',        'label' => __( 'Layout',     'ipin' ) ],
 	];
 
-	$schemes = [
-		'vivid'  => [ 'label' => 'Vivid',  'swatch' => 'swatch-vivid'  ],
-		'ocean'  => [ 'label' => 'Ocean',  'swatch' => 'swatch-ocean'  ],
-		'ember'  => [ 'label' => 'Ember',  'swatch' => 'swatch-ember'  ],
-		'forest' => [ 'label' => 'Forest', 'swatch' => 'swatch-forest' ],
-		'mono'   => [ 'label' => 'Mono',   'swatch' => 'swatch-mono'   ],
-	];
-
 	$scheme  = ipin_get( 'ipin_colour_scheme', 'vivid' );
 	$version = wp_get_theme()->get( 'Version' );
 	?>
@@ -168,9 +179,10 @@ function ipin_render_settings_page(): void {
 		<?php endforeach; ?>
 	</ul>
 
-	<form id="ipin-settings-form" method="post" action="">
-		<?php wp_nonce_field( 'ipin_save_options', 'ipin_nonce' ); ?>
-		<input type="hidden" name="action" value="ipin_save_options">
+	<?php settings_errors(); // "Settings saved." after a no-JS options.php save ?>
+
+	<form id="ipin-settings-form" method="post" action="options.php">
+		<?php settings_fields( 'ipin_options_group' ); ?>
 
 		<!-- ====================================================
 		     TAB: GENERAL
@@ -195,7 +207,7 @@ function ipin_render_settings_page(): void {
 					<div>
 						<input type="number" id="ipin_posts_per_page" name="ipin_posts_per_page"
 							value="<?php echo esc_attr( ipin_get( 'ipin_posts_per_page', 12 ) ); ?>" min="1" max="100">
-						<p class="ipin-field-desc"><?php esc_html_e( 'Pins to load before infinite scroll fetches the next batch.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Pins per batch on the homepage, archives and search; infinite scroll loads the next batch. Overrides "Blog pages show at most" in Settings > Reading.', 'ipin' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -249,13 +261,14 @@ function ipin_render_settings_page(): void {
 				<p class="ipin-card__desc"><?php esc_html_e( 'Pick a palette. All accents and interactive colours update automatically. Dark mode is available on all schemes.', 'ipin' ); ?></p>
 
 				<div class="ipin-scheme-grid">
-					<?php foreach ( $schemes as $slug => $s ) : ?>
+					<?php foreach ( ipin_colour_schemes() as $slug => $label ) : ?>
 					<label class="ipin-scheme-card">
 						<input type="radio" name="ipin_colour_scheme" value="<?php echo esc_attr( $slug ); ?>"
 							<?php checked( $slug, $scheme ); ?>>
 						<span class="ipin-scheme-card__inner">
-							<span class="ipin-swatch <?php echo esc_attr( $s['swatch'] ); ?>"></span>
-							<?php echo esc_html( $s['label'] ); ?>
+							<?php // data-scheme pulls this scheme's real --grad-brand from tokens.css ?>
+							<span class="ipin-swatch" data-scheme="<?php echo esc_attr( $slug ); ?>"></span>
+							<?php echo esc_html( $label ); ?>
 						</span>
 					</label>
 					<?php endforeach; ?>
@@ -465,6 +478,7 @@ function ipin_render_save_bar(): void {
 	<div class="ipin-save-bar">
 		<button type="submit" class="ipin-btn-primary"><?php esc_html_e( 'Save Settings', 'ipin' ); ?></button>
 		<span class="ipin-saved-notice" aria-live="polite">&#x2713; <?php esc_html_e( 'Settings saved!', 'ipin' ); ?></span>
+		<span class="ipin-error-notice" role="alert" hidden></span>
 	</div>
 	<?php
 }

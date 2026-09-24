@@ -237,7 +237,8 @@
 					</h2>
 
 					<?php
-					$show_avatars    = get_option( 'show_avatars' );
+					// Needs both core's Settings > Discussion switch and the theme's own.
+					$show_avatars    = get_option( 'show_avatars' ) && (int) ipin_option( 'ipin_show_avatars_grid', 1 );
 					$comments_number = get_comments_number();
 					?>
 					<div class="masonry-meta<?php echo ( ! $comments_number && ! $show_avatars ) ? ' text-center' : ''; ?>">

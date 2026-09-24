@@ -143,8 +143,11 @@
 
 
 /* ── Tab panels ──────────────────────────────────────────── */
-.plugin-settings-root .ipin-tab-panel { display: none; }
-.plugin-settings-root .ipin-tab-panel.ipin-active { display: block; }
+/* Tabs are a JS enhancement: ipin.admin.js adds .ipin-js. Without it
+   every panel shows stacked and the (inoperable) tab bar is hidden. */
+.plugin-settings-root:not(.ipin-js) .ipin-tabs-nav { display: none; }
+.plugin-settings-root.ipin-js .ipin-tab-panel { display: none; }
+.plugin-settings-root.ipin-js .ipin-tab-panel.ipin-active { display: block; }
 
 
 /* ── Cards ───────────────────────────────────────────────── */
@@ -365,11 +368,9 @@
   display: block;
 }
 
-.plugin-settings-root .swatch-vivid  { background: linear-gradient(135deg,#e8006a,#7b00d4,#00b4ff); }
-.plugin-settings-root .swatch-ocean  { background: linear-gradient(135deg,#00897b,#0097a7,#1a237e); }
-.plugin-settings-root .swatch-ember  { background: linear-gradient(135deg,#e65100,#e53935,#b71c1c); }
-.plugin-settings-root .swatch-forest { background: linear-gradient(135deg,#558b2f,#2e7d32,#f9a825); }
-.plugin-settings-root .swatch-mono   { background: linear-gradient(135deg,#212121,#424242,#757575); }
+/* Each swatch carries data-scheme, so --grad-brand resolves to that
+   scheme's real gradient from tokens.css (loaded on this page). */
+.plugin-settings-root .ipin-swatch { background: var(--grad-brand); }
 
 
 /* ── Range slider ─────────────────────────────────────────── */
@@ -502,4 +503,12 @@
     align-items: flex-start;
     gap: 6px;
   }
+}
+
+
+/* ── Save error ───────────────────────────────────────────── */
+.plugin-settings-root .ipin-error-notice {
+  font-size: .85rem;
+  font-weight: 600;
+  color: #b32d2e;
 }

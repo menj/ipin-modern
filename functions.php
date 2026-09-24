@@ -77,15 +77,33 @@ function ipin_setup(): void {
 		'top_nav' => __( 'Top Navigation', 'ipin' ),
 	] );
 
-	// Block editor styles — registered here (after_setup_theme) so the block
-	// editor picks them up. Calling add_editor_style() in wp_enqueue_scripts
-	// only affects the frontend and has no effect in the editor.
-	add_editor_style( [ 'assets/css/fonts.css', 'assets/css/editor-style.css' ] );
+	// Block editor styles. 'editor-styles' support is what makes the block
+	// editor load add_editor_style() files at all; tokens.css comes first so
+	// editor-style.css can use the same colour variables as the front end.
+	add_theme_support( 'editor-styles' );
+	add_editor_style( [ 'assets/css/fonts.css', 'assets/css/tokens.css', 'assets/css/editor-style.css' ] );
 
 	// Global content width (used by WP for oEmbed sizing etc.)
 	$GLOBALS['content_width'] ??= 860;
 }
 add_action( 'after_setup_theme', 'ipin_setup' );
+
+
+/* -------------------------------------------------------
+   GRID PAGE SIZE
+   Theme Options → General → "Posts per page" sets the batch
+   size for every grid view (home, archives, search) so each
+   infinite-scroll page is the same length.
+   ------------------------------------------------------- */
+function ipin_grid_page_size( \WP_Query $q ): void {
+	if ( is_admin() || ! $q->is_main_query() ) {
+		return;
+	}
+	if ( $q->is_home() || $q->is_archive() || $q->is_search() ) {
+		$q->set( 'posts_per_page', ipin_sanitize_per_page( get_option( 'ipin_posts_per_page', 12 ) ) );
+	}
+}
+add_action( 'pre_get_posts', 'ipin_grid_page_size' );
 
 
 /* Sidebars removed by design — single posts and pages render full width. */

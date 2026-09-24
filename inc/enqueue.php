@@ -37,6 +37,9 @@ function ipin_enqueue_assets(): void {
 
 	// ── CSS modules — /assets/css/ ──────────────────────
 	wp_enqueue_style( 'ipin-tokens',  "$uri/assets/css/tokens.css",  [ 'ipin-fonts' ], $v );
+	$card_width = ipin_sanitize_card_width( get_option( 'ipin_card_width', 220 ) );
+	$radius_lg  = (int) get_option( 'ipin_rounded_cards', 1 ) ? '20px' : '6px';
+	wp_add_inline_style( 'ipin-tokens', ":root{--card-width:{$card_width}px;--radius-lg:{$radius_lg};}" );
 	wp_enqueue_style( 'ipin-base',    "$uri/assets/css/base.css",    [ 'ipin-tokens' ],       $v );
 	wp_enqueue_style( 'ipin-nav',     "$uri/assets/css/nav.css",     [ 'ipin-base' ],         $v );
 	wp_enqueue_style( 'ipin-single',  "$uri/assets/css/single.css",  [ 'ipin-base' ],         $v );
@@ -107,10 +110,13 @@ function ipin_enqueue_admin_assets( string $hook ): void {
 	$uri = get_template_directory_uri();
 	$v   = wp_get_theme()->get( 'Version' );
 
+	// tokens.css holds only custom properties; the scheme swatches read
+	// their gradients from it so the picker always matches the site.
+	wp_enqueue_style( 'ipin-tokens', "$uri/assets/css/tokens.css", [], $v );
 	wp_enqueue_style(
 		'ipin-admin-css',
 		"$uri/assets/css/admin.css",
-		[],
+		[ 'ipin-tokens' ],
 		$v
 	);
 
@@ -126,52 +132,34 @@ function ipin_enqueue_admin_assets( string $hook ): void {
 		'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		'nonce'   => wp_create_nonce( 'ipin_save_options' ),
 		'saving'  => __( 'Saving…', 'ipin' ),
+		'error'   => __( 'Settings could not be saved. Check your connection and try again.', 'ipin' ),
 	] );
 }
 add_action( 'admin_enqueue_scripts', 'ipin_enqueue_admin_assets' );
 
 
 /* -------------------------------------------------------
-   DYNAMIC CSS + FLASH-FREE SCHEME INIT
-   Injects a tiny <style> and a synchronous <script>
-   into <head> (priority 1 = before wp_head assets) so
-   the correct colour scheme and dark/light state are
-   applied before the first paint — no FOUC.
+   FLASH-FREE SCHEME INIT
+   A synchronous <script> in <head> (priority 1, before
+   wp_head assets) applies the colour scheme and dark/light
+   state before the first paint — no FOUC. The admin's card
+   width / corner settings travel as wp_add_inline_style()
+   on the ipin-tokens handle (see ipin_enqueue_assets).
    ------------------------------------------------------- */
 function ipin_dynamic_css_and_scheme(): void {
-	$scheme     = sanitize_key( get_option( 'ipin_colour_scheme', 'vivid' ) );
-	$card_width = max( 140, min( 400, (int) get_option( 'ipin_card_width', 220 ) ) );
-	$rounded    = (int) get_option( 'ipin_rounded_cards', 1 );
-	$dark_def   = (int) get_option( 'ipin_dark_mode_default', 0 );
-	$radius_lg  = $rounded ? '20px' : '6px';
+	$scheme      = ipin_sanitize_scheme( get_option( 'ipin_colour_scheme', 'vivid' ) );
+	$dark_def_js = (int) get_option( 'ipin_dark_mode_default', 0 ) ? 'true' : 'false';
 
-	// Tiny CSS override for admin-configurable token values
-	echo '<style id="ipin-dynamic-css">'
-		. ":root{--card-width:{$card_width}px;--radius-lg:{$radius_lg};}"
-		. "</style>\n";
+	// Synchronous scheme + dark-mode initialisation. Must run before any
+	// CSS is painted to prevent a flash, so it stays inline in <head>;
+	// printed through core so CSP nonce/attribute filters apply.
+	$js = "(function(){var h=document.documentElement;h.setAttribute('data-scheme'," . wp_json_encode( $scheme ) . ");"
+		. "var s=null;try{s=localStorage.getItem('ipin-dark-mode');}catch(e){}"
+		. "if(s==='dark'){h.setAttribute('data-theme','dark');}"
+		. "else if(s==='light'){h.removeAttribute('data-theme');}"
+		. "else if({$dark_def_js}||window.matchMedia('(prefers-color-scheme:dark)').matches){h.setAttribute('data-theme','dark');}})();";
 
-	// Synchronous scheme + dark-mode initialisation
-	// Must run before any CSS is painted to prevent flash.
-	$scheme_js   = esc_js( $scheme );
-	$dark_def_js = $dark_def ? 'true' : 'false';
-
-	echo <<<JS
-<script id="ipin-scheme-init">
-(function(){
-  var h=document.documentElement;
-  h.setAttribute('data-scheme','{$scheme_js}');
-  var s=null;
-  try{s=localStorage.getItem('ipin-dark-mode');}catch(e){}
-  if(s==='dark'){
-    h.setAttribute('data-theme','dark');
-  }else if(s==='light'){
-    h.removeAttribute('data-theme');
-  }else if({$dark_def_js}||window.matchMedia('(prefers-color-scheme:dark)').matches){
-    h.setAttribute('data-theme','dark');
-  }
-})();
-</script>
-JS;
+	wp_print_inline_script_tag( $js, [ 'id' => 'ipin-scheme-init' ] );
 }
 add_action( 'wp_head', 'ipin_dynamic_css_and_scheme', 1 );
 
