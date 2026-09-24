@@ -139,7 +139,8 @@
 		<div id="masonry" aria-busy="true">
 			<?php while ( have_posts() ) : the_post(); ?>
 
-			<article id="post-<?php the_ID(); ?>" <?php post_class( 'thumb' ); ?> data-post-id="<?php the_ID(); ?>">
+			<?php $is_video_pin = (bool) ipin_post_video( get_the_ID() ); ?>
+			<article id="post-<?php the_ID(); ?>" <?php post_class( $is_video_pin ? 'thumb thumb--video' : 'thumb' ); ?> data-post-id="<?php the_ID(); ?>">
 
 				<!-- Thumbnail image — decorative duplicate of the title link;
 				     hidden from AT to avoid announcing the same destination twice -->
@@ -203,21 +204,24 @@
 					</div>
 					<?php endif; ?>
 
-					<!-- Hover/focus action bar — hidden from AT; keyboard users reach the
-					     visible title link and the duplicate links below instead -->
+					<?php if ( $is_video_pin ) : ?>
+					<span class="thumb-play" aria-hidden="true">
+						<svg viewBox="0 0 24 24" focusable="false"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>
+					</span>
+					<?php endif; ?>
+
+					<!-- Hover/focus action bar — decorative (aria-hidden, no pointer
+					     events). Spans, not links: an <a> nested in the wrapping <a>
+					     is invalid HTML and makes browsers restructure the card. -->
 					<div class="masonry-actionbar" aria-hidden="true">
-						<a class="btn btn-comment"
-						   href="<?php the_permalink(); ?>#respond"
-						   tabindex="-1">
+						<span class="btn btn-comment">
 							<i class="fa fa-comment" aria-hidden="true"></i>
 							<?php esc_html_e( 'Comment', 'ipin' ); ?>
-						</a>
-						<a class="btn btn-view"
-						   href="<?php the_permalink(); ?>"
-						   tabindex="-1">
+						</span>
+						<span class="btn btn-view">
 							<?php esc_html_e( 'View', 'ipin' ); ?>
 							<i class="fa fa-arrow-right" aria-hidden="true"></i>
-						</a>
+						</span>
 					</div>
 				</a><!-- /.thumb-img-wrap -->
 
@@ -225,7 +229,11 @@
 				<div class="thumb-body">
 
 					<h2 class="thumbtitle">
-						<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+						<a href="<?php the_permalink(); ?>"><?php the_title(); ?><?php
+							if ( $is_video_pin ) {
+								echo ' <span class="screen-reader-text">' . esc_html__( '(video)', 'ipin' ) . '</span>';
+							}
+						?></a>
 					</h2>
 
 					<?php

@@ -503,3 +503,32 @@
   .bento-feature { aspect-ratio: 4 / 3; }
   .bento-side { grid-template-rows: none; grid-template-columns: 1fr; }
 }
+
+/* ── Video pin badge ── */
+.thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(16, 12, 28, .55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  pointer-events: none;
+  z-index: 1;
+  transition: transform var(--dur) var(--ease), background var(--dur);
+}
+.thumb-play svg { width: 20px; height: 20px; fill: currentColor; margin-left: 3px; }
+#masonry .thumb:hover .thumb-play,
+#masonry .thumb:focus-within .thumb-play {
+  transform: scale(1.08);
+  background: var(--clr-accent-1);
+}
+/* On video pins the play badge is the affordance: drop the hover chips
+   so they never sit underneath it; the tinted overlay stays. */
+#masonry .thumb--video .masonry-actionbar .btn { display: none; }

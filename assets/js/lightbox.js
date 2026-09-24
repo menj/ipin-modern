@@ -110,12 +110,19 @@
     loadPin(postId);
   }
 
+  function stopVideo() {
+    var vid = el['lightbox-video'];
+    var playing = vid.querySelector('video');
+    if (playing) { try { playing.pause(); } catch (e) {} }
+    vid.hidden = true;
+    vid.textContent = '';                // removing the node ends iframe playback too
+  }
+
   function closeLightbox() {
     if (!overlay) return;
     overlay.hidden = true;
     document.body.style.overflow = '';
-    el['lightbox-video'].hidden = true;
-    el['lightbox-video'].textContent = ''; // stop playback
+    stopVideo();
     if (lastFocused) { try { lastFocused.focus(); } catch (e) {} }
   }
 
@@ -124,6 +131,7 @@
   ======================================================== */
   function loadPin(postId) {
     currentIdx = pinIds.indexOf(postId);
+    stopVideo();                         // prev/next must not leave audio playing
     showLoading();
     updateNavButtons();
 
@@ -149,6 +157,7 @@
      RENDER
   ======================================================== */
   function safeHttpUrl(raw) {
+    if (!raw) return '';                 // '' would otherwise resolve to the current page URL
     try {
       var u = new URL(raw, window.location.href);
       if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
@@ -160,19 +169,36 @@
     var img = el['lightbox-img'];
     var vid = el['lightbox-video'];
 
-    // Image or video
-    var embed = d.is_video ? safeHttpUrl(d.embed_url) : '';
-    if (embed) {
+    // Image or video. The server has already normalised and validated
+    // the source; the scheme is re-checked here before it is used.
+    var v   = d.video || null;
+    var src = v ? safeHttpUrl(v.src) : '';
+    if (src) {
       img.hidden = true;
       img.src = '';
       vid.textContent = '';
-      var frame = document.createElement('iframe');
-      frame.src = embed;
-      frame.title = d.title || '';
-      frame.loading = 'lazy';
-      frame.setAttribute('allowfullscreen', '');
-      frame.addEventListener('load', hideLoading);
-      vid.appendChild(frame);
+      if (v.type === 'file') {
+        // Direct file (e.g. from menj.bio): native player, poster = pin image.
+        var video = document.createElement('video');
+        video.controls = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+        if (d.img_url) video.poster = safeHttpUrl(d.img_url);
+        video.setAttribute('aria-label', d.title || '');
+        var source = document.createElement('source');
+        source.src = src;
+        if (v.mime) source.type = v.mime;
+        video.appendChild(source);
+        vid.appendChild(video);
+      } else {
+        var frame = document.createElement('iframe');
+        frame.src = src;
+        frame.title = d.title || '';
+        frame.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media');
+        frame.setAttribute('allowfullscreen', '');
+        frame.referrerPolicy = 'strict-origin-when-cross-origin';
+        vid.appendChild(frame);
+      }
       vid.hidden = false;
       hideLoading();                     // never leave the spinner over a video
     } else {

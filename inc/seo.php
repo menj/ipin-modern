@@ -217,15 +217,15 @@ function ipin_structured_data(): void {
 			'itemListElement' => $crumbs,
 		];
 
-		// Video pin → VideoObject.
-		$embed_url = (string) get_post_meta( $post_id, '_ipin_video_embed_url', true );
-		if ( get_post_meta( $post_id, '_ipin_is_video', true ) && $embed_url ) {
+		// Video pin → VideoObject (contentUrl for files, embedUrl for players).
+		$source = ipin_post_video( $post_id );
+		if ( $source ) {
 			$video = [
 				'@type'      => 'VideoObject',
 				'name'       => get_the_title( $post_id ),
-				'embedUrl'   => esc_url_raw( $embed_url ),
 				'uploadDate' => get_the_date( 'c', $post_id ),
 			];
+			$video[ 'file' === $source['type'] ? 'contentUrl' : 'embedUrl' ] = esc_url_raw( $source['src'] );
 			if ( ! empty( $article['image'] ) ) {
 				$video['thumbnailUrl'] = $article['image'];
 			}

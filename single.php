@@ -34,7 +34,12 @@
 
 		<div class="post-content">
 			<?php
-			if ( has_post_thumbnail() ) {
+			$video = ipin_post_video( get_the_ID() );
+			if ( $video ) {
+				// Video pin: the player replaces the featured image, which
+				// becomes the poster for direct files.
+				echo ipin_video_player( get_the_ID(), $video ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside
+			} elseif ( has_post_thumbnail() ) {
 				the_post_thumbnail( 'large', [
 					'class' => 'aligncenter',
 					'alt'   => get_the_title(),

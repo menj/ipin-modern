@@ -227,3 +227,26 @@ img.alignleft  { float: left;  margin: 0.25rem 1.5rem 1rem 0; border-radius: var
     animation: none !important;
   }
 }
+
+/* ── Screen-reader-only text (WordPress core convention) ── */
+.screen-reader-text {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  width: 1px;
+  word-wrap: normal !important;
+}
+.screen-reader-text:focus {
+  clip-path: none;
+  height: auto;
+  width: auto;
+  margin: 0;
+  padding: 14px 22px;
+  z-index: 100000;
+  background: var(--bg-card);
+  color: var(--txt-primary);
+}

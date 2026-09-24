@@ -222,9 +222,8 @@ function ipin_lightbox_data_handler(): void {
 		$img_url = $src ? $src[0] : '';
 	}
 
-	// Video meta
-	$is_video  = (bool) get_post_meta( $post_id, '_ipin_is_video', true );
-	$embed_url = (string) get_post_meta( $post_id, '_ipin_video_embed_url', true );
+	// Video pin: normalised, validated source (file or embed) or null
+	$video = ipin_post_video( $post_id );
 
 	// Author
 	$author_id     = (int) $post->post_author;
@@ -253,8 +252,11 @@ function ipin_lightbox_data_handler(): void {
 		'title'         => get_the_title( $post_id ),
 		'permalink'     => get_permalink( $post_id ),
 		'img_url'       => $img_url,
-		'is_video'      => $is_video,
-		'embed_url'     => esc_url_raw( $embed_url ),
+		'video'         => $video ? [
+			'type' => $video['type'],
+			'src'  => esc_url_raw( $video['src'] ),
+			'mime' => $video['mime'],
+		] : null,
 		'author_name'   => esc_html( $author_name ),
 		'author_url'    => esc_url( $author_url ),
 		'author_avatar' => esc_url( $author_avatar ),

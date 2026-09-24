@@ -479,3 +479,27 @@
   .btn-share__label { display: none; }
   .btn-share { width: 40px; padding: 0; justify-content: center; }
 }
+
+/* =========================================================
+   VIDEO PIN PLAYER
+   ========================================================= */
+.post-video {
+  margin: 0 0 24px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #000;
+}
+.post-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  background: #000;
+}
+.post-video--embed { aspect-ratio: 16 / 9; }
+.post-video--embed iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
