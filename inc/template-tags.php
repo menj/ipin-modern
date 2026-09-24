@@ -23,6 +23,35 @@ function ipin_option( string $key, mixed $default = '' ): mixed {
 
 
 /* -------------------------------------------------------
+   SOCIAL PLATFORM ICON
+   Returns the bundled minimalist SVG glyph for a platform
+   (assets/img/social/{platform}.svg), inlined with
+   fill="currentColor" so it follows the surrounding text
+   colour in every colour scheme and in dark mode.
+   ------------------------------------------------------- */
+function ipin_social_icon( string $platform ): string {
+	static $cache = [];
+
+	if ( isset( $cache[ $platform ] ) ) {
+		return $cache[ $platform ];
+	}
+
+	$file = get_template_directory() . '/assets/img/social/' . sanitize_key( $platform ) . '.svg';
+	$svg  = is_readable( $file ) ? (string) file_get_contents( $file ) : '';
+
+	if ( $svg ) {
+		$svg = str_replace(
+			'<svg ',
+			'<svg class="ipin-social-svg" fill="currentColor" aria-hidden="true" focusable="false" ',
+			$svg
+		);
+	}
+
+	return $cache[ $platform ] = $svg;
+}
+
+
+/* -------------------------------------------------------
    RELATIVE HUMAN-READABLE TIMESTAMP
    ------------------------------------------------------- */
 function ipin_human_time_diff( int $from, int $to = 0 ): string {

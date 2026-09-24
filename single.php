@@ -82,7 +82,7 @@
 			   href="https://pinterest.com/pin/create/button/?url=<?php echo $share_url; ?>&media=<?php echo $share_img; ?>&description=<?php echo $share_title; ?>"
 			   target="_blank" rel="noopener noreferrer"
 			   aria-label="<?php esc_attr_e( 'Save to Pinterest (opens in new tab)', 'ipin' ); ?>">
-				<i class="fa-brands fa-pinterest" aria-hidden="true"></i>
+				<?php echo ipin_social_icon( 'pinterest' ); ?>
 				<span class="btn-share__label">Pinterest</span>
 			</a>
 
@@ -90,7 +90,7 @@
 			   href="https://twitter.com/intent/tweet?url=<?php echo $share_url; ?>&text=<?php echo $share_title; ?>"
 			   target="_blank" rel="noopener noreferrer"
 			   aria-label="<?php esc_attr_e( 'Share on X / Twitter (opens in new tab)', 'ipin' ); ?>">
-				<i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+				<?php echo ipin_social_icon( 'x' ); ?>
 				<span class="btn-share__label">X</span>
 			</a>
 
@@ -98,7 +98,7 @@
 			   href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>"
 			   target="_blank" rel="noopener noreferrer"
 			   aria-label="<?php esc_attr_e( 'Share on Facebook (opens in new tab)', 'ipin' ); ?>">
-				<i class="fa-brands fa-facebook" aria-hidden="true"></i>
+				<?php echo ipin_social_icon( 'facebook' ); ?>
 				<span class="btn-share__label">Facebook</span>
 			</a>
 

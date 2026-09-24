@@ -197,3 +197,12 @@ img.alignleft  { float: left;  margin: 0.25rem 1.5rem 1rem 0; border-radius: var
     --border:        rgba(255,255,255,.45);
   }
 }
+
+/* ── Bundled social platform glyphs (assets/img/social) ──
+   Inlined SVGs sized like the icon-font glyphs they replace;
+   fill="currentColor" follows the scheme tokens and dark mode. */
+.ipin-social-svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+}

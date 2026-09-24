@@ -120,7 +120,7 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener noreferrer">
-					<i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+					<?php echo ipin_social_icon( 'x' ); ?>
 				</a>
 				<?php endif; ?>
 
@@ -131,7 +131,7 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener noreferrer">
-					<i class="fa-brands fa-facebook" aria-hidden="true"></i>
+					<?php echo ipin_social_icon( 'facebook' ); ?>
 				</a>
 				<?php endif; ?>
 
@@ -142,7 +142,7 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener noreferrer">
-					<i class="fa-brands fa-instagram" aria-hidden="true"></i>
+					<?php echo ipin_social_icon( 'instagram' ); ?>
 				</a>
 				<?php endif; ?>
 
