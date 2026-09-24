@@ -9,30 +9,70 @@ declare( strict_types = 1 );
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* -------------------------------------------------------
+   SETTINGS SCHEMA
+   The single place a setting is declared: key => [ sanitizer,
+   default ]. Both save paths below (AJAX and the no-JS
+   options.php post) sanitise through these callbacks, because
+   register_setting() attaches each one to its option's
+   sanitize_option_{$key} filter, which update_option() runs.
+   ------------------------------------------------------- */
+function ipin_settings_schema(): array {
+	return [
+		// General
+		'ipin_frontpage_comments' => [ 'absint',                  3       ],
+		'ipin_posts_per_page'     => [ 'ipin_sanitize_per_page',  12      ],
+		'ipin_show_avatars_grid'  => [ 'absint',                  1       ],
+		'ipin_footer_text'        => [ 'wp_kses_post',            ''      ],
+		// Appearance
+		'ipin_colour_scheme'      => [ 'ipin_sanitize_scheme',    'vivid' ],
+		'ipin_dark_mode_default'  => [ 'absint',                  0       ],
+		'ipin_card_width'         => [ 'ipin_sanitize_card_width', 220    ],
+		'ipin_rounded_cards'      => [ 'absint',                  1       ],
+		// Social
+		'ipin_twitter_url'        => [ 'esc_url_raw',             ''      ],
+		'ipin_facebook_url'       => [ 'esc_url_raw',             ''      ],
+		'ipin_instagram_url'      => [ 'esc_url_raw',             ''      ],
+		'ipin_author_sameas'      => [ 'ipin_sanitize_url_list',  ''      ],
+		'ipin_fediverse_creator'  => [ 'ipin_sanitize_fediverse', ''      ],
+		'ipin_rss_visible'        => [ 'absint',                  1       ],
+		// Layout — homepage hero
+		'ipin_hero_enabled'       => [ 'absint',                  1       ],
+		'ipin_hero_bento'         => [ 'absint',                  1       ],
+		'ipin_hero_title'         => [ 'sanitize_text_field',     ''      ],
+		'ipin_hero_lede'          => [ 'wp_kses_post',            ''      ],
+	];
+}
+
+/** The colour schemes tokens.css defines, slug => label. */
+function ipin_colour_schemes(): array {
+	return [
+		'vivid'  => __( 'Vivid',  'ipin' ),
+		'ocean'  => __( 'Ocean',  'ipin' ),
+		'ember'  => __( 'Ember',  'ipin' ),
+		'forest' => __( 'Forest', 'ipin' ),
+		'mono'   => __( 'Mono',   'ipin' ),
+	];
+}
+
+function ipin_sanitize_scheme( mixed $value ): string {
+	$value = sanitize_key( (string) $value );
+	return array_key_exists( $value, ipin_colour_schemes() ) ? $value : 'vivid';
+}
+
+function ipin_sanitize_per_page( mixed $value ): int {
+	return max( 1, min( 100, absint( $value ) ) );
+}
+
+function ipin_sanitize_card_width( mixed $value ): int {
+	return max( 140, min( 400, absint( $value ) ) );
+}
+
+
+/* -------------------------------------------------------
    REGISTER SETTINGS
    ------------------------------------------------------- */
 function ipin_register_settings(): void {
-	$settings = [
-		// General
-		'ipin_frontpage_comments' => [ 'absint',      3    ],
-		'ipin_posts_per_page'     => [ 'absint',      12   ],
-		// Appearance
-		'ipin_colour_scheme'      => [ 'sanitize_key', 'vivid' ],
-		'ipin_dark_mode_default'  => [ 'absint',       0   ],
-		'ipin_card_width'         => [ 'absint',       220 ],
-		'ipin_rounded_cards'      => [ 'absint',       1   ],
-		// Social links
-		'ipin_twitter_url'        => [ 'esc_url_raw',  ''  ],
-		'ipin_facebook_url'       => [ 'esc_url_raw',  ''  ],
-		'ipin_instagram_url'      => [ 'esc_url_raw',  ''  ],
-		'ipin_rss_visible'        => [ 'absint',       1   ],
-		// Layout
-		'ipin_show_avatars_grid'  => [ 'absint',       1   ],
-		'ipin_sidebar_position'   => [ 'sanitize_key', 'right' ],
-		'ipin_footer_text'        => [ 'wp_kses_post', ''  ],
-	];
-
-	foreach ( $settings as $key => [ $sanitize, $default ] ) {
+	foreach ( ipin_settings_schema() as $key => [ $sanitize, $default ] ) {
 		register_setting( 'ipin_options_group', $key, [
 			'sanitize_callback' => $sanitize,
 			'default'           => $default,
@@ -44,44 +84,23 @@ add_action( 'admin_init', 'ipin_register_settings' );
 
 /* -------------------------------------------------------
    AJAX SAVE HANDLER
+   Progressive enhancement over the options.php form post.
+   Sanitising happens inside update_option() via the
+   callbacks registered above — nothing is duplicated here.
    ------------------------------------------------------- */
 function ipin_ajax_save_options(): void {
 	check_ajax_referer( 'ipin_save_options', 'ipin_nonce' );
 
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( 'Unauthorized', 403 );
+		wp_send_json_error( [ 'message' => __( 'You do not have permission to change these settings.', 'ipin' ) ], 403 );
 	}
 
-	$fields = [
-		'ipin_frontpage_comments'    => 'absint',
-		'ipin_posts_per_page'        => 'absint',
-		'ipin_colour_scheme'         => 'sanitize_key',
-		'ipin_dark_mode_default'     => 'absint',
-		'ipin_card_width'            => 'absint',
-		'ipin_rounded_cards'         => 'absint',
-		'ipin_twitter_url'           => 'esc_url_raw',
-		'ipin_facebook_url'          => 'esc_url_raw',
-		'ipin_instagram_url'         => 'esc_url_raw',
-		'ipin_rss_visible'           => 'absint',
-		'ipin_show_avatars_grid'     => 'absint',
-		'ipin_sidebar_position'      => 'sanitize_key',
-		'ipin_footer_text'           => 'wp_kses_post',
-	];
-
-	foreach ( $fields as $key => $cb ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked above
-		$val = isset( $_POST[ $key ] ) ? call_user_func( $cb, wp_unslash( $_POST[ $key ] ) ) : 0;
-		update_option( $key, $val );
-	}
-
-	// Ad slots — code preserved with ipin_sanitize_ad_code(), plus
-	// global switch and per-slot enabled toggles saved as absint.
-	update_option( 'ipin_manual_ads_enabled', absint( $_POST['ipin_manual_ads_enabled'] ?? 0 ) );
-	foreach ( array_keys( ipin_ad_slots() ) as $slot ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked above
-		$ad_code = isset( $_POST[ $slot ] ) ? ipin_sanitize_ad_code( $_POST[ $slot ] ) : '';
-		update_option( $slot, $ad_code );
-		update_option( $slot . '_enabled', absint( $_POST[ $slot . '_enabled' ] ?? 0 ) );
+	foreach ( array_keys( ipin_settings_schema() ) as $key ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above
+		if ( array_key_exists( $key, $_POST ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- sanitised by the registered callback
+			update_option( $key, wp_unslash( $_POST[ $key ] ) );
+		}
 	}
 
 	wp_send_json_success( [ 'message' => __( 'Settings saved.', 'ipin' ) ] );
@@ -123,16 +142,7 @@ function ipin_render_settings_page(): void {
 		'general'    => [ 'icon' => '&#x2699;&#xfe0f;', 'label' => __( 'General',    'ipin' ) ],
 		'appearance' => [ 'icon' => '&#x1f3a8;',        'label' => __( 'Appearance', 'ipin' ) ],
 		'social'     => [ 'icon' => '&#x1f517;',        'label' => __( 'Social',     'ipin' ) ],
-		'ads'        => [ 'icon' => '&#x1f4b0;',        'label' => __( 'Ads',        'ipin' ) ],
 		'layout'     => [ 'icon' => '&#x1f4d0;',        'label' => __( 'Layout',     'ipin' ) ],
-	];
-
-	$schemes = [
-		'vivid'  => [ 'label' => 'Vivid',  'swatch' => 'swatch-vivid'  ],
-		'ocean'  => [ 'label' => 'Ocean',  'swatch' => 'swatch-ocean'  ],
-		'ember'  => [ 'label' => 'Ember',  'swatch' => 'swatch-ember'  ],
-		'forest' => [ 'label' => 'Forest', 'swatch' => 'swatch-forest' ],
-		'mono'   => [ 'label' => 'Mono',   'swatch' => 'swatch-mono'   ],
 	];
 
 	$scheme  = ipin_get( 'ipin_colour_scheme', 'vivid' );
@@ -170,9 +180,10 @@ function ipin_render_settings_page(): void {
 		<?php endforeach; ?>
 	</ul>
 
-	<form id="ipin-settings-form" method="post" action="">
-		<?php wp_nonce_field( 'ipin_save_options', 'ipin_nonce' ); ?>
-		<input type="hidden" name="action" value="ipin_save_options">
+	<?php settings_errors(); // "Settings saved." after a no-JS options.php save ?>
+
+	<form id="ipin-settings-form" method="post" action="options.php">
+		<?php settings_fields( 'ipin_options_group' ); ?>
 
 		<!-- ====================================================
 		     TAB: GENERAL
@@ -197,7 +208,7 @@ function ipin_render_settings_page(): void {
 					<div>
 						<input type="number" id="ipin_posts_per_page" name="ipin_posts_per_page"
 							value="<?php echo esc_attr( ipin_get( 'ipin_posts_per_page', 12 ) ); ?>" min="1" max="100">
-						<p class="ipin-field-desc"><?php esc_html_e( 'Pins to load before infinite scroll fetches the next batch.', 'ipin' ); ?></p>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Pins per batch on the homepage, archives and search; infinite scroll loads the next batch. Overrides "Blog pages show at most" in Settings > Reading.', 'ipin' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -251,13 +262,14 @@ function ipin_render_settings_page(): void {
 				<p class="ipin-card__desc"><?php esc_html_e( 'Pick a palette. All accents and interactive colours update automatically. Dark mode is available on all schemes.', 'ipin' ); ?></p>
 
 				<div class="ipin-scheme-grid">
-					<?php foreach ( $schemes as $slug => $s ) : ?>
+					<?php foreach ( ipin_colour_schemes() as $slug => $label ) : ?>
 					<label class="ipin-scheme-card">
 						<input type="radio" name="ipin_colour_scheme" value="<?php echo esc_attr( $slug ); ?>"
 							<?php checked( $slug, $scheme ); ?>>
 						<span class="ipin-scheme-card__inner">
-							<span class="ipin-swatch <?php echo esc_attr( $s['swatch'] ); ?>"></span>
-							<?php echo esc_html( $s['label'] ); ?>
+							<?php // data-scheme pulls this scheme's real --grad-brand from tokens.css ?>
+							<span class="ipin-swatch" data-scheme="<?php echo esc_attr( $slug ); ?>"></span>
+							<?php echo esc_html( $label ); ?>
 						</span>
 					</label>
 					<?php endforeach; ?>
@@ -346,6 +358,25 @@ function ipin_render_settings_page(): void {
 						placeholder="<?php echo esc_attr( $ph ); ?>">
 				</div>
 				<?php endforeach; ?>
+
+				<div class="ipin-field">
+					<label for="ipin_fediverse_creator"><?php esc_html_e( 'Mastodon / fediverse handle', 'ipin' ); ?></label>
+					<div>
+						<input type="text" id="ipin_fediverse_creator" name="ipin_fediverse_creator"
+							value="<?php echo esc_attr( ipin_get( 'ipin_fediverse_creator', '' ) ); ?>"
+							placeholder="@you@mastodon.social" autocomplete="off" spellcheck="false">
+						<p class="ipin-field-desc"><?php esc_html_e( 'Credits you on Mastodon link previews (fediverse:creator), adds a rel="me" link so Mastodon can verify this site on your profile, and joins your sameAs links. A profile URL works too.', 'ipin' ); ?></p>
+					</div>
+				</div>
+
+				<div class="ipin-field">
+					<label for="ipin_author_sameas"><?php esc_html_e( 'Also-me profile URLs (schema.org sameAs)', 'ipin' ); ?></label>
+					<div>
+						<textarea id="ipin_author_sameas" name="ipin_author_sameas" rows="4"
+							placeholder="https://menj.bio&#10;https://menj.blog"><?php echo esc_textarea( ipin_get( 'ipin_author_sameas', '' ) ); ?></textarea>
+						<p class="ipin-field-desc"><?php esc_html_e( 'One URL per line. Added to the author Person schema (together with the profiles above) so search engines link this site to your other properties.', 'ipin' ); ?></p>
+					</div>
+				</div>
 			</div>
 
 			<div class="ipin-card">
@@ -373,96 +404,63 @@ function ipin_render_settings_page(): void {
 
 
 		<!-- ====================================================
-		     TAB: ADS
-		     ==================================================== -->
-		<div id="ipin-tab-ads" class="ipin-tab-panel" role="tabpanel" aria-labelledby="ipin-tab-btn-ads">
-
-			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Ad Mode', 'ipin' ); ?></p>
-
-				<div class="ipin-info-box">
-					<strong><?php esc_html_e( 'Auto Ads (Google Site Kit):', 'ipin' ); ?></strong>
-					<?php esc_html_e( 'Disable manual slots and let Site Kit handle all placement. The AdSense script is injected via wp_head automatically.', 'ipin' ); ?>
-					<br><br>
-					<strong><?php esc_html_e( 'Manual units:', 'ipin' ); ?></strong>
-					<?php esc_html_e( 'Enable manual slots, paste your AdSense code into each position, and use the per-slot toggle to activate or pause individually. Code is always preserved when a slot is paused.', 'ipin' ); ?>
-				</div>
-
-				<div class="ipin-toggle-row">
-					<div class="ipin-toggle-cell">
-						<label class="ipin-switch" for="ipin_manual_ads_enabled"
-							aria-label="<?php esc_html_e( 'Enable manual ad slots', 'ipin' ); ?>">
-							<input type="checkbox" id="ipin_manual_ads_enabled" name="ipin_manual_ads_enabled" value="1"
-								<?php checked( 1, (int) get_option( 'ipin_manual_ads_enabled', 1 ) ); ?>>
-							<span class="ipin-switch__track"></span>
-							<span class="ipin-switch__thumb"></span>
-						</label>
-					</div>
-					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Enable manual ad slots', 'ipin' ); ?></span>
-						<p class="ipin-toggle-desc"><?php esc_html_e( 'Turn off to hand all placement to Google Site Kit Auto Ads. Your slot code is kept.', 'ipin' ); ?></p>
-					</div>
-				</div>
-			</div>
-
-			<div id="ipin-ad-slots-wrap">
-				<?php foreach ( ipin_ad_slots() as $slot => $label ) :
-					$on = (bool) get_option( $slot . '_enabled', 1 );
-				?>
-				<div class="ipin-ad-slot-card<?php echo $on ? '' : ' ipin-ad-slot-card--paused'; ?>">
-					<div class="ipin-ad-slot-card__header">
-						<div class="ipin-ad-slot-card__label">
-							<label class="ipin-switch ipin-switch--sm" for="<?php echo esc_attr( $slot ); ?>_enabled"
-								aria-label="<?php echo esc_attr( $label ); ?>">
-								<input type="checkbox" id="<?php echo esc_attr( $slot ); ?>_enabled"
-									name="<?php echo esc_attr( $slot ); ?>_enabled" value="1"
-									<?php checked( 1, $on ); ?>>
-								<span class="ipin-switch__track"></span>
-								<span class="ipin-switch__thumb"></span>
-							</label>
-							<span class="ipin-ad-slot-card__name"><?php echo esc_html( $label ); ?></span>
-						</div>
-						<span class="ipin-badge <?php echo $on ? 'ipin-badge--on' : 'ipin-badge--off'; ?>">
-							<?php echo $on ? esc_html__( 'Active', 'ipin' ) : esc_html__( 'Paused', 'ipin' ); ?>
-						</span>
-					</div>
-					<label for="<?php echo esc_attr( $slot ); ?>" class="screen-reader-text"><?php echo esc_html( $label ); ?></label>
-					<textarea id="<?php echo esc_attr( $slot ); ?>" name="<?php echo esc_attr( $slot ); ?>" rows="4"
-						placeholder="<?php esc_attr_e( 'Paste ad code here...', 'ipin' ); ?>"><?php echo esc_textarea( (string) get_option( $slot, '' ) ); ?></textarea>
-				</div>
-				<?php endforeach; ?>
-			</div><!-- /#ipin-ad-slots-wrap -->
-
-			<?php ipin_render_save_bar(); ?>
-		</div><!-- /#ipin-tab-ads -->
-
-
-		<!-- ====================================================
 		     TAB: LAYOUT
 		     ==================================================== -->
 		<div id="ipin-tab-layout" class="ipin-tab-panel" role="tabpanel" aria-labelledby="ipin-tab-btn-layout">
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Single Post / Page Sidebar', 'ipin' ); ?></p>
-				<p class="ipin-card__desc"><?php esc_html_e( 'Controls sidebar position on single posts and pages. Individual pages can override via page templates.', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Homepage Hero', 'ipin' ); ?></p>
+				<p class="ipin-card__desc"><?php esc_html_e( 'Statement heading and lede paragraph shown above the grid on the first page of the homepage.', 'ipin' ); ?></p>
+
+				<div class="ipin-toggle-row">
+					<div class="ipin-toggle-cell">
+						<label class="ipin-switch" for="ipin_hero_enabled"
+							aria-label="<?php esc_html_e( 'Show homepage hero', 'ipin' ); ?>">
+							<input type="hidden" name="ipin_hero_enabled" value="0">
+							<input type="checkbox" id="ipin_hero_enabled" name="ipin_hero_enabled" value="1"
+								<?php checked( 1, (int) ipin_get( 'ipin_hero_enabled', 1 ) ); ?>>
+							<span class="ipin-switch__track"></span>
+							<span class="ipin-switch__thumb"></span>
+						</label>
+					</div>
+					<div class="ipin-toggle-body">
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show homepage hero', 'ipin' ); ?></span>
+					</div>
+				</div>
+
+				<div class="ipin-toggle-row">
+					<div class="ipin-toggle-cell">
+						<label class="ipin-switch" for="ipin_hero_bento"
+							aria-label="<?php esc_html_e( 'Show featured-pin bento panel', 'ipin' ); ?>">
+							<input type="hidden" name="ipin_hero_bento" value="0">
+							<input type="checkbox" id="ipin_hero_bento" name="ipin_hero_bento" value="1"
+								<?php checked( 1, (int) ipin_get( 'ipin_hero_bento', 1 ) ); ?>>
+							<span class="ipin-switch__track"></span>
+							<span class="ipin-switch__thumb"></span>
+						</label>
+					</div>
+					<div class="ipin-toggle-body">
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show featured-pin bento panel', 'ipin' ); ?></span>
+						<span class="ipin-toggle-desc"><?php esc_html_e( 'Featured pin (first sticky post, or the newest pin) plus board stats beside the hero text.', 'ipin' ); ?></span>
+					</div>
+				</div>
 
 				<div class="ipin-field">
-					<label for="ipin_sidebar_position"><?php esc_html_e( 'Sidebar position', 'ipin' ); ?></label>
+					<label for="ipin_hero_title"><?php esc_html_e( 'Hero heading', 'ipin' ); ?></label>
 					<div>
-						<select id="ipin_sidebar_position" name="ipin_sidebar_position">
-							<?php
-							$positions = [
-								'right' => __( 'Right sidebar',          'ipin' ),
-								'left'  => __( 'Left sidebar',           'ipin' ),
-								'none'  => __( 'No sidebar (full width)', 'ipin' ),
-							];
-							$current = ipin_get( 'ipin_sidebar_position', 'right' );
-							foreach ( $positions as $val => $lbl ) : ?>
-							<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $val, $current ); ?>>
-								<?php echo esc_html( $lbl ); ?>
-							</option>
-							<?php endforeach; ?>
-						</select>
+						<input type="text" id="ipin_hero_title" name="ipin_hero_title"
+							value="<?php echo esc_attr( ipin_get( 'ipin_hero_title', '' ) ); ?>"
+							placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
+						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site title. Wrap one word in *asterisks* to give it the gradient accent.', 'ipin' ); ?></p>
+					</div>
+				</div>
+
+				<div class="ipin-field">
+					<label for="ipin_hero_lede"><?php esc_html_e( 'Lede paragraph', 'ipin' ); ?></label>
+					<div>
+						<textarea id="ipin_hero_lede" name="ipin_hero_lede" rows="3"
+							placeholder="<?php echo esc_attr( get_bloginfo( 'description' ) ); ?>"><?php echo esc_textarea( ipin_get( 'ipin_hero_lede', '' ) ); ?></textarea>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site tagline. Basic HTML (links, emphasis) is allowed.', 'ipin' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -491,6 +489,7 @@ function ipin_render_save_bar(): void {
 	<div class="ipin-save-bar">
 		<button type="submit" class="ipin-btn-primary"><?php esc_html_e( 'Save Settings', 'ipin' ); ?></button>
 		<span class="ipin-saved-notice" aria-live="polite">&#x2713; <?php esc_html_e( 'Settings saved!', 'ipin' ); ?></span>
+		<span class="ipin-error-notice" role="alert" hidden></span>
 	</div>
 	<?php
 }

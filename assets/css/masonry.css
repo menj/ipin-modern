@@ -17,8 +17,43 @@
   position: relative;
 }
 
-/* ── Masonry container ── */
-#masonry { margin: 0 auto; visibility: hidden; }
+/* ── Masonry container ──
+   Before ipin.grid.js runs (and without JS at all) the grid renders
+   as CSS multi-columns; the engine then switches it to absolutely
+   positioned masonry by adding .masonry-js. Never hidden. */
+#masonry { margin: 0 auto; }
+#masonry:not(.masonry-js) {
+  columns: var(--card-width);
+  column-gap: var(--card-gap);
+}
+#masonry:not(.masonry-js) .thumb {
+  float: none;
+  width: 100%;
+  break-inside: avoid;
+  margin: 0 0 var(--card-gap);
+}
+#masonry.masonry-js {
+  position: relative;
+}
+#masonry.masonry-js .thumb {
+  position: absolute;
+  float: none;
+  margin: 0;
+}
+
+/* ── Infinite-scroll status + sentinel ── */
+.grid-status {
+  width: fit-content;
+  margin: 18px auto 0;
+  padding: 7px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--bg-card);
+  color: var(--txt-secondary);
+  font-family: var(--font-accent);
+  font-size: .74rem;
+}
+.grid-sentinel { height: 1px; }
 
 /* ── Individual card ── */
 #masonry .thumb {
@@ -104,8 +139,8 @@
   border: none;
   pointer-events: none; /* visual only */
 }
-.btn-comment { background: var(--clr-accent-1); color: #fff; }
-.btn-view    { background: var(--clr-accent-3); color: #fff; }
+.btn-comment { background: var(--clr-fill-1); color: var(--clr-on-fill); }
+.btn-view    { background: var(--clr-fill-3); color: var(--clr-on-fill); }
 
 /* ── Card body ── */
 .thumb-body { padding: 12px 13px 9px; }
@@ -202,7 +237,7 @@
 .empty-state .empty-icon { font-size: 4rem; margin-bottom: 18px; display: block; line-height: 1; }
 .empty-state h1 {
   font-size: 1.6rem;
-  background: var(--grad-brand);
+  background: var(--grad-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -281,7 +316,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 14px var(--grid-gap, 12px) 10px;
+  padding: 14px var(--card-gap) 10px;
   position: sticky;
   top: var(--nav-height, 60px);
   z-index: 10;
@@ -297,8 +332,9 @@
   height: 32px;
   padding: 0 14px;
   border-radius: var(--radius-pill);
+  font-family: var(--font-accent);
   font-size: .78rem;
-  font-weight: 600;
+  font-weight: 400;
   color: var(--txt-secondary);
   text-decoration: none;
   background: var(--bg-card);
@@ -313,12 +349,228 @@
 
 .sort-bar__btn.active,
 .sort-bar__btn[aria-current="page"] {
-  background: var(--clr-accent-1);
-  color: #fff;
+  background: var(--clr-fill-1);
+  color: var(--clr-on-fill);
   border-color: transparent;
 }
 
 .sort-bar__btn:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
+}
+
+/* =========================================================
+   HOMEPAGE HERO
+   Statement heading + lede above the grid; content set in
+   Theme Options → Layout, falling back to site title/tagline.
+   ========================================================= */
+.home-hero {
+  padding: clamp(30px, 5.5vw, 64px) 0 6px;
+}
+.home-hero__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6.2vw, 4.75rem);
+  line-height: 1.04;
+  letter-spacing: -.015em;
+  color: var(--txt-primary);
+  margin: 0;
+  text-wrap: balance;
+  max-width: 20ch;
+}
+.home-hero__accent {
+  background: var(--grad-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--clr-accent-1); /* fallback when clip-text unsupported */
+}
+.home-hero__lede {
+  font-size: clamp(1.02rem, 1.5vw, 1.28rem);
+  line-height: 1.62;
+  color: var(--txt-secondary);
+  max-width: 54ch;
+  margin: 16px 0 0;
+}
+.home-hero__lede a { color: var(--clr-accent-1); }
+
+/* ── Bento panel: featured pin + board tiles ── */
+.home-hero--bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+}
+.home-hero__bento {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--card-gap);
+}
+.bento-feature {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 4.4;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+.bento-feature__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur) var(--ease);
+}
+.bento-feature:hover .bento-feature__img,
+.bento-feature:focus-visible .bento-feature__img { transform: scale(1.04); }
+.bento-feature:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+.bento-feature__meta {
+  position: absolute;
+  inset: auto 10px 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md, 12px);
+  background: rgba(16, 12, 28, .55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #fff;
+}
+.bento-feature__meta strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+.bento-feature__meta span { font-size: .76rem; opacity: .88; }
+.bento-side {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: var(--card-gap);
+}
+.bento-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.bento-tile__label {
+  font-family: var(--font-accent);
+  font-size: .66rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--txt-muted);
+}
+.bento-tile__stat {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 2.2vw, 2.1rem);
+  line-height: 1;
+  color: var(--txt-primary);
+  font-variant-numeric: tabular-nums;
+}
+.bento-tile__stat small {
+  font-family: var(--font-body);
+  font-size: .78rem;
+  font-weight: 400;
+  color: var(--txt-muted);
+}
+.bento-tile__note { margin: 0; font-size: .8rem; color: var(--txt-secondary); }
+.bento-tile__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.bento-chip {
+  padding: 4px 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill, 999px);
+  font-size: .76rem;
+  color: var(--txt-secondary);
+  text-decoration: none;
+}
+.bento-chip:hover {
+  border-color: var(--clr-accent-1);
+  color: var(--clr-accent-1);
+}
+@media (max-width: 980px) {
+  .home-hero--bento { grid-template-columns: 1fr; align-items: start; }
+}
+@media (max-width: 560px) {
+  .home-hero__bento { grid-template-columns: 1fr; }
+  .bento-feature { aspect-ratio: 4 / 3; }
+  .bento-side { grid-template-rows: none; grid-template-columns: 1fr; }
+}
+
+/* ── Video pin badge ── */
+.thumb-play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 52px;
+  height: 52px;
+  margin: -26px 0 0 -26px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(16, 12, 28, .55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  pointer-events: none;
+  z-index: 1;
+  transition: transform var(--dur) var(--ease), background var(--dur);
+}
+.thumb-play svg { width: 20px; height: 20px; fill: currentColor; margin-left: 3px; }
+#masonry .thumb:hover .thumb-play,
+#masonry .thumb:focus-within .thumb-play {
+  transform: scale(1.08);
+  background: var(--clr-fill-1);
+}
+/* On video pins the play badge is the affordance: drop the hover chips
+   so they never sit underneath it; the tinted overlay stays. */
+#masonry .thumb--video .masonry-actionbar .btn { display: none; }
+
+/* =========================================================
+   CARD CONTAINER QUERIES
+   Cards size to Theme Options → Card width (140–400px), so their
+   type responds to the card itself, not the viewport.
+   ========================================================= */
+#masonry .thumb {
+  container: pin / inline-size;
+}
+@container pin (max-width: 180px) {
+  .thumb-body     { padding: 10px 10px 8px; }
+  .thumbtitle     { font-size: .82rem; margin-bottom: 6px; }
+  .masonry-meta   { font-size: .72rem; }
+  .masonry-actionbar .btn { padding: 6px 10px; font-size: .72rem; }
+}
+@container pin (min-width: 300px) {
+  .thumb-body     { padding: 14px 16px 12px; }
+  .thumbtitle     { font-size: 1.02rem; }
+  .masonry-meta   { font-size: .82rem; }
+}
+
+/* =========================================================
+   SCROLL-DRIVEN CARD ENTRANCE
+   Pure CSS on the view() timeline: each card eases up as it
+   enters the viewport. Animates translate/opacity, not transform,
+   so the hover lift (transform) is never overridden. Cards already
+   in view at load are past the range and render at rest; browsers
+   without scroll timelines and reduced-motion visitors get none.
+   ========================================================= */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    #masonry .thumb {
+      animation: ipin-pin-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    @keyframes ipin-pin-in {
+      from { opacity: .4; translate: 0 22px; }
+      to   { opacity: 1;  translate: 0 0; }
+    }
+  }
 }

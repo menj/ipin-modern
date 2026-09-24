@@ -32,11 +32,12 @@ require_once $ipin_inc . 'nav-walker.php';       // Ipin_Nav_Walker + accessible
 
 // ── Design features ───────────────────────────────────
 require_once $ipin_inc . 'post-types.php';       // ipin_article CPT (sideblog)
-require_once $ipin_inc . 'popular-posts.php';    // popular posts by comment count + widget
-require_once $ipin_inc . 'ads.php';              // ad slot definitions & render helpers
+require_once $ipin_inc . 'popular-posts.php';    // sort bar: popular-by-comments ordering
 
 // ── Assets & UI ───────────────────────────────────────
 require_once $ipin_inc . 'enqueue.php';          // all wp_enqueue_* calls
+require_once $ipin_inc . 'video.php';            // video pins: source parser, player, editor box
+require_once $ipin_inc . 'seo.php';              // meta description + JSON-LD structured data
 require_once $ipin_inc . 'admin-options.php';    // tabbed admin settings page
 require_once $ipin_inc . 'customizer.php';       // WP Customizer integration
 
@@ -52,6 +53,8 @@ function ipin_setup(): void {
 	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
+	// Grid card rendition: 2x the widest card setting (400px), any height.
+	add_image_size( 'ipin-card', 800, 0, false );
 	add_theme_support( 'html5', [
 		'comment-list',
 		'comment-form',
@@ -76,10 +79,11 @@ function ipin_setup(): void {
 		'top_nav' => __( 'Top Navigation', 'ipin' ),
 	] );
 
-	// Block editor styles — registered here (after_setup_theme) so the block
-	// editor picks them up. Calling add_editor_style() in wp_enqueue_scripts
-	// only affects the frontend and has no effect in the editor.
-	add_editor_style( 'assets/css/editor-style.css' );
+	// Block editor styles. 'editor-styles' support is what makes the block
+	// editor load add_editor_style() files at all; tokens.css comes first so
+	// editor-style.css can use the same colour variables as the front end.
+	add_theme_support( 'editor-styles' );
+	add_editor_style( [ 'assets/css/fonts.css', 'assets/css/tokens.css', 'assets/css/editor-style.css' ] );
 
 	// Global content width (used by WP for oEmbed sizing etc.)
 	$GLOBALS['content_width'] ??= 860;
@@ -88,26 +92,20 @@ add_action( 'after_setup_theme', 'ipin_setup' );
 
 
 /* -------------------------------------------------------
-   WIDGET AREAS
+   GRID PAGE SIZE
+   Theme Options → General → "Posts per page" sets the batch
+   size for every grid view (home, archives, search) so each
+   infinite-scroll page is the same length.
    ------------------------------------------------------- */
-function ipin_widgets_init(): void {
-	$shared = [
-		'before_widget' => '<div class="widget %2$s">',
-		'after_widget'  => '</div>',
-		'before_title'  => '<h4>',
-		'after_title'   => '</h4>',
-	];
-
-	register_sidebar( array_merge( $shared, [
-		'name'        => __( 'Right Sidebar', 'ipin' ),
-		'id'          => 'sidebar-right',
-		'description' => __( 'Widgets in the right column of single posts and pages.', 'ipin' ),
-	] ) );
-
-	register_sidebar( array_merge( $shared, [
-		'name'        => __( 'Left Sidebar', 'ipin' ),
-		'id'          => 'sidebar-left',
-		'description' => __( 'Widgets in the left column (left-sidebar page template).', 'ipin' ),
-	] ) );
+function ipin_grid_page_size( \WP_Query $q ): void {
+	if ( is_admin() || ! $q->is_main_query() ) {
+		return;
+	}
+	if ( $q->is_home() || $q->is_archive() || $q->is_search() ) {
+		$q->set( 'posts_per_page', ipin_sanitize_per_page( get_option( 'ipin_posts_per_page', 12 ) ) );
+	}
 }
-add_action( 'widgets_init', 'ipin_widgets_init' );
+add_action( 'pre_get_posts', 'ipin_grid_page_size' );
+
+
+/* Sidebars removed by design — single posts and pages render full width. */

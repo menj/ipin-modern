@@ -79,18 +79,29 @@ body {
   box-shadow: none;
 }
 
-/* ── Minimum touch/click target size (WCAG 2.5.8) ──
-   24×24 px minimum. Nav items, buttons, links in nav
-   already meet this via padding; enforce globally here. */
-a, button, [role="button"], input, select, textarea, label[for] {
+/* ── Minimum target size (WCAG 2.5.8) ──
+   24×24 px. min-height works on block/inline-block controls only;
+   it does nothing for plain inline <a>. Links inside running text
+   are covered by 2.5.8's "inline" exception; the small standalone
+   links (card meta, comment permalink/edit, footer) get an explicit
+   inline-block target below. */
+button, [role="button"], input, select, textarea, label[for] {
   min-height: 24px;
+}
+.masonry-meta a,
+.comment-content > a,
+.comment-edit-link,
+#footer a {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
 }
 
 /* ── Links ── */
 a {
   color: var(--clr-accent-2);
   text-decoration: underline;
-  text-decoration-color: rgba(120,75,160,.35);
+  text-decoration-color: color-mix(in oklch, var(--clr-accent-2) 35%, transparent);
   text-underline-offset: 3px;
   transition: color var(--dur), text-decoration-color var(--dur);
 }
@@ -196,4 +207,187 @@ img.alignleft  { float: left;  margin: 0.25rem 1.5rem 1rem 0; border-radius: var
     --txt-muted:     #C8C3D8;
     --border:        rgba(255,255,255,.45);
   }
+}
+
+/* ── Inline UI icons (ipin_icon()) — sized like the text around them ── */
+.ipin-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  vertical-align: -0.125em;
+}
+
+/* ── Bundled social platform glyphs (assets/img/social) ──
+   Inlined SVGs sized like the icon-font glyphs they replace;
+   fill="currentColor" follows the scheme tokens and dark mode. */
+.ipin-social-svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+}
+
+/* ── Cross-document View Transitions ──
+   Same-origin navigations morph in supporting browsers: the grid
+   card image and the single post's featured image share a
+   per-post view-transition-name, so the clicked pin's image
+   travels to its place on the post page. Everything else
+   crossfades. No-ops entirely in browsers without support. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .22s;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+/* ── Screen-reader-only text (WordPress core convention) ── */
+.screen-reader-text {
+  border: 0;
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  width: 1px;
+  word-wrap: normal !important;
+}
+.screen-reader-text:focus {
+  clip-path: none;
+  height: auto;
+  width: auto;
+  margin: 0;
+  padding: 14px 22px;
+  z-index: 100000;
+  background: var(--bg-card);
+  color: var(--txt-primary);
+}
+
+
+/* Site-wide chrome (every view, including 404 and empty search):
+   standalone search form, footer, scroll-to-top. */
+/* =========================================================
+   STANDALONE SEARCH FORM
+   ========================================================= */
+.search-form-wrap {
+  display: flex;
+  gap: 8px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.search-form-wrap input[type="search"] {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 10px 18px;
+  font-family: var(--font-body);
+  font-size: .9rem;
+  color: var(--txt-primary);
+  transition: border-color var(--dur), box-shadow var(--dur);
+}
+
+/* :focus-visible gives both the outline and border highlight */
+.search-form-wrap input[type="search"]:focus-visible {
+  outline: none;
+  border-color: var(--clr-accent-1);
+  box-shadow: var(--focus-ring);
+}
+
+.search-form-wrap button {
+  background: var(--grad-brand-btn);
+  color: var(--clr-on-fill);
+  border: none;
+  border-radius: var(--radius-pill);
+  padding: 10px 22px;
+  font-family: var(--font-body);
+  font-size: .88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity var(--dur), transform var(--dur) var(--ease);
+}
+
+.search-form-wrap button:hover {
+  opacity: .86;
+  transform: scale(1.03);
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+#footer {
+  background: var(--bg-footer);
+  color: var(--txt-footer);
+  text-align: center;
+  padding: 30px 24px;
+  margin-top: 52px;
+  font-size: .85rem;
+}
+
+#footer a {
+  color: var(--txt-footer-link);
+  transition: color var(--dur);
+}
+
+#footer a:hover { color: var(--clr-footer-link-hover); }
+
+/* =========================================================
+   SCROLL TO TOP  (<button> — WCAG 2.1.1 / 2.5.8)
+   ========================================================= */
+#scrolltotop {
+  position: fixed;
+  bottom: 26px;
+  right: 22px;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  /* 44×44 px minimum tap target — WCAG 2.5.8 */
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--grad-brand-btn);
+  color: var(--clr-on-fill);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  box-shadow: var(--shadow-md);
+  font-size: 1rem;
+  font-family: var(--font-body);
+}
+
+#scrolltotop:hover {
+  transform: translateY(-4px) scale(1.1);
+  box-shadow: var(--shadow-lg);
+}
+
+#scrolltotop:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+#scrolltotop .sr-only {
+  /* Visually hidden label for screen readers */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  clip: rect(0,0,0,0);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+  #scrolltotop { right: 12px; bottom: 14px; }
 }

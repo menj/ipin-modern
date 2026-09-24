@@ -1,17 +1,7 @@
 <?php get_header(); ?>
 
 <main id="main-content" tabindex="-1">
-<div class="content-area<?php
-	$pos = ipin_option( 'ipin_sidebar_position', 'right' );
-	if ( $pos === 'none' )  echo ' full-width';
-	if ( $pos === 'left' )  echo ' left-sidebar';
-?>">
-
-	<?php if ( $pos === 'left' ) : ?>
-	<aside class="sidebar" aria-label="<?php esc_attr_e( 'Sidebar', 'ipin' ); ?>">
-		<?php get_sidebar( 'left' ); ?>
-	</aside>
-	<?php endif; ?>
+<div class="content-area">
 
 	<?php while ( have_posts() ) : the_post(); ?>
 
@@ -44,10 +34,18 @@
 
 		<div class="post-content">
 			<?php
-			if ( has_post_thumbnail() ) {
+			$video = ipin_post_video( get_the_ID() );
+			if ( $video ) {
+				// Video pin: the player replaces the featured image, which
+				// becomes the poster for direct files.
+				echo ipin_video_player( get_the_ID(), $video ); // phpcs:ignore WordPress.Security.EscapeOutput -- escaped inside
+			} elseif ( has_post_thumbnail() ) {
 				the_post_thumbnail( 'large', [
 					'class' => 'aligncenter',
 					'alt'   => get_the_title(),
+					// Pairs with the same name on this post's grid card, so
+					// supporting browsers morph the image across navigation.
+					'style' => 'view-transition-name: ipin-media-' . get_the_ID(),
 				] );
 			}
 			the_content();
@@ -82,7 +80,7 @@
 			   href="https://pinterest.com/pin/create/button/?url=<?php echo $share_url; ?>&media=<?php echo $share_img; ?>&description=<?php echo $share_title; ?>"
 			   target="_blank" rel="noopener noreferrer"
 			   aria-label="<?php esc_attr_e( 'Save to Pinterest (opens in new tab)', 'ipin' ); ?>">
-				<i class="fa-brands fa-pinterest" aria-hidden="true"></i>
+				<?php echo ipin_social_icon( 'pinterest' ); ?>
 				<span class="btn-share__label">Pinterest</span>
 			</a>
 
@@ -90,7 +88,7 @@
 			   href="https://twitter.com/intent/tweet?url=<?php echo $share_url; ?>&text=<?php echo $share_title; ?>"
 			   target="_blank" rel="noopener noreferrer"
 			   aria-label="<?php esc_attr_e( 'Share on X / Twitter (opens in new tab)', 'ipin' ); ?>">
-				<i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+				<?php echo ipin_social_icon( 'x' ); ?>
 				<span class="btn-share__label">X</span>
 			</a>
 
@@ -98,14 +96,14 @@
 			   href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>"
 			   target="_blank" rel="noopener noreferrer"
 			   aria-label="<?php esc_attr_e( 'Share on Facebook (opens in new tab)', 'ipin' ); ?>">
-				<i class="fa-brands fa-facebook" aria-hidden="true"></i>
+				<?php echo ipin_social_icon( 'facebook' ); ?>
 				<span class="btn-share__label">Facebook</span>
 			</a>
 
 			<button class="btn-share btn-share--copy"
 			        data-copy-url="<?php echo esc_attr( get_permalink() ); ?>"
 			        aria-label="<?php esc_attr_e( 'Copy link to clipboard', 'ipin' ); ?>">
-				<i class="fa fa-link" aria-hidden="true"></i>
+				<?php echo ipin_icon( 'link' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<span class="btn-share__label"><?php esc_html_e( 'Copy link', 'ipin' ); ?></span>
 			</button>
 		</div><!-- /.post-share -->
@@ -117,19 +115,13 @@
 			</ul>
 		</nav>
 
-		<div id="comments" class="post-comments">
+		<div class="post-comments">
 			<?php comments_template(); ?>
 		</div>
 
 	</article>
 
 	<?php endwhile; ?>
-
-	<?php if ( $pos === 'right' || $pos === '' ) : ?>
-	<aside class="sidebar" aria-label="<?php esc_attr_e( 'Sidebar', 'ipin' ); ?>">
-		<?php get_sidebar( 'right' ); ?>
-	</aside>
-	<?php endif; ?>
 
 </div>
 </main>

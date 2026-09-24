@@ -3,10 +3,11 @@
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="theme-color" content="#FF3CAC">
+	<?php $ipin_tc = ipin_theme_colors(); ?>
+	<meta name="theme-color" content="<?php echo esc_attr( $ipin_tc['light'] ); ?>"
+	      data-light="<?php echo esc_attr( $ipin_tc['light'] ); ?>"
+	      data-dark="<?php echo esc_attr( $ipin_tc['dark'] ); ?>">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<?php wp_head(); ?>
 </head>
 
@@ -15,10 +16,6 @@
 
 <!-- Skip to main content (WCAG 2.4.1) -->
 <a class="skip-link" href="#main-content"><?php esc_html_e( 'Skip to main content', 'ipin' ); ?></a>
-
-<noscript>
-	<style>#masonry { visibility: visible !important; }</style>
-</noscript>
 
 <!-- =======================================================
      TOP NAVIGATION  (landmark: <nav>, WCAG 1.3.6 / 4.1.2)
@@ -43,6 +40,10 @@
 		   		__( '%s — go to homepage', 'ipin' ),
 		   		get_bloginfo( 'name' )
 		   ) ); ?>">
+			<span class="navbar-brand__icon" aria-hidden="true"><?php
+				// Same pin mark as favicon.svg — one source of truth for the brand glyph.
+				echo file_get_contents( get_template_directory() . '/favicon.svg' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+			?></span>
 			<span aria-hidden="true"><?php bloginfo( 'name' ); ?></span>
 		</a>
 		<?php endif; ?>
@@ -51,7 +52,9 @@
 		<button class="navbar-toggle"
 		        aria-label="<?php esc_attr_e( 'Open navigation menu', 'ipin' ); ?>"
 		        aria-expanded="false"
-		        aria-controls="nav-main">
+		        aria-controls="nav-main"
+		        data-label-open="<?php esc_attr_e( 'Open navigation menu', 'ipin' ); ?>"
+		        data-label-close="<?php esc_attr_e( 'Close navigation menu', 'ipin' ); ?>">
 			<span class="icon-bar" aria-hidden="true"></span>
 			<span class="icon-bar" aria-hidden="true"></span>
 			<span class="icon-bar" aria-hidden="true"></span>
@@ -66,6 +69,7 @@
 					'menu_class'     => 'nav-list',
 					'depth'          => 3,
 					'container'      => false,
+					'walker'         => new Ipin_Nav_Walker(),
 					'items_wrap'     => '<ul id="%1$s" class="%2$s" role="list">%3$s</ul>',
 				] ); ?>
 			<?php else : ?>
@@ -92,7 +96,7 @@
 					autocomplete="off"
 				>
 				<button type="submit">
-					<i class="fa fa-search" aria-hidden="true"></i>
+					<?php echo ipin_icon( 'search' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<span class="sr-only"><?php esc_html_e( 'Search', 'ipin' ); ?></span>
 				</button>
 			</form>
@@ -109,7 +113,7 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener">
-					<i class="fa fa-rss" aria-hidden="true"></i>
+					<?php echo ipin_icon( 'rss' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</a>
 				<?php endif; ?>
 
@@ -120,7 +124,7 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener noreferrer">
-					<i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+					<?php echo ipin_social_icon( 'x' ); ?>
 				</a>
 				<?php endif; ?>
 
@@ -131,7 +135,7 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener noreferrer">
-					<i class="fa-brands fa-facebook" aria-hidden="true"></i>
+					<?php echo ipin_social_icon( 'facebook' ); ?>
 				</a>
 				<?php endif; ?>
 
@@ -142,15 +146,26 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener noreferrer">
-					<i class="fa-brands fa-instagram" aria-hidden="true"></i>
+					<?php echo ipin_social_icon( 'instagram' ); ?>
 				</a>
 				<?php endif; ?>
 
-				<!-- Dark-mode toggle (WCAG 4.1.2: aria-pressed updated by JS) -->
+				<!-- Dark-mode toggle: sun/moon pill switch with sliding
+				     gradient thumb (WCAG 4.1.2: aria-pressed + aria-label
+				     updated by JS via the data-label-* attributes) -->
 				<button id="dark-mode-toggle"
+				        class="mode-switch"
 				        aria-label="<?php esc_attr_e( 'Switch to dark mode', 'ipin' ); ?>"
-				        aria-pressed="false">
-					<i class="fa fa-moon" aria-hidden="true"></i>
+				        aria-pressed="false"
+				        data-label-dark="<?php esc_attr_e( 'Switch to dark mode', 'ipin' ); ?>"
+				        data-label-light="<?php esc_attr_e( 'Switch to light mode', 'ipin' ); ?>">
+					<span class="mode-switch__thumb" aria-hidden="true"></span>
+					<span class="mode-switch__icon mode-switch__icon--sun" aria-hidden="true">
+						<svg viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-15a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 17a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1ZM2 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1Zm17-1a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2h-2ZM4.9 4.9a1 1 0 0 1 1.4 0l1.5 1.5a1 1 0 0 1-1.5 1.4L4.9 6.3a1 1 0 0 1 0-1.4Zm12.3 12.3a1 1 0 0 1 1.4 0l1.5 1.5a1 1 0 0 1-1.4 1.4l-1.5-1.5a1 1 0 0 1 0-1.4Zm1.5-12.3a1 1 0 0 1 0 1.4l-1.5 1.5a1 1 0 1 1-1.4-1.5l1.5-1.4a1 1 0 0 1 1.4 0ZM6.3 17.2a1 1 0 0 1 0 1.4l-1.4 1.5a1 1 0 0 1-1.5-1.4l1.5-1.5a1 1 0 0 1 1.4 0Z"/></svg>
+					</span>
+					<span class="mode-switch__icon mode-switch__icon--moon" aria-hidden="true">
+						<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"/></svg>
+					</span>
 				</button>
 
 			</div><!-- /.topmenu-social-wrap -->
@@ -168,15 +183,14 @@ if ( is_search() || is_category() || is_tag() || is_archive() ) : ?>
 			esc_html__( 'Search results for "%s"', 'ipin' ),
 			'<em>' . esc_html( get_search_query() ) . '</em>'
 		); ?></h1>
-		<?php if ( category_description() ) echo '<p>' . wp_kses_post( category_description() ) . '</p>'; ?>
 	<?php elseif ( is_category() ) : ?>
 		<h1><?php single_cat_title(); ?></h1>
-		<?php if ( category_description() ) echo '<p>' . wp_kses_post( category_description() ) . '</p>'; ?>
+		<?php $ipin_desc = category_description(); if ( $ipin_desc && ! is_wp_error( $ipin_desc ) ) echo '<p>' . wp_kses_post( $ipin_desc ) . '</p>'; ?>
 	<?php elseif ( is_tag() ) : ?>
 		<h1><?php printf(
 			/* translators: %s = tag name */
 			esc_html__( 'Tag: %s', 'ipin' ),
-			'<em>' . single_tag_title( '', false ) . '</em>'
+			'<em>' . esc_html( single_tag_title( '', false ) ) . '</em>'
 		); ?></h1>
 		<?php if ( tag_description() ) echo '<p>' . wp_kses_post( tag_description() ) . '</p>'; ?>
 	<?php elseif ( is_author() ) : ?>

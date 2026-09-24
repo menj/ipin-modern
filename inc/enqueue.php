@@ -23,32 +23,26 @@ function ipin_enqueue_assets(): void {
 	$uri = get_template_directory_uri();
 	$v   = wp_get_theme()->get( 'Version' );
 
-	// ── External: Google Fonts ──────────────────────────
-	wp_enqueue_style(
-		'ipin-google-fonts',
-		'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@600;700;800&display=swap',
-		[],
-		null   // external — no version hash
-	);
-
-	// ── External: Font Awesome 6 ────────────────────────
-	wp_enqueue_style(
-		'ipin-font-awesome',
-		'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
-		[],
-		'6.5.0'
-	);
+	// ── Self-hosted webfonts — /assets/fonts/ ───────────
+	// EB Garamond + Sabon Next LT + Special Elite, WOFF2.
+	wp_enqueue_style( 'ipin-fonts', "$uri/assets/css/fonts.css", [], $v );
 
 	// ── CSS modules — /assets/css/ ──────────────────────
-	wp_enqueue_style( 'ipin-tokens',  "$uri/assets/css/tokens.css",  [ 'ipin-google-fonts' ], $v );
+	wp_enqueue_style( 'ipin-tokens',  "$uri/assets/css/tokens.css",  [ 'ipin-fonts' ], $v );
+	$card_width = ipin_sanitize_card_width( get_option( 'ipin_card_width', 220 ) );
+	$radius_lg  = (int) get_option( 'ipin_rounded_cards', 1 ) ? '20px' : '6px';
+	wp_add_inline_style( 'ipin-tokens', ":root{--card-width:{$card_width}px;--radius-lg:{$radius_lg};}" );
 	wp_enqueue_style( 'ipin-base',    "$uri/assets/css/base.css",    [ 'ipin-tokens' ],       $v );
 	wp_enqueue_style( 'ipin-nav',     "$uri/assets/css/nav.css",     [ 'ipin-base' ],         $v );
-	wp_enqueue_style( 'ipin-single',  "$uri/assets/css/single.css",  [ 'ipin-base' ],         $v );
-	wp_enqueue_style( 'ipin-lightbox',"$uri/assets/css/lightbox.css",[ 'ipin-base' ],         $v );
 
-	// Masonry grid CSS — archive / search / front-page only
-	if ( ! is_singular() ) {
+	// Each view loads only the stylesheet it renders: posts/pages get
+	// single.css; the grid (home, archives, search, 404) gets masonry +
+	// lightbox. Footer, search form and scroll-to-top live in base.css.
+	if ( is_singular() ) {
+		wp_enqueue_style( 'ipin-single', "$uri/assets/css/single.css", [ 'ipin-base' ], $v );
+	} else {
 		wp_enqueue_style( 'ipin-masonry-css', "$uri/assets/css/masonry.css", [ 'ipin-base' ], $v );
+		wp_enqueue_style( 'ipin-lightbox',    "$uri/assets/css/lightbox.css", [ 'ipin-base' ], $v );
 	}
 
 	// Required WP theme stylesheet (header comment only — no actual rules)
@@ -59,54 +53,57 @@ function ipin_enqueue_assets(): void {
 		wp_enqueue_script( 'comment-reply' );
 	}
 
-	// ── JS: masonry libraries — /assets/js/ ─────────────
-	// Loaded in <head> (in_footer = false) so masonry can
-	// initialise as soon as jQuery and images are ready.
-	if ( ! is_singular() ) {
-		wp_enqueue_script(
-			'ipin-masonry',
-			"$uri/assets/js/jquery.masonry.min.js",
-			[ 'jquery' ], '3.3.2', false
-		);
-		wp_enqueue_script(
-			'ipin-imagesloaded',
-			"$uri/assets/js/jquery.imagesloaded.min.js",
-			[ 'jquery' ], '4.1.4', false
-		);
-		wp_enqueue_script(
-			'ipin-infinitescroll',
-			"$uri/assets/js/jquery.infinitescroll.min.js",
-			[ 'jquery' ], '2.1.0', false
-		);
-	}
-
-	// ── JS: custom theme script — footer ────────────────
+	// ── JS: custom theme script — footer, no jQuery ─────
 	wp_enqueue_script(
 		'ipin-custom',
 		"$uri/assets/js/ipin.custom.js",
-		[ 'jquery' ], $v,
+		[], $v,
 		true  // in footer
 	);
 
-	// ── JS: lightbox — archive pages only ───────────────
+	// ── JS: grid engine + lightbox — archive pages only ─
+	// Vanilla masonry, infinite scroll, and lightbox; the
+	// bundled jQuery plugin stack is gone.
 	if ( ! is_singular() ) {
+		wp_enqueue_script(
+			'ipin-grid',
+			"$uri/assets/js/ipin.grid.js",
+			[ 'ipin-custom' ], $v,   // after ipin-custom so ipinData is localized first
+			true
+		);
 		wp_enqueue_script(
 			'ipin-lightbox',
 			"$uri/assets/js/lightbox.js",
-			[ 'jquery', 'ipin-custom' ], $v,
+			[ 'ipin-custom' ], $v,
 			true
 		);
 	}
 
 	// PHP → JS data bridge
 	wp_localize_script( 'ipin-custom', 'ipinData', [
-		'allLoaded'       => __( 'All items loaded', 'ipin' ),
-		'themeUrl'        => $uri,
-		'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
-		'darkModeDefault' => (int) get_option( 'ipin_dark_mode_default', 0 ),
-		'colourScheme'    => sanitize_key( get_option( 'ipin_colour_scheme', 'vivid' ) ),
-		'cardWidth'       => (int) get_option( 'ipin_card_width', 220 ),
-		'roundedCards'    => (int) get_option( 'ipin_rounded_cards', 1 ),
+		'allLoaded'   => __( 'All items loaded', 'ipin' ),
+		'loadingText' => __( 'Loading more pins…', 'ipin' ),
+		'i18n'        => [
+			'comments'      => __( 'Comments', 'ipin' ),
+			'viewAll'       => __( 'View all', 'ipin' ),
+			'view'          => __( 'View', 'ipin' ),
+			'close'         => __( 'Close lightbox', 'ipin' ),
+			'prev'          => __( 'Previous pin', 'ipin' ),
+			'next'          => __( 'Next pin', 'ipin' ),
+			'pinError'      => __( 'This pin could not be loaded.', 'ipin' ),
+			'pinErrorHint'  => __( 'Please try again, or open the post directly.', 'ipin' ),
+			'sharePinterest'=> __( 'Save to Pinterest (opens in new tab)', 'ipin' ),
+			'shareX'        => __( 'Share on X (opens in new tab)', 'ipin' ),
+			'shareFacebook' => __( 'Share on Facebook (opens in new tab)', 'ipin' ),
+			'copied'        => __( 'Copied!', 'ipin' ),
+			'linkCopied'    => __( 'Link copied to clipboard.', 'ipin' ),
+		],
+		'pinUrl'      => esc_url_raw( rest_url( 'ipin/v1/pin/' ) ),
+		'icons'       => [
+			'pinterest' => ipin_social_icon( 'pinterest' ),
+			'x'         => ipin_social_icon( 'x' ),
+			'facebook'  => ipin_social_icon( 'facebook' ),
+		],
 	] );
 }
 add_action( 'wp_enqueue_scripts', 'ipin_enqueue_assets' );
@@ -123,10 +120,13 @@ function ipin_enqueue_admin_assets( string $hook ): void {
 	$uri = get_template_directory_uri();
 	$v   = wp_get_theme()->get( 'Version' );
 
+	// tokens.css holds only custom properties; the scheme swatches read
+	// their gradients from it so the picker always matches the site.
+	wp_enqueue_style( 'ipin-tokens', "$uri/assets/css/tokens.css", [], $v );
 	wp_enqueue_style(
 		'ipin-admin-css',
 		"$uri/assets/css/admin.css",
-		[],
+		[ 'ipin-tokens' ],
 		$v
 	);
 
@@ -142,51 +142,71 @@ function ipin_enqueue_admin_assets( string $hook ): void {
 		'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		'nonce'   => wp_create_nonce( 'ipin_save_options' ),
 		'saving'  => __( 'Saving…', 'ipin' ),
+		'error'   => __( 'Settings could not be saved. Check your connection and try again.', 'ipin' ),
 	] );
 }
 add_action( 'admin_enqueue_scripts', 'ipin_enqueue_admin_assets' );
 
 
 /* -------------------------------------------------------
-   DYNAMIC CSS + FLASH-FREE SCHEME INIT
-   Injects a tiny <style> and a synchronous <script>
-   into <head> (priority 1 = before wp_head assets) so
-   the correct colour scheme and dark/light state are
-   applied before the first paint — no FOUC.
+   BROWSER CHROME COLOUR (theme-color)
+   Per scheme: its lead vivid colour in light mode, its nav
+   surface in dark mode (mirrors tokens.css). The pre-paint
+   script and the dark-mode toggle swap between the two.
+   ------------------------------------------------------- */
+function ipin_theme_colors(): array {
+	$map = [
+		'vivid'  => [ '#FF3CAC', '#130E20' ],
+		'ocean'  => [ '#00C9B1', '#030D1C' ],
+		'ember'  => [ '#FF4D00', '#1A0900' ],
+		'forest' => [ '#52B788', '#041208' ],
+		'mono'   => [ '#444444', '#111111' ],
+	];
+	[ $light, $dark ] = $map[ ipin_sanitize_scheme( get_option( 'ipin_colour_scheme', 'vivid' ) ) ];
+	return [ 'light' => $light, 'dark' => $dark ];
+}
+
+
+/* -------------------------------------------------------
+   FLASH-FREE SCHEME INIT
+   A synchronous <script> in <head> (priority 1, before
+   wp_head assets) applies the colour scheme and dark/light
+   state before the first paint — no FOUC. The admin's card
+   width / corner settings travel as wp_add_inline_style()
+   on the ipin-tokens handle (see ipin_enqueue_assets).
    ------------------------------------------------------- */
 function ipin_dynamic_css_and_scheme(): void {
-	$scheme     = sanitize_key( get_option( 'ipin_colour_scheme', 'vivid' ) );
-	$card_width = max( 140, min( 400, (int) get_option( 'ipin_card_width', 220 ) ) );
-	$rounded    = (int) get_option( 'ipin_rounded_cards', 1 );
-	$dark_def   = (int) get_option( 'ipin_dark_mode_default', 0 );
-	$radius_lg  = $rounded ? '20px' : '6px';
+	$scheme      = ipin_sanitize_scheme( get_option( 'ipin_colour_scheme', 'vivid' ) );
+	$dark_def_js = (int) get_option( 'ipin_dark_mode_default', 0 ) ? 'true' : 'false';
 
-	// Tiny CSS override for admin-configurable token values
-	echo '<style id="ipin-dynamic-css">'
-		. ":root{--card-width:{$card_width}px;--radius-lg:{$radius_lg};}"
-		. "</style>\n";
+	// Synchronous scheme + dark-mode initialisation. Must run before any
+	// CSS is painted to prevent a flash, so it stays inline in <head>;
+	// printed through core so CSP nonce/attribute filters apply.
+	$js = "(function(){var h=document.documentElement;h.setAttribute('data-scheme'," . wp_json_encode( $scheme ) . ");"
+		. "var s=null;try{s=localStorage.getItem('ipin-dark-mode');}catch(e){}"
+		. "if(s==='dark'){h.setAttribute('data-theme','dark');}"
+		. "else if(s==='light'){h.removeAttribute('data-theme');}"
+		. "else if({$dark_def_js}||window.matchMedia('(prefers-color-scheme:dark)').matches){h.setAttribute('data-theme','dark');}"
+		. "var m=document.querySelector('meta[name=\"theme-color\"]');"
+		. "if(m){m.content=h.getAttribute('data-theme')==='dark'?m.dataset.dark:m.dataset.light;}})();";
 
-	// Synchronous scheme + dark-mode initialisation
-	// Must run before any CSS is painted to prevent flash.
-	$scheme_js   = esc_js( $scheme );
-	$dark_def_js = $dark_def ? 'true' : 'false';
-
-	echo <<<JS
-<script id="ipin-scheme-init">
-(function(){
-  var h=document.documentElement;
-  h.setAttribute('data-scheme','{$scheme_js}');
-  var s=null;
-  try{s=localStorage.getItem('ipin-dark-mode');}catch(e){}
-  if(s==='dark'){
-    h.setAttribute('data-theme','dark');
-  }else if(s==='light'){
-    h.removeAttribute('data-theme');
-  }else if({$dark_def_js}||window.matchMedia('(prefers-color-scheme:dark)').matches){
-    h.setAttribute('data-theme','dark');
-  }
-})();
-</script>
-JS;
+	wp_print_inline_script_tag( $js, [ 'id' => 'ipin-scheme-init' ] );
 }
 add_action( 'wp_head', 'ipin_dynamic_css_and_scheme', 1 );
+
+/* -------------------------------------------------------
+   FAVICON FALLBACK
+   Prints the bundled brand favicon only when no Site Icon
+   is set (Customizer → Site Identity → Site Icon). When a
+   Site Icon exists, core outputs its own <link> tags and
+   this fallback stays silent so the owner's icon wins.
+   ------------------------------------------------------- */
+function ipin_favicon_fallback(): void {
+	if ( has_site_icon() ) {
+		return;
+	}
+	$base = get_template_directory_uri();
+	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.ico' ) . '" sizes="48x48">' . "\n";
+	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.svg' ) . '" type="image/svg+xml" sizes="any">' . "\n";
+}
+add_action( 'wp_head', 'ipin_favicon_fallback', 2 );

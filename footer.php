@@ -30,7 +30,7 @@
         aria-label="<?php esc_attr_e( 'Scroll back to top', 'ipin' ); ?>"
         aria-hidden="true"
         hidden>
-	<i class="fa fa-chevron-up" aria-hidden="true"></i>
+	<?php echo ipin_icon( 'chevron-up' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 	<span class="sr-only"><?php esc_html_e( 'Top', 'ipin' ); ?></span>
 </button>
 

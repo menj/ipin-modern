@@ -1,0 +1,61 @@
+/**
+ * iPin Modern — Self-hosted webfonts
+ *
+ * All families ship with the theme as WOFF2 (assets/fonts/):
+ *   EB Garamond    — display face (variable, 400–800 + italic)
+ *   Sabon Next LT  — body / reading face (licensed by the site owner)
+ *   Special Elite  — typewriter accent for labels and eyebrows
+ * No external font CDN is requested anywhere.
+ */
+
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../fonts/ebgaramond-var.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'EB Garamond';
+  src: url('../fonts/ebgaramond-italic-var.woff2') format('woff2');
+  font-weight: 400 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Sabon Next LT';
+  src: url('../fonts/sabonnext-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Sabon Next LT';
+  src: url('../fonts/sabonnext-italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Sabon Next LT';
+  src: url('../fonts/sabonnext-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Sabon Next LT';
+  src: url('../fonts/sabonnext-bolditalic.woff2') format('woff2');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Special Elite';
+  src: url('../fonts/specialelite-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}

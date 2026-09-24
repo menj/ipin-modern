@@ -10,6 +10,7 @@
 
   var root = document.querySelector('.plugin-settings-root');
   if (!root) return;
+  root.classList.add('ipin-js');   // switches the CSS from stacked sections to tabs
 
   /* ── Tab switching ─────────────────────────────────────────
      Keyboard: ArrowLeft / ArrowRight navigate between tabs.
@@ -55,20 +56,6 @@
   } catch (e) {}
 
 
-  /* ── Colour scheme — visual selector ───────────────────────
-     Keyboard-accessible: clicking the card checks the hidden
-     radio; the CSS :checked + .inner handles the border highlight.
-  ─────────────────────────────────────────────────────────── */
-  root.querySelectorAll('.ipin-scheme-card input[type="radio"]').forEach(function (radio) {
-    radio.addEventListener('change', function () {
-      root.querySelectorAll('.ipin-scheme-card__inner').forEach(function (inner) {
-        inner.setAttribute('aria-checked', 'false');
-      });
-      radio.nextElementSibling.setAttribute('aria-checked', 'true');
-    });
-  });
-
-
   /* ── Range slider — live value display ──────────────────────
      Reads input[type=range]#ipin_card_width, updates sibling
      #ipin_card_width_val span in real time.
@@ -83,83 +70,62 @@
   }
 
 
-  /* ── Global manual-ads switch ───────────────────────────────
-     Dims and disables the slot area when the master switch is off.
-  ─────────────────────────────────────────────────────────── */
-  var globalSwitch = root.querySelector('#ipin_manual_ads_enabled');
-  var slotsWrap    = root.querySelector('#ipin-ad-slots-wrap');
-
-  function syncGlobalAds() {
-    if (!slotsWrap) return;
-    slotsWrap.classList.toggle('ipin-slots-globally-off', !globalSwitch.checked);
-  }
-
-  if (globalSwitch) {
-    globalSwitch.addEventListener('change', syncGlobalAds);
-    syncGlobalAds(); // apply on load
-  }
-
-
-  /* ── Per-slot toggle — live badge + card dim ────────────────
-     Event-delegated to #ipin-ad-slots-wrap.
-  ─────────────────────────────────────────────────────────── */
-  if (slotsWrap) {
-    slotsWrap.addEventListener('change', function (e) {
-      var cb = e.target;
-      if (!cb || cb.type !== 'checkbox' || !cb.name.endsWith('_enabled')) return;
-
-      var card  = cb.closest('.ipin-ad-slot-card');
-      var badge = card && card.querySelector('.ipin-badge');
-      if (!card || !badge) return;
-
-      if (cb.checked) {
-        card.classList.remove('ipin-ad-slot-card--paused');
-        badge.className   = 'ipin-badge ipin-badge--on';
-        badge.textContent = 'Active';
-      } else {
-        card.classList.add('ipin-ad-slot-card--paused');
-        badge.className   = 'ipin-badge ipin-badge--off';
-        badge.textContent = 'Paused';
-      }
-    });
-  }
-
-
   /* ── AJAX save ──────────────────────────────────────────────
-     Submits all form fields via fetch(). Shows saved notice
-     briefly on success, restores button on error.
+     Progressive enhancement: without JS the form posts to
+     options.php. With JS it saves via fetch() and reports the
+     result in the save bar whose button was pressed — every
+     tab has one. Failures are shown, never swallowed.
   ─────────────────────────────────────────────────────────── */
-  var form      = root.querySelector('#ipin-settings-form');
-  var saveBtn   = root.querySelector('.ipin-btn-primary[type="submit"]');
-  var savedNote = root.querySelector('.ipin-saved-notice');
+  var form = root.querySelector('#ipin-settings-form');
 
-  if (!form || !saveBtn) return;
+  if (!form) return;
   if (typeof ipinAdmin === 'undefined') return;
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
-    var originalLabel   = saveBtn.textContent;
-    saveBtn.disabled    = true;
-    saveBtn.textContent = ipinAdmin.saving || 'Saving\u2026';
+    var btn   = (e.submitter && e.submitter.closest('.ipin-save-bar'))
+      ? e.submitter
+      : root.querySelector('.ipin-tab-panel.ipin-active .ipin-btn-primary') || root.querySelector('.ipin-btn-primary');
+    var bar   = btn.closest('.ipin-save-bar');
+    var saved = bar.querySelector('.ipin-saved-notice');
+    var error = bar.querySelector('.ipin-error-notice');
+
+    var originalLabel = btn.textContent;
+    btn.disabled    = true;
+    btn.textContent = ipinAdmin.saving || 'Saving…';
+    if (error) { error.hidden = true; error.textContent = ''; }
 
     var data = new FormData(form);
     data.set('action', 'ipin_save_options');
     data.set('ipin_nonce', ipinAdmin.nonce);
 
-    fetch(ipinAdmin.ajaxUrl, { method: 'POST', body: data })
-      .then(function (r) { return r.json(); })
+    function fail(message) {
+      if (!error) return;
+      error.textContent = message || ipinAdmin.error;
+      error.hidden = false;
+    }
+
+    fetch(ipinAdmin.ajaxUrl, { method: 'POST', body: data, credentials: 'same-origin' })
+      .then(function (r) {
+        return r.json().catch(function () { return null; });
+      })
       .then(function (res) {
-        saveBtn.disabled    = false;
-        saveBtn.textContent = originalLabel;
-        if (res && res.success && savedNote) {
-          savedNote.classList.add('ipin-visible');
-          setTimeout(function () { savedNote.classList.remove('ipin-visible'); }, 2500);
+        btn.disabled    = false;
+        btn.textContent = originalLabel;
+        if (res && res.success) {
+          if (saved) {
+            saved.classList.add('ipin-visible');
+            setTimeout(function () { saved.classList.remove('ipin-visible'); }, 2500);
+          }
+        } else {
+          fail(res && res.data && res.data.message);
         }
       })
       .catch(function () {
-        saveBtn.disabled    = false;
-        saveBtn.textContent = originalLabel;
+        btn.disabled    = false;
+        btn.textContent = originalLabel;
+        fail();
       });
   });
 

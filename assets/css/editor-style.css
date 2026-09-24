@@ -1,28 +1,31 @@
+/* Block editor canvas. tokens.css is loaded first (functions.php), so
+   these read the same colour variables as the front end. */
 body {
-	font-family: 'Plus Jakarta Sans', sans-serif;
+	font-family: 'Sabon Next LT', 'EB Garamond', Georgia, serif;
 	font-size: 15px;
 	line-height: 1.75;
-	color: #1A1025;
+	color: var(--txt-primary);
+	background: var(--bg-card);
 	max-width: 800px;
 	margin: 0 auto;
 	padding: 24px;
 }
 
 h1, h2, h3, h4, h5, h6 {
-	font-family: 'Syne', sans-serif;
+	font-family: 'EB Garamond', Georgia, serif;
 	font-weight: 700;
 	line-height: 1.2;
 	margin: 24px 0 10px;
 }
 
-a { color: #FF3CAC; }
+a { color: var(--clr-accent-1); }
 
 img { max-width: 100%; height: auto; border-radius: 10px; }
 
 blockquote {
-	border-left: 4px solid #784BA0;
+	border-left: 4px solid var(--clr-accent-2);
 	margin: 16px 0;
 	padding: 8px 20px;
-	color: #6B6878;
+	color: var(--txt-secondary);
 	font-style: italic;
 }
