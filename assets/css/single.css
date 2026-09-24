@@ -34,7 +34,7 @@
 .post-wrapper .h1-wrapper h1 {
   font-size: clamp(1.2rem, 2.5vw, 1.85rem);
   text-align: center;
-  background: var(--grad-brand);
+  background: var(--grad-text);   /* accent stops: readable in both modes */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -92,7 +92,7 @@
 .post-wrapper .post-content a {
   color: var(--clr-accent-1);
   text-decoration: underline;
-  text-decoration-color: rgba(255,60,172,.3);
+  text-decoration-color: color-mix(in oklch, var(--clr-accent-1) 30%, transparent);
   text-underline-offset: 3px;
   transition: text-decoration-color var(--dur);
 }
@@ -178,7 +178,7 @@
   object-fit: cover;
 }
 
-.float-right { float: right; }
+.comment-reply-wrap { float: right; margin-left: 12px; }
 
 .comment-reply-link {
   display: inline-flex;
@@ -197,9 +197,9 @@
 }
 
 .comment-reply-link:hover {
-  background: var(--clr-accent-1);
-  color: #fff;
-  border-color: var(--clr-accent-1);
+  background: var(--clr-fill-1);
+  color: var(--clr-on-fill);
+  border-color: var(--clr-fill-1);
 }
 
 .comment-content {
@@ -211,16 +211,25 @@
 
 .comment-content-with-avatar { margin-left: 49px; }
 
-.bypostauthor,
-.bypostauthor a.url {
-  background: var(--clr-accent-2);
-  color: #fff;
-  padding: 1px 7px;
-  border-radius: var(--radius-xs);
-  font-size: .8em;
+/* Post author's comments: a quiet rule on the comment, plus a small
+   "Author" badge next to the name (output by ipin_comment()). */
+.commentlist li.bypostauthor > .comment-content {
+  border-left: 3px solid var(--clr-accent-2);
+  padding-left: 12px;
 }
-
-.bypostauthor a.url:hover { background: var(--clr-accent-1); color: #fff; }
+.comment-author-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--clr-fill-2);
+  color: var(--clr-on-fill);
+  font-family: var(--font-accent);
+  font-size: .68rem;
+  font-weight: 400;
+  letter-spacing: .06em;
+  vertical-align: middle;
+}
 
 #reply-title {
   color: var(--txt-primary);
@@ -275,7 +284,13 @@
   align-items: center;
   gap: 7px;
   padding: 10px 26px;
+  border: 0;
+  border-radius: var(--radius-pill);
   background: var(--grad-brand-btn);
+  color: var(--clr-on-fill);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
   transition:
     opacity   var(--dur),
     transform var(--dur) var(--ease);
@@ -338,7 +353,7 @@
    ========================================================= */
 #footer {
   background: var(--bg-footer);
-  color: rgba(240,235,248,.45);
+  color: var(--txt-footer);
   text-align: center;
   padding: 30px 24px;
   margin-top: 52px;
@@ -346,11 +361,11 @@
 }
 
 #footer a {
-  color: rgba(240,235,248,.65);
+  color: var(--txt-footer-link);
   transition: color var(--dur);
 }
 
-#footer a:hover { color: var(--clr-accent-1); }
+#footer a:hover { color: var(--clr-footer-link-hover); }
 
 /* =========================================================
    SCROLL TO TOP  (<button> — WCAG 2.1.1 / 2.5.8)
@@ -473,7 +488,7 @@
 .btn-share--twitter   { background: #000000; color: #fff; }
 .btn-share--facebook  { background: #1877F2; color: #fff; }
 .btn-share--copy      { background: var(--bg-card); color: var(--txt-primary); border: 1px solid var(--border); }
-.btn-share--copy.copied { background: var(--clr-accent-5, #007A53); color: #fff; border-color: transparent; }
+.btn-share--copy.copied { background: var(--clr-fill-5); color: var(--clr-on-fill); border-color: transparent; }
 
 @media (max-width: 480px) {
   .btn-share__label { display: none; }

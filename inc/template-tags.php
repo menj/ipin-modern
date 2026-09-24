@@ -114,8 +114,14 @@ function ipin_comment( \WP_Comment $comment, array $args, int $depth ): void {
 
 		<div class="comment-content<?php echo $show_avatars ? ' comment-content-with-avatar' : ''; ?>">
 			<strong>
-				<span <?php comment_class(); ?>><?php comment_author_link(); ?></span>
+				<span class="comment-author-name"><?php comment_author_link(); ?></span>
 			</strong>
+			<?php
+			// Same test core uses for the li's .bypostauthor class.
+			$post_author = (int) get_post_field( 'post_author', (int) $comment->comment_post_ID );
+			if ( $comment->user_id && (int) $comment->user_id === $post_author ) : ?>
+				<span class="comment-author-badge"><?php esc_html_e( 'Author', 'ipin' ); ?></span>
+			<?php endif; ?>
 			&mdash;
 			<?php comment_date( 'j M Y g:ia' ); ?>
 			<a href="#comment-<?php comment_ID(); ?>" title="<?php esc_attr_e( 'Permalink', 'ipin' ); ?>">#</a>
@@ -159,6 +165,12 @@ function ipin_comment_form_fields( array $fields ): array {
 		. '<label for="url">' . esc_html__( 'Website', 'ipin' ) . '</label>'
 		. '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ) . '" autocomplete="url">'
 		. '</div>';
+
+	// Name / Email / Website sit in a three-column grid. The wrapper opens
+	// in the first field and closes in the last, so core's cookie-consent
+	// field (printed after these) stays full width below the grid.
+	$fields['author'] = '<div class="comment-form-fields-grid">' . $fields['author'];
+	$fields['url']   .= '</div>';
 
 	return $fields;
 }

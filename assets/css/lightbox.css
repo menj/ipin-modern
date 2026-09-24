@@ -241,8 +241,8 @@
 }
 
 .lightbox-close:hover {
-  background: var(--clr-accent-1);
-  color: #fff;
+  background: var(--clr-fill-1);
+  color: var(--clr-on-fill);
   border-color: transparent;
 }
 
@@ -273,8 +273,8 @@
 }
 
 .lightbox-nav:hover {
-  background: var(--clr-accent-1);
-  color: #fff;
+  background: var(--clr-fill-1);
+  color: var(--clr-on-fill);
   border-color: transparent;
 }
 

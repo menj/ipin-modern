@@ -139,6 +139,25 @@ add_action( 'admin_enqueue_scripts', 'ipin_enqueue_admin_assets' );
 
 
 /* -------------------------------------------------------
+   BROWSER CHROME COLOUR (theme-color)
+   Per scheme: its lead vivid colour in light mode, its nav
+   surface in dark mode (mirrors tokens.css). The pre-paint
+   script and the dark-mode toggle swap between the two.
+   ------------------------------------------------------- */
+function ipin_theme_colors(): array {
+	$map = [
+		'vivid'  => [ '#FF3CAC', '#130E20' ],
+		'ocean'  => [ '#00C9B1', '#030D1C' ],
+		'ember'  => [ '#FF4D00', '#1A0900' ],
+		'forest' => [ '#52B788', '#041208' ],
+		'mono'   => [ '#444444', '#111111' ],
+	];
+	[ $light, $dark ] = $map[ ipin_sanitize_scheme( get_option( 'ipin_colour_scheme', 'vivid' ) ) ];
+	return [ 'light' => $light, 'dark' => $dark ];
+}
+
+
+/* -------------------------------------------------------
    FLASH-FREE SCHEME INIT
    A synchronous <script> in <head> (priority 1, before
    wp_head assets) applies the colour scheme and dark/light
@@ -157,7 +176,9 @@ function ipin_dynamic_css_and_scheme(): void {
 		. "var s=null;try{s=localStorage.getItem('ipin-dark-mode');}catch(e){}"
 		. "if(s==='dark'){h.setAttribute('data-theme','dark');}"
 		. "else if(s==='light'){h.removeAttribute('data-theme');}"
-		. "else if({$dark_def_js}||window.matchMedia('(prefers-color-scheme:dark)').matches){h.setAttribute('data-theme','dark');}})();";
+		. "else if({$dark_def_js}||window.matchMedia('(prefers-color-scheme:dark)').matches){h.setAttribute('data-theme','dark');}"
+		. "var m=document.querySelector('meta[name=\"theme-color\"]');"
+		. "if(m){m.content=h.getAttribute('data-theme')==='dark'?m.dataset.dark:m.dataset.light;}})();";
 
 	wp_print_inline_script_tag( $js, [ 'id' => 'ipin-scheme-init' ] );
 }

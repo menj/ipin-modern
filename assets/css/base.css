@@ -79,18 +79,29 @@ body {
   box-shadow: none;
 }
 
-/* ── Minimum touch/click target size (WCAG 2.5.8) ──
-   24×24 px minimum. Nav items, buttons, links in nav
-   already meet this via padding; enforce globally here. */
-a, button, [role="button"], input, select, textarea, label[for] {
+/* ── Minimum target size (WCAG 2.5.8) ──
+   24×24 px. min-height works on block/inline-block controls only;
+   it does nothing for plain inline <a>. Links inside running text
+   are covered by 2.5.8's "inline" exception; the small standalone
+   links (card meta, comment permalink/edit, footer) get an explicit
+   inline-block target below. */
+button, [role="button"], input, select, textarea, label[for] {
   min-height: 24px;
+}
+.masonry-meta a,
+.comment-content > a,
+.comment-edit-link,
+#footer a {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
 }
 
 /* ── Links ── */
 a {
   color: var(--clr-accent-2);
   text-decoration: underline;
-  text-decoration-color: rgba(120,75,160,.35);
+  text-decoration-color: color-mix(in oklch, var(--clr-accent-2) 35%, transparent);
   text-underline-offset: 3px;
   transition: color var(--dur), text-decoration-color var(--dur);
 }

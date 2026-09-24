@@ -139,8 +139,8 @@
   border: none;
   pointer-events: none; /* visual only */
 }
-.btn-comment { background: var(--clr-accent-1); color: #fff; }
-.btn-view    { background: var(--clr-accent-3); color: #fff; }
+.btn-comment { background: var(--clr-fill-1); color: var(--clr-on-fill); }
+.btn-view    { background: var(--clr-fill-3); color: var(--clr-on-fill); }
 
 /* ── Card body ── */
 .thumb-body { padding: 12px 13px 9px; }
@@ -237,7 +237,7 @@
 .empty-state .empty-icon { font-size: 4rem; margin-bottom: 18px; display: block; line-height: 1; }
 .empty-state h1 {
   font-size: 1.6rem;
-  background: var(--grad-brand);
+  background: var(--grad-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -316,7 +316,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 14px var(--grid-gap, 12px) 10px;
+  padding: 14px var(--card-gap) 10px;
   position: sticky;
   top: var(--nav-height, 60px);
   z-index: 10;
@@ -349,8 +349,8 @@
 
 .sort-bar__btn.active,
 .sort-bar__btn[aria-current="page"] {
-  background: var(--clr-accent-1);
-  color: #fff;
+  background: var(--clr-fill-1);
+  color: var(--clr-on-fill);
   border-color: transparent;
 }
 
@@ -379,7 +379,7 @@
   max-width: 20ch;
 }
 .home-hero__accent {
-  background: var(--grad-brand);
+  background: var(--grad-text);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -527,8 +527,50 @@
 #masonry .thumb:hover .thumb-play,
 #masonry .thumb:focus-within .thumb-play {
   transform: scale(1.08);
-  background: var(--clr-accent-1);
+  background: var(--clr-fill-1);
 }
 /* On video pins the play badge is the affordance: drop the hover chips
    so they never sit underneath it; the tinted overlay stays. */
 #masonry .thumb--video .masonry-actionbar .btn { display: none; }
+
+/* =========================================================
+   CARD CONTAINER QUERIES
+   Cards size to Theme Options → Card width (140–400px), so their
+   type responds to the card itself, not the viewport.
+   ========================================================= */
+#masonry .thumb {
+  container: pin / inline-size;
+}
+@container pin (max-width: 180px) {
+  .thumb-body     { padding: 10px 10px 8px; }
+  .thumbtitle     { font-size: .82rem; margin-bottom: 6px; }
+  .masonry-meta   { font-size: .72rem; }
+  .masonry-actionbar .btn { padding: 6px 10px; font-size: .72rem; }
+}
+@container pin (min-width: 300px) {
+  .thumb-body     { padding: 14px 16px 12px; }
+  .thumbtitle     { font-size: 1.02rem; }
+  .masonry-meta   { font-size: .82rem; }
+}
+
+/* =========================================================
+   SCROLL-DRIVEN CARD ENTRANCE
+   Pure CSS on the view() timeline: each card eases up as it
+   enters the viewport. Animates translate/opacity, not transform,
+   so the hover lift (transform) is never overridden. Cards already
+   in view at load are past the range and render at rest; browsers
+   without scroll timelines and reduced-motion visitors get none.
+   ========================================================= */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    #masonry .thumb {
+      animation: ipin-pin-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+    @keyframes ipin-pin-in {
+      from { opacity: .4; translate: 0 22px; }
+      to   { opacity: 1;  translate: 0 0; }
+    }
+  }
+}

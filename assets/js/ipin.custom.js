@@ -40,6 +40,10 @@
       darkToggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
       darkToggle.setAttribute('aria-label', dark ? LABEL_LIGHT : LABEL_DARK);
     }
+    var themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor && themeColor.dataset.light) {
+      themeColor.content = dark ? themeColor.dataset.dark : themeColor.dataset.light;
+    }
     if (persist) {
       try { localStorage.setItem('ipin-dark-mode', dark ? 'dark' : 'light'); } catch (e) {}
     }

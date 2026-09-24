@@ -115,7 +115,7 @@
 			</ul>
 		</nav>
 
-		<div id="comments" class="post-comments">
+		<div class="post-comments">
 			<?php comments_template(); ?>
 		</div>
 

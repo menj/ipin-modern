@@ -23,7 +23,7 @@
 		</div>
 
 		<?php if ( comments_open() || get_comments_number() ) : ?>
-		<div id="comments" class="post-comments">
+		<div class="post-comments">
 			<?php comments_template(); ?>
 		</div>
 		<?php endif; ?>
