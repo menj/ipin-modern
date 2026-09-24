@@ -25,7 +25,19 @@ Migration guides for each major version jump, a troubleshooting list, and the ro
 ### Child themes
 
 - Grid markup is unchanged apart from these: the card's hover chips are `<span class="btn">` instead of links, video pins add `.thumb--video` and a `.thumb-play` badge, and the comments wrapper in `single.php` and `page.php` lost its duplicate `id="comments"` (the id now lives only on the section in `comments.php`).
-- The grid engine lives in `assets/js/ipin.grid.js`. After it appends a page of pins it fires `ipin:infiniteScrollLoaded` on `document`; listen for that instead of the old jQuery callbacks.
+- The grid engine lives in `assets/js/grid.js`. After it appends a page of pins it fires `ipin:infiniteScrollLoaded` on `document`; listen for that instead of the old jQuery callbacks.
+- Files and enqueue handles were renamed so each script matches its stylesheet. If a child theme dequeues, deregisters or depends on one of these, update the name:
+
+  | 4.x | 5.0 |
+  |---|---|
+  | `assets/js/ipin.custom.js`, handle `ipin-custom` | `assets/js/theme.js`, handle `ipin-theme` |
+  | `assets/js/ipin.admin.js`, handle `ipin-admin-js` | `assets/js/admin.js`, handle `ipin-admin` |
+  | `assets/css/masonry.css`, handle `ipin-masonry-css` | `assets/css/grid.css`, handle `ipin-grid` |
+  | handle `ipin-admin-css` | handle `ipin-admin` |
+  | `favicon.svg`, `favicon.ico` in the theme root | `assets/img/` |
+  | `inc/nav-walker.php` | `inc/class-ipin-nav-walker.php` (class name unchanged) |
+
+- `index.php` now loads its pieces from `template-parts/`: `home-hero.php`, `sort-bar.php` and `card.php` (one pin); `single.php` loads `share-bar.php`. To change one, copy just that file into the same path in your child theme. `card.php` receives `comments_per_card` and `previews` in `$args`.
 - Colour tokens are now in OKLCH, and gradients, borders and shadows are derived from a few source colours. Overriding `--clr-accent-*`, `--clr-fill-*` or `--clr-vivid-*` is enough; you don't need to repeat the gradients. Use `--clr-fill-*` for solid buttons with white labels, since `--clr-accent-*` turns into a light text colour in dark mode.
 - `ipin_dynamic_css_and_scheme()` no longer prints a `<style>` block. Card width and corner radius arrive through `wp_add_inline_style()` on the `ipin-tokens` handle.
 - Lightbox data comes from `GET /wp-json/ipin/v1/pin/{id}`. The `ipin_lightbox_data` admin-ajax action is gone.
@@ -190,8 +202,8 @@ See the Installation section in `readme.txt`. Short version:
 ## Known issues
 
 ### The grid shows as plain columns and never becomes a masonry layout
-- The CSS-columns layout is the no-JavaScript fallback. If you see it with JavaScript on, `ipin.grid.js` isn't running. Check the browser console for errors and the Network tab for `assets/js/ipin.grid.js`.
-- Optimisation plugins that combine or defer scripts can break the load order. `ipin.grid.js` depends on `ipin.custom.js`; exclude both from combining if in doubt.
+- The CSS-columns layout is the no-JavaScript fallback. If you see it with JavaScript on, `grid.js` isn't running. Check the browser console for errors and the Network tab for `assets/js/grid.js`.
+- Optimisation plugins that combine or defer scripts can break the load order. `grid.js` depends on `theme.js`; exclude both from combining if in doubt.
 
 ### Infinite scroll doesn't load more pins
 - The grid engine follows the `#navigation-next a` link. The default `index.php` prints it; a custom template has to as well.
@@ -237,34 +249,52 @@ or verifying that an install is complete.
 
 ```
 ipin-modern/
-├── style.css                    Theme header only (Version: 5.0.0)
-├── functions.php                Setup, image size, grid page size, module loader
-├── index.php                    Hero, sort bar, masonry grid (home, archives, search)
-├── single.php  page.php         Posts and pages, full width
-├── comments.php  searchform.php  404.php  header.php  footer.php
-├── favicon.svg  favicon.ico     Pin mark (used when no Site Icon is set)
+├── style.css                    Theme header, and a map of the stylesheets and scripts
+├── functions.php                Module loader, theme setup, grid page size
 ├── screenshot.png               1200 × 900
 ├── readme.txt  CHANGELOG.md  UPGRADING.md
 │
+├── header.php  footer.php       Top bar and footer, on every view
+├── index.php                    Grid views: home, archives, search
+├── single.php  page.php         Posts (and articles), pages; full width
+├── 404.php                      Not-found page
+├── comments.php  searchform.php
+│
+├── template-parts/
+│   ├── home-hero.php            Hero heading, lede and featured-pin panel
+│   ├── sort-bar.php             Latest / 7 days / this month / all time
+│   ├── card.php                 One pin in the grid (also what infinite scroll loads)
+│   └── share-bar.php            Share buttons on single posts
+│
 ├── inc/
-│   ├── template-tags.php        Helpers, icons, comment callback, feed, REST lightbox data
-│   ├── enqueue.php              Assets, inline tokens, scheme init, theme-color
-│   ├── admin-options.php        Settings schema and the tabbed settings page
-│   ├── seo.php                  Meta description, JSON-LD, sameAs, Mastodon tags
-│   ├── video.php                Video pins: parser, player, editor box
-│   ├── nav-walker.php           Menu walker with disclosure buttons
-│   ├── popular-posts.php        Sort bar ordering and links
+│   ├── template-tags.php        Helpers the templates call, comment callback, 404 lines
+│   ├── class-ipin-nav-walker.php  Menu walker with disclosure buttons
+│   ├── enqueue.php              Assets, inline tokens, scheme init, theme-color, favicon
 │   ├── post-types.php           Sideblog post type (ipin_article)
+│   ├── popular-posts.php        Sort bar ordering (?popular=) and links
+│   ├── video.php                Video pins: parser, player, editor box
+│   ├── seo.php                  Meta description, JSON-LD, sameAs, Mastodon tags
+│   ├── feed.php                 RSS: pin images and enclosures
+│   ├── rest-api.php             Lightbox data: GET /wp-json/ipin/v1/pin/{id}
+│   ├── admin-options.php        Settings schema and the tabbed settings page
 │   └── customizer.php           Customizer notice, Colors section handling
 │
 ├── assets/
-│   ├── css/                     fonts, tokens, base, nav, masonry, lightbox, single, 404, admin, editor-style
-│   ├── js/                      ipin.grid.js, ipin.custom.js, lightbox.js, ipin.admin.js
+│   ├── css/                     fonts, tokens, base, nav, grid, lightbox, single, 404, admin, editor-style
+│   ├── js/                      theme.js, grid.js, lightbox.js, admin.js
 │   ├── fonts/                   EB Garamond, Sabon Next LT, Special Elite (WOFF2)
-│   └── img/social/              x, facebook, instagram, pinterest (SVG)
+│   └── img/                     favicon.svg, favicon.ico (used when no Site Icon is set)
+│       └── social/              x, facebook, instagram, pinterest (SVG)
 │
 └── languages/ipin-modern.pot
 ```
+
+**Enqueue handles (v5.0):**
+CSS: `ipin-fonts`, `ipin-tokens`, `ipin-base`, `ipin-nav`, then `ipin-single`
+(posts and pages), `ipin-404`, or `ipin-grid` + `ipin-lightbox` (grid views);
+`ipin-style`. Admin: `ipin-tokens`, `ipin-admin`.
+JS: `ipin-theme` (every view), `ipin-grid` + `ipin-lightbox` (grid views).
+Admin: `ipin-admin`.
 
 No jQuery. No bundled third-party libraries. No sidebars or widget areas.
 

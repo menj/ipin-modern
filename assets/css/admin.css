@@ -143,7 +143,7 @@
 
 
 /* ── Tab panels ──────────────────────────────────────────── */
-/* Tabs are a JS enhancement: ipin.admin.js adds .ipin-js. Without it
+/* Tabs are a JS enhancement: admin.js adds .ipin-js. Without it
    every panel shows stacked and the (inoperable) tab bar is hidden. */
 .plugin-settings-root:not(.ipin-js) .ipin-tabs-nav { display: none; }
 .plugin-settings-root.ipin-js .ipin-tab-panel { display: none; }

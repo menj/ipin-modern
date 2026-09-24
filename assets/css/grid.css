@@ -1,12 +1,16 @@
 /**
- * iPin Modern — Masonry Grid
+ * iPin Modern — Grid
+ * Grid views (home, archives, search): the masonry grid and its
+ * CSS-columns fallback, pin cards, sort bar, homepage hero and
+ * featured-pin panel, empty state. Loaded with lightbox.css from
+ * inc/enqueue.php; markup in template-parts/ and index.php.
+ *
  * WCAG notes:
  *   - .masonry-actionbar is aria-hidden="true" (decorative overlay)
  *     and shown on hover + :focus-within so sighted keyboard users
  *     see it when the card title link is focused
- *   - Each <article> has aria-labelledby pointing to .thumbtitle
- *   - The sole keyboard-accessible link per card is .thumbtitle a
- *   - The image wrapper is a <div> (not <a>) to avoid nested links
+ *   - The sole keyboard-accessible link per card is .thumbtitle a;
+ *     the image link (.thumb-img-wrap) is aria-hidden, tabindex="-1"
  */
 
 /* ── Grid wrapper ── */
@@ -18,7 +22,7 @@
 }
 
 /* ── Masonry container ──
-   Before ipin.grid.js runs (and without JS at all) the grid renders
+   Before grid.js runs (and without JS at all) the grid renders
    as CSS multi-columns; the engine then switches it to absolutely
    positioned masonry by adding .masonry-js. Never hidden. */
 #masonry { margin: 0 auto; }
@@ -85,7 +89,7 @@
   box-shadow: 0 0 0 2px var(--clr-accent-4), var(--shadow-md);
 }
 
-/* ── Thumbnail image wrapper (div — NOT an anchor) ── */
+/* ── Thumbnail image link (aria-hidden, out of the tab order) ── */
 .thumb-img-wrap {
   display: block;
   position: relative;

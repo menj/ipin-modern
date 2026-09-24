@@ -85,6 +85,14 @@ Read [UPGRADING.md](UPGRADING.md) before updating a customised site.
 - `theme-color` follows the active scheme and switches for dark mode.
 - Text domain renamed from `ipin` to `ipin-modern` to match the theme folder.
 - Social icons in the nav and share bar come from a bundled SVG set.
+- File layout. `index.php` loads its hero, sort bar and cards from
+  `template-parts/`, and `single.php` its share bar. Scripts are named after
+  their stylesheets: `theme.js`, `grid.js` (with `grid.css`, formerly
+  `masonry.css`), `lightbox.js`, `admin.js`. Handles follow: `ipin-theme`,
+  `ipin-grid`, `ipin-admin`. Favicons moved to `assets/img/`. The walker is
+  `inc/class-ipin-nav-walker.php`, and RSS and REST code moved out of
+  `template-tags.php` into `inc/feed.php` and `inc/rest-api.php`. The HTML
+  every page renders is unchanged.
 
 ### Removed
 - Sidebars: both widget areas, `sidebar-left.php`, `sidebar-right.php`,

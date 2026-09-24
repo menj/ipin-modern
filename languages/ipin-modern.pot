@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-24T13:07:50+00:00\n"
+"POT-Creation-Date: 2026-09-24T13:24:29+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ipin-modern\n"
@@ -57,7 +57,7 @@ msgid "Or play detective:"
 msgstr ""
 
 #: comments.php:3
-#: inc/enqueue.php:90
+#: inc/enqueue.php:94
 msgid "Comments"
 msgstr ""
 
@@ -115,7 +115,7 @@ msgstr ""
 msgid "Top"
 msgstr ""
 
-#: functions.php:79
+#: functions.php:86
 msgid "Top Navigation"
 msgstr ""
 
@@ -441,6 +441,12 @@ msgstr ""
 msgid "Settings saved!"
 msgstr ""
 
+#. translators: %s = parent menu item title
+#: inc/class-ipin-nav-walker.php:57
+#, php-format
+msgid "Show submenu for %s"
+msgstr ""
+
 #: inc/customizer.php:25
 msgid "Colour scheme, dark mode, the homepage hero, social profiles and layout are managed on the iPin Settings page."
 msgstr ""
@@ -453,77 +459,71 @@ msgstr ""
 msgid "iPin Theme Settings"
 msgstr ""
 
-#: inc/enqueue.php:87
+#: inc/enqueue.php:91
 msgid "All items loaded"
 msgstr ""
 
-#: inc/enqueue.php:88
+#: inc/enqueue.php:92
 msgid "Loading more pins…"
 msgstr ""
 
-#: inc/enqueue.php:91
+#: inc/enqueue.php:95
 msgid "View all"
 msgstr ""
 
-#: inc/enqueue.php:92
-#: index.php:214
+#: inc/enqueue.php:96
+#: template-parts/card.php:77
 msgid "View"
 msgstr ""
 
-#: inc/enqueue.php:93
+#: inc/enqueue.php:97
 msgid "Close lightbox"
 msgstr ""
 
-#: inc/enqueue.php:94
+#: inc/enqueue.php:98
 msgid "Previous pin"
 msgstr ""
 
-#: inc/enqueue.php:95
+#: inc/enqueue.php:99
 msgid "Next pin"
 msgstr ""
 
-#: inc/enqueue.php:96
+#: inc/enqueue.php:100
 msgid "This pin could not be loaded."
 msgstr ""
 
-#: inc/enqueue.php:97
+#: inc/enqueue.php:101
 msgid "Please try again, or open the post directly."
 msgstr ""
 
-#: inc/enqueue.php:98
-#: single.php:93
+#: inc/enqueue.php:102
+#: template-parts/share-bar.php:23
 msgid "Save to Pinterest (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:99
+#: inc/enqueue.php:103
 msgid "Share on X (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:100
-#: single.php:109
+#: inc/enqueue.php:104
+#: template-parts/share-bar.php:39
 msgid "Share on Facebook (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:101
+#: inc/enqueue.php:105
 msgid "Copied!"
 msgstr ""
 
-#: inc/enqueue.php:102
+#: inc/enqueue.php:106
 msgid "Link copied to clipboard."
 msgstr ""
 
-#: inc/enqueue.php:147
+#: inc/enqueue.php:151
 msgid "Saving…"
 msgstr ""
 
-#: inc/enqueue.php:148
+#: inc/enqueue.php:152
 msgid "Settings could not be saved. Check your connection and try again."
-msgstr ""
-
-#. translators: %s = parent menu item title
-#: inc/nav-walker.php:57
-#, php-format
-msgid "Show submenu for %s"
 msgstr ""
 
 #: inc/post-types.php:27
@@ -586,8 +586,12 @@ msgstr ""
 msgid "The Sideblog is now built into iPin Modern. You can deactivate and delete the <em>iPin Sideblog</em> plugin; your articles stay where they are."
 msgstr ""
 
+#: inc/rest-api.php:76
+msgid "Pin not found."
+msgstr ""
+
 #. translators: %d = number of minutes
-#: inc/template-tags.php:181
+#: inc/template-tags.php:195
 #, php-format
 msgid "%d min ago"
 msgid_plural "%d mins ago"
@@ -595,7 +599,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d = number of hours
-#: inc/template-tags.php:187
+#: inc/template-tags.php:201
 #, php-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
@@ -603,99 +607,95 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d = number of days
-#: inc/template-tags.php:193
+#: inc/template-tags.php:207
 #, php-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:217
+#: inc/template-tags.php:231
 msgid "Reply"
 msgstr ""
 
-#: inc/template-tags.php:231
+#: inc/template-tags.php:245
 msgid "Author"
 msgstr ""
 
-#: inc/template-tags.php:235
+#: inc/template-tags.php:249
 msgid "Permalink"
 msgstr ""
 
-#: inc/template-tags.php:236
+#: inc/template-tags.php:250
 #: single.php:31
 msgid "Edit"
 msgstr ""
 
-#: inc/template-tags.php:239
+#: inc/template-tags.php:253
 msgid "Your comment is awaiting moderation."
 msgstr ""
 
-#: inc/template-tags.php:261
+#: inc/template-tags.php:275
 msgid "Name"
 msgstr ""
 
-#: inc/template-tags.php:267
+#: inc/template-tags.php:281
 msgid "Email"
 msgstr ""
 
-#: inc/template-tags.php:273
+#: inc/template-tags.php:287
 msgid "Website"
 msgstr ""
 
-#: inc/template-tags.php:438
-msgid "Pin not found."
-msgstr ""
-
-#: inc/template-tags.php:466
+#: inc/template-tags.php:323
 msgid "This pin fell off the board."
 msgstr ""
 
-#: inc/template-tags.php:467
+#: inc/template-tags.php:324
 msgid "We checked behind the sofa. Crumbs, one hair tie, no page. Try a search, or slip back to the board before anyone notices."
 msgstr ""
 
-#: inc/template-tags.php:470
+#: inc/template-tags.php:327
 msgid "Well, this is awkward."
 msgstr ""
 
-#: inc/template-tags.php:471
+#: inc/template-tags.php:328
 msgid "You found the one spot on the board with nothing pinned to it. Honestly? Impressive."
 msgstr ""
 
-#: inc/template-tags.php:474
+#: inc/template-tags.php:331
 msgid "Nothing to see here. Literally."
 msgstr ""
 
-#: inc/template-tags.php:475
+#: inc/template-tags.php:332
 msgid "The page you wanted has left the building and didn't leave a forwarding address. Rude, we know."
 msgstr ""
 
-#: inc/template-tags.php:478
+#: inc/template-tags.php:335
 msgid "Somebody un-pinned this."
 msgstr ""
 
-#: inc/template-tags.php:479
+#: inc/template-tags.php:336
 msgid "Either the link is wrong or the page took a gap year to find itself. Neither of us is getting it back today."
 msgstr ""
 
-#: inc/template-tags.php:482
+#: inc/template-tags.php:339
 msgid "Plot twist: there's no page."
 msgstr ""
 
-#: inc/template-tags.php:483
+#: inc/template-tags.php:340
 msgid "You clicked with confidence, and we respect that. Sadly, the page didn't turn up to its own party."
 msgstr ""
 
-#: inc/template-tags.php:486
+#: inc/template-tags.php:343
 msgid "Blank is the new black."
 msgstr ""
 
-#: inc/template-tags.php:487
+#: inc/template-tags.php:344
 msgid "Very minimalist of us. Still, you probably came here for something with pictures in it."
 msgstr ""
 
-#: inc/template-tags.php:499
+#: inc/template-tags.php:356
 msgid "Page not found"
 msgstr ""
 
@@ -725,93 +725,27 @@ msgstr ""
 msgid "Not playable. Paste the direct file link (ending in .mp4, .webm, .m4v, .mov or .ogv), not the page that shows the video."
 msgstr ""
 
-#: index.php:72
-msgid "Featured"
-msgstr ""
-
-#. translators: %d = number of comments
-#: index.php:76
-#, php-format
-msgid "%d comment"
-msgid_plural "%d comments"
-msgstr[0] ""
-msgstr[1] ""
-
-#: index.php:84
-msgid "This board"
-msgstr ""
-
-#: index.php:85
-msgid "pins"
-msgstr ""
-
-#. translators: 1: category count, 2: comment count
-#: index.php:89
-#, php-format
-msgid "%1$s categories · %2$s comments"
-msgstr ""
-
-#: index.php:97
-msgid "Browse"
-msgstr ""
-
-#: index.php:116
-msgid "Sort posts"
-msgstr ""
-
-#: index.php:120
-msgid "Latest"
-msgstr ""
-
-#: index.php:126
-msgid "Last 7 days"
-msgstr ""
-
-#: index.php:132
-msgid "This month"
-msgstr ""
-
-#: index.php:138
-msgid "All time"
-msgstr ""
-
-#: index.php:226
-msgid "(video)"
-msgstr ""
-
-#: index.php:246
-msgid "in"
-msgstr ""
-
-#. translators: %d = number of comments on the pin
-#: index.php:276
-#, php-format
-msgid "View all %d comment"
-msgid_plural "View all %d comments"
-msgstr[0] ""
-msgstr[1] ""
-
-#: index.php:290
+#: index.php:36
 msgid "Posts pagination"
 msgstr ""
 
-#: index.php:293
+#: index.php:39
 msgid "Older posts"
 msgstr ""
 
-#: index.php:296
+#: index.php:42
 msgid "Newer posts"
 msgstr ""
 
-#: index.php:303
+#: index.php:49
 msgid "No content found"
 msgstr ""
 
-#: index.php:305
+#: index.php:51
 msgid "Nothing pinned here yet"
 msgstr ""
 
-#: index.php:306
+#: index.php:52
 msgid "Perhaps searching will help."
 msgstr ""
 
@@ -853,26 +787,92 @@ msgstr ""
 msgid "Tags:"
 msgstr ""
 
-#: single.php:87
+#: single.php:79
+msgid "Post navigation"
+msgstr ""
+
+#: template-parts/card.php:89
+msgid "(video)"
+msgstr ""
+
+#: template-parts/card.php:109
+msgid "in"
+msgstr ""
+
+#. translators: %d = number of comments on the pin
+#: template-parts/card.php:139
+#, php-format
+msgid "View all %d comment"
+msgid_plural "View all %d comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/home-hero.php:72
+msgid "Featured"
+msgstr ""
+
+#. translators: %d = number of comments
+#: template-parts/home-hero.php:76
+#, php-format
+msgid "%d comment"
+msgid_plural "%d comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: template-parts/home-hero.php:84
+msgid "This board"
+msgstr ""
+
+#: template-parts/home-hero.php:85
+msgid "pins"
+msgstr ""
+
+#. translators: 1: category count, 2: comment count
+#: template-parts/home-hero.php:89
+#, php-format
+msgid "%1$s categories · %2$s comments"
+msgstr ""
+
+#: template-parts/home-hero.php:97
+msgid "Browse"
+msgstr ""
+
+#: template-parts/share-bar.php:17
 msgid "Share this post"
 msgstr ""
 
-#: single.php:88
+#: template-parts/share-bar.php:18
 msgid "Share:"
 msgstr ""
 
-#: single.php:101
+#: template-parts/share-bar.php:31
 msgid "Share on X / Twitter (opens in new tab)"
 msgstr ""
 
-#: single.php:116
+#: template-parts/share-bar.php:46
 msgid "Copy link to clipboard"
 msgstr ""
 
-#: single.php:118
+#: template-parts/share-bar.php:48
 msgid "Copy link"
 msgstr ""
 
-#: single.php:122
-msgid "Post navigation"
+#: template-parts/sort-bar.php:11
+msgid "Sort posts"
+msgstr ""
+
+#: template-parts/sort-bar.php:15
+msgid "Latest"
+msgstr ""
+
+#: template-parts/sort-bar.php:21
+msgid "Last 7 days"
+msgstr ""
+
+#: template-parts/sort-bar.php:27
+msgid "This month"
+msgstr ""
+
+#: template-parts/sort-bar.php:33
+msgid "All time"
 msgstr ""

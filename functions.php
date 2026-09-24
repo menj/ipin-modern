@@ -2,13 +2,16 @@
 /**
  * iPin Modern — functions.php
  *
- * Theme bootstrap only. All logic is delegated to /inc/:
+ * Theme bootstrap: loads the modules in /inc/, then sets up theme
+ * supports. Where everything lives:
  *
- *   inc/enqueue.php        Asset enqueuing (CSS, JS, editor styles)
- *   inc/nav-walker.php     Accessible nav walker & menu filters
- *   inc/template-tags.php  Helper functions used in templates
- *   inc/admin-options.php  Tabbed admin settings page
- *   inc/customizer.php     WP Customizer integration
+ *   *.php (root)           Page templates WordPress picks by view
+ *   template-parts/        Pieces the templates share: home hero, sort
+ *                          bar, grid card, share bar
+ *   inc/                   PHP modules, loaded below
+ *   assets/css, js/        Stylesheets and scripts (see style.css for the map)
+ *   assets/fonts, img/     Self-hosted fonts; favicon and social icons
+ *   languages/             Translation template (ipin-modern.pot)
  *
  * PHP 8.x compatible. Bootstrap-free. No deprecated WP APIs.
  */
@@ -21,25 +24,29 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 
 /* -------------------------------------------------------
    REQUIRE /inc/ FILES
-   Load order matters: enqueue depends on template-tags
-   for ipin_option(), so template-tags comes first.
+   template-tags.php comes first: the others call its
+   helpers (ipin_option(), ipin_plain(), ipin_icon()).
    ------------------------------------------------------- */
 $ipin_inc = get_template_directory() . '/inc/';
 
 // ── Core ──────────────────────────────────────────────
-require_once $ipin_inc . 'template-tags.php';   // helpers, comment callback, RSS filter
-require_once $ipin_inc . 'nav-walker.php';       // Ipin_Nav_Walker + accessible nav filters
+require_once $ipin_inc . 'template-tags.php';          // helpers the templates call, comment callback, 404 lines
+require_once $ipin_inc . 'class-ipin-nav-walker.php';  // Ipin_Nav_Walker: menus with disclosure buttons
+require_once $ipin_inc . 'enqueue.php';                // assets, scheme init, theme-color, favicon
 
-// ── Design features ───────────────────────────────────
-require_once $ipin_inc . 'post-types.php';       // Sideblog: ipin_article post type
-require_once $ipin_inc . 'popular-posts.php';    // sort bar: popular-by-comments ordering
+// ── Content ───────────────────────────────────────────
+require_once $ipin_inc . 'post-types.php';             // Sideblog: ipin_article post type
+require_once $ipin_inc . 'popular-posts.php';          // sort bar ordering (?popular=)
+require_once $ipin_inc . 'video.php';                  // video pins: source parser, player, editor box
 
-// ── Assets & UI ───────────────────────────────────────
-require_once $ipin_inc . 'enqueue.php';          // all wp_enqueue_* calls
-require_once $ipin_inc . 'video.php';            // video pins: source parser, player, editor box
-require_once $ipin_inc . 'seo.php';              // meta description + JSON-LD structured data
-require_once $ipin_inc . 'admin-options.php';    // tabbed admin settings page
-require_once $ipin_inc . 'customizer.php';       // WP Customizer integration
+// ── Output for machines ───────────────────────────────
+require_once $ipin_inc . 'seo.php';                    // meta description + JSON-LD structured data
+require_once $ipin_inc . 'feed.php';                   // RSS: pin images and enclosures
+require_once $ipin_inc . 'rest-api.php';               // lightbox data: GET /wp-json/ipin/v1/pin/{id}
+
+// ── Admin ─────────────────────────────────────────────
+require_once $ipin_inc . 'admin-options.php';          // tabbed settings page
+require_once $ipin_inc . 'customizer.php';             // Customizer integration
 
 unset( $ipin_inc );
 

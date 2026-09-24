@@ -1,8 +1,9 @@
 /* =========================================================
    404 PAGE
    "4 0 4" with a loose pin for the zero, a cheeky headline
-   (picked at random in inc/template-tags.php), and three ways
-   back. Loaded on 404 views only, from inc/enqueue.php.
+   (picked at random by ipin_404_quip() in inc/template-tags.php),
+   and three ways back. Markup in 404.php. Loaded on 404 views
+   only, from inc/enqueue.php.
    ========================================================= */
 
 .error-404 {
@@ -34,7 +35,7 @@
   color: var(--clr-accent-1); /* fallback when clip-text unsupported */
 }
 
-/* The zero: the brand pin (same path as favicon.svg), stuck in by its
+/* The zero: the brand pin (same path as assets/img/favicon.svg), stuck in by its
    tip at a lazy angle and wobbling. Masked, so it takes the scheme's
    gradient in light and dark mode. */
 .error-404__pin {

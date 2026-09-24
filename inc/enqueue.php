@@ -2,13 +2,17 @@
 /**
  * iPin Modern — Asset Enqueue
  *
- * All wp_enqueue_style() and wp_enqueue_script() calls.
- * CSS lives in /assets/css/, JS in /assets/js/.
+ * All wp_enqueue_style() and wp_enqueue_script() calls, plus the
+ * <head> output that belongs with them: the pre-paint colour-scheme
+ * script, theme-color and the fallback favicon.
+ * CSS lives in /assets/css/, JS in /assets/js/, images in /assets/img/.
  *
- * Load order:
- *   CSS:  tokens → base → nav → masonry (archive only) → single
- *   JS:   masonry libs (archive, head) → ipin.custom (footer)
- *   Admin: admin.css + ipin.admin.js (admin page only)
+ * Load order (handle: file):
+ *   CSS    ipin-fonts → ipin-tokens → ipin-base → ipin-nav, then one of
+ *          ipin-single (posts, pages) | ipin-404 | ipin-grid + ipin-lightbox
+ *   JS     ipin-theme (every view, footer) → ipin-grid + ipin-lightbox
+ *          (grid views)
+ *   Admin  ipin-tokens + ipin-admin (CSS and JS, settings page only)
  */
 
 declare( strict_types = 1 );
@@ -37,15 +41,15 @@ function ipin_enqueue_assets(): void {
 
 	// Each view loads only the stylesheet it renders: posts/pages get
 	// single.css; 404 gets 404.css; the grid (home, archives, search)
-	// gets masonry + lightbox. Footer, search form and scroll-to-top
+	// gets grid + lightbox. Footer, search form and scroll-to-top
 	// live in base.css.
 	if ( is_singular() ) {
 		wp_enqueue_style( 'ipin-single', "$uri/assets/css/single.css", [ 'ipin-base' ], $v );
 	} elseif ( is_404() ) {
 		wp_enqueue_style( 'ipin-404', "$uri/assets/css/404.css", [ 'ipin-base' ], $v );
 	} else {
-		wp_enqueue_style( 'ipin-masonry-css', "$uri/assets/css/masonry.css", [ 'ipin-base' ], $v );
-		wp_enqueue_style( 'ipin-lightbox',    "$uri/assets/css/lightbox.css", [ 'ipin-base' ], $v );
+		wp_enqueue_style( 'ipin-grid',     "$uri/assets/css/grid.css",     [ 'ipin-base' ], $v );
+		wp_enqueue_style( 'ipin-lightbox', "$uri/assets/css/lightbox.css", [ 'ipin-base' ], $v );
 	}
 
 	// Required WP theme stylesheet (header comment only — no actual rules)
@@ -58,8 +62,8 @@ function ipin_enqueue_assets(): void {
 
 	// ── JS: custom theme script — footer, no jQuery ─────
 	wp_enqueue_script(
-		'ipin-custom',
-		"$uri/assets/js/ipin.custom.js",
+		'ipin-theme',
+		"$uri/assets/js/theme.js",
 		[], $v,
 		true  // in footer
 	);
@@ -70,20 +74,20 @@ function ipin_enqueue_assets(): void {
 	if ( ! is_singular() && ! is_404() ) {
 		wp_enqueue_script(
 			'ipin-grid',
-			"$uri/assets/js/ipin.grid.js",
-			[ 'ipin-custom' ], $v,   // after ipin-custom so ipinData is localized first
+			"$uri/assets/js/grid.js",
+			[ 'ipin-theme' ], $v,   // after ipin-theme so ipinData is localized first
 			true
 		);
 		wp_enqueue_script(
 			'ipin-lightbox',
 			"$uri/assets/js/lightbox.js",
-			[ 'ipin-custom' ], $v,
+			[ 'ipin-theme' ], $v,
 			true
 		);
 	}
 
 	// PHP → JS data bridge
-	wp_localize_script( 'ipin-custom', 'ipinData', [
+	wp_localize_script( 'ipin-theme', 'ipinData', [
 		'allLoaded'   => __( 'All items loaded', 'ipin-modern' ),
 		'loadingText' => __( 'Loading more pins…', 'ipin-modern' ),
 		'i18n'        => [
@@ -127,21 +131,21 @@ function ipin_enqueue_admin_assets( string $hook ): void {
 	// their gradients from it so the picker always matches the site.
 	wp_enqueue_style( 'ipin-tokens', "$uri/assets/css/tokens.css", [], $v );
 	wp_enqueue_style(
-		'ipin-admin-css',
+		'ipin-admin',
 		"$uri/assets/css/admin.css",
 		[ 'ipin-tokens' ],
 		$v
 	);
 
 	wp_enqueue_script(
-		'ipin-admin-js',
-		"$uri/assets/js/ipin.admin.js",
+		'ipin-admin',
+		"$uri/assets/js/admin.js",
 		[],
 		$v,
 		true
 	);
 
-	wp_localize_script( 'ipin-admin-js', 'ipinAdmin', [
+	wp_localize_script( 'ipin-admin', 'ipinAdmin', [
 		'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		'nonce'   => wp_create_nonce( 'ipin_save_options' ),
 		'saving'  => __( 'Saving…', 'ipin-modern' ),
@@ -208,7 +212,7 @@ function ipin_favicon_fallback(): void {
 	if ( has_site_icon() ) {
 		return;
 	}
-	$base = get_template_directory_uri();
+	$base = get_template_directory_uri() . '/assets/img';
 	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.ico' ) . '" sizes="48x48">' . "\n";
 	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.svg' ) . '" type="image/svg+xml" sizes="any">' . "\n";
 }

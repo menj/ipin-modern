@@ -6,7 +6,7 @@
  * Bootstrap-free. Items with children get a disclosure <button>
  * after their link (WAI-ARIA disclosure navigation pattern): the
  * button owns aria-expanded/aria-controls and is toggled by
- * ipin.custom.js, so submenus work on touch screens and for
+ * assets/js/theme.js, so submenus work on touch screens and for
  * keyboard and screen-reader users, not only on mouse hover.
  */
 
