@@ -29,8 +29,11 @@ function ipin_register_settings(): void {
 		'ipin_rss_visible'        => [ 'absint',       1   ],
 		// Layout
 		'ipin_show_avatars_grid'  => [ 'absint',       1   ],
-		'ipin_sidebar_position'   => [ 'sanitize_key', 'right' ],
 		'ipin_footer_text'        => [ 'wp_kses_post', ''  ],
+		// Hero
+		'ipin_hero_enabled'       => [ 'absint',              1  ],
+		'ipin_hero_title'         => [ 'sanitize_text_field', '' ],
+		'ipin_hero_lede'          => [ 'wp_kses_post',        '' ],
 	];
 
 	foreach ( $settings as $key => [ $sanitize, $default ] ) {
@@ -66,8 +69,10 @@ function ipin_ajax_save_options(): void {
 		'ipin_author_sameas'         => 'ipin_sanitize_url_list',
 		'ipin_rss_visible'           => 'absint',
 		'ipin_show_avatars_grid'     => 'absint',
-		'ipin_sidebar_position'      => 'sanitize_key',
 		'ipin_footer_text'           => 'wp_kses_post',
+		'ipin_hero_enabled'          => 'absint',
+		'ipin_hero_title'            => 'sanitize_text_field',
+		'ipin_hero_lede'             => 'wp_kses_post',
 	];
 
 	foreach ( $fields as $key => $cb ) {
@@ -454,26 +459,41 @@ function ipin_render_settings_page(): void {
 		<div id="ipin-tab-layout" class="ipin-tab-panel" role="tabpanel" aria-labelledby="ipin-tab-btn-layout">
 
 			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Single Post / Page Sidebar', 'ipin' ); ?></p>
-				<p class="ipin-card__desc"><?php esc_html_e( 'Controls sidebar position on single posts and pages. Individual pages can override via page templates.', 'ipin' ); ?></p>
+				<p class="ipin-card__title"><?php esc_html_e( 'Homepage Hero', 'ipin' ); ?></p>
+				<p class="ipin-card__desc"><?php esc_html_e( 'Statement heading and lede paragraph shown above the grid on the first page of the homepage.', 'ipin' ); ?></p>
+
+				<div class="ipin-toggle-row">
+					<div class="ipin-toggle-cell">
+						<label class="ipin-switch" for="ipin_hero_enabled"
+							aria-label="<?php esc_html_e( 'Show homepage hero', 'ipin' ); ?>">
+							<input type="hidden" name="ipin_hero_enabled" value="0">
+							<input type="checkbox" id="ipin_hero_enabled" name="ipin_hero_enabled" value="1"
+								<?php checked( 1, (int) ipin_get( 'ipin_hero_enabled', 1 ) ); ?>>
+							<span class="ipin-switch__track"></span>
+							<span class="ipin-switch__thumb"></span>
+						</label>
+					</div>
+					<div class="ipin-toggle-body">
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show homepage hero', 'ipin' ); ?></span>
+					</div>
+				</div>
 
 				<div class="ipin-field">
-					<label for="ipin_sidebar_position"><?php esc_html_e( 'Sidebar position', 'ipin' ); ?></label>
+					<label for="ipin_hero_title"><?php esc_html_e( 'Hero heading', 'ipin' ); ?></label>
 					<div>
-						<select id="ipin_sidebar_position" name="ipin_sidebar_position">
-							<?php
-							$positions = [
-								'right' => __( 'Right sidebar',          'ipin' ),
-								'left'  => __( 'Left sidebar',           'ipin' ),
-								'none'  => __( 'No sidebar (full width)', 'ipin' ),
-							];
-							$current = ipin_get( 'ipin_sidebar_position', 'right' );
-							foreach ( $positions as $val => $lbl ) : ?>
-							<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $val, $current ); ?>>
-								<?php echo esc_html( $lbl ); ?>
-							</option>
-							<?php endforeach; ?>
-						</select>
+						<input type="text" id="ipin_hero_title" name="ipin_hero_title"
+							value="<?php echo esc_attr( ipin_get( 'ipin_hero_title', '' ) ); ?>"
+							placeholder="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>">
+						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site title. Wrap one word in *asterisks* to give it the gradient accent.', 'ipin' ); ?></p>
+					</div>
+				</div>
+
+				<div class="ipin-field">
+					<label for="ipin_hero_lede"><?php esc_html_e( 'Lede paragraph', 'ipin' ); ?></label>
+					<div>
+						<textarea id="ipin_hero_lede" name="ipin_hero_lede" rows="3"
+							placeholder="<?php echo esc_attr( get_bloginfo( 'description' ) ); ?>"><?php echo esc_textarea( ipin_get( 'ipin_hero_lede', '' ) ); ?></textarea>
+						<p class="ipin-field-desc"><?php esc_html_e( 'Leave blank to use the site tagline. Basic HTML (links, emphasis) is allowed.', 'ipin' ); ?></p>
 					</div>
 				</div>
 			</div>

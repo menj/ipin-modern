@@ -323,3 +323,38 @@
   outline: none;
   box-shadow: var(--focus-ring);
 }
+
+/* =========================================================
+   HOMEPAGE HERO
+   Statement heading + lede above the grid; content set in
+   Theme Options → Layout, falling back to site title/tagline.
+   ========================================================= */
+.home-hero {
+  padding: clamp(30px, 5.5vw, 64px) 0 6px;
+}
+.home-hero__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6.2vw, 4.75rem);
+  line-height: 1.04;
+  letter-spacing: -.015em;
+  color: var(--txt-primary);
+  margin: 0;
+  text-wrap: balance;
+  max-width: 20ch;
+}
+.home-hero__accent {
+  background: var(--grad-brand);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: var(--clr-accent-1); /* fallback when clip-text unsupported */
+}
+.home-hero__lede {
+  font-size: clamp(1.02rem, 1.5vw, 1.28rem);
+  line-height: 1.62;
+  color: var(--txt-secondary);
+  max-width: 54ch;
+  margin: 16px 0 0;
+}
+.home-hero__lede a { color: var(--clr-accent-1); }

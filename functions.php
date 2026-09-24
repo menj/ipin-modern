@@ -88,27 +88,4 @@ function ipin_setup(): void {
 add_action( 'after_setup_theme', 'ipin_setup' );
 
 
-/* -------------------------------------------------------
-   WIDGET AREAS
-   ------------------------------------------------------- */
-function ipin_widgets_init(): void {
-	$shared = [
-		'before_widget' => '<div class="widget %2$s">',
-		'after_widget'  => '</div>',
-		'before_title'  => '<h4>',
-		'after_title'   => '</h4>',
-	];
-
-	register_sidebar( array_merge( $shared, [
-		'name'        => __( 'Right Sidebar', 'ipin' ),
-		'id'          => 'sidebar-right',
-		'description' => __( 'Widgets in the right column of single posts and pages.', 'ipin' ),
-	] ) );
-
-	register_sidebar( array_merge( $shared, [
-		'name'        => __( 'Left Sidebar', 'ipin' ),
-		'id'          => 'sidebar-left',
-		'description' => __( 'Widgets in the left column (left-sidebar page template).', 'ipin' ),
-	] ) );
-}
-add_action( 'widgets_init', 'ipin_widgets_init' );
+/* Sidebars removed by design — single posts and pages render full width. */

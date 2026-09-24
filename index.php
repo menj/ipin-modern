@@ -4,6 +4,32 @@
 <main id="main-content" tabindex="-1">
 <div id="masonry-wrap">
 
+	<!-- ── Homepage hero: statement heading + lede ───── -->
+	<?php if ( ( is_home() || is_front_page() ) && ! is_paged() && (int) ipin_option( 'ipin_hero_enabled', 1 ) ) :
+		$hero_title = trim( (string) ipin_option( 'ipin_hero_title', '' ) );
+		$hero_lede  = trim( (string) ipin_option( 'ipin_hero_lede', '' ) );
+		if ( '' === $hero_title ) {
+			$hero_title = get_bloginfo( 'name', 'display' );
+		}
+		if ( '' === $hero_lede ) {
+			$hero_lede = get_bloginfo( 'description', 'display' );
+		}
+		// *word* in the heading gets the brand-gradient accent.
+		$hero_html = preg_replace(
+			'/\*([^*]+)\*/',
+			'<span class="home-hero__accent">$1</span>',
+			esc_html( $hero_title )
+		);
+		if ( $hero_title ) :
+	?>
+	<header class="home-hero">
+		<h1 class="home-hero__title"><?php echo wp_kses( $hero_html, [ 'span' => [ 'class' => [] ] ] ); ?></h1>
+		<?php if ( $hero_lede ) : ?>
+		<p class="home-hero__lede"><?php echo wp_kses_post( $hero_lede ); ?></p>
+		<?php endif; ?>
+	</header>
+	<?php endif; endif; ?>
+
 	<!-- ── Popular posts sort bar ────────────────────── -->
 	<?php
 	$current_sort = sanitize_key( $_GET['popular'] ?? '' );

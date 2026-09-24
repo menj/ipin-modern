@@ -1,17 +1,7 @@
 <?php get_header(); ?>
 
 <main id="main-content" tabindex="-1">
-<div class="content-area<?php
-	$pos = ipin_option( 'ipin_sidebar_position', 'right' );
-	if ( $pos === 'none' ) echo ' full-width';
-	if ( $pos === 'left' ) echo ' left-sidebar';
-?>">
-
-	<?php if ( $pos === 'left' ) : ?>
-	<aside class="sidebar" aria-label="<?php esc_attr_e( 'Sidebar', 'ipin' ); ?>">
-		<?php get_sidebar( 'left' ); ?>
-	</aside>
-	<?php endif; ?>
+<div class="content-area">
 
 	<?php while ( have_posts() ) : the_post(); ?>
 
@@ -43,12 +33,6 @@
 	</article>
 
 	<?php endwhile; ?>
-
-	<?php if ( $pos === 'right' || $pos === '' ) : ?>
-	<aside class="sidebar" aria-label="<?php esc_attr_e( 'Sidebar', 'ipin' ); ?>">
-		<?php get_sidebar( 'right' ); ?>
-	</aside>
-	<?php endif; ?>
 
 </div>
 </main>
