@@ -55,54 +55,42 @@ function ipin_enqueue_assets(): void {
 		wp_enqueue_script( 'comment-reply' );
 	}
 
-	// ── JS: masonry libraries — /assets/js/ ─────────────
-	// Loaded in <head> (in_footer = false) so masonry can
-	// initialise as soon as jQuery and images are ready.
-	if ( ! is_singular() ) {
-		wp_enqueue_script(
-			'ipin-masonry',
-			"$uri/assets/js/jquery.masonry.min.js",
-			[ 'jquery' ], '3.3.2', false
-		);
-		wp_enqueue_script(
-			'ipin-imagesloaded',
-			"$uri/assets/js/jquery.imagesloaded.min.js",
-			[ 'jquery' ], '4.1.4', false
-		);
-		wp_enqueue_script(
-			'ipin-infinitescroll',
-			"$uri/assets/js/jquery.infinitescroll.min.js",
-			[ 'jquery' ], '2.1.0', false
-		);
-	}
-
-	// ── JS: custom theme script — footer ────────────────
+	// ── JS: custom theme script — footer, no jQuery ─────
 	wp_enqueue_script(
 		'ipin-custom',
 		"$uri/assets/js/ipin.custom.js",
-		[ 'jquery' ], $v,
+		[], $v,
 		true  // in footer
 	);
 
-	// ── JS: lightbox — archive pages only ───────────────
+	// ── JS: grid engine + lightbox — archive pages only ─
+	// Vanilla masonry, infinite scroll, and lightbox; the
+	// bundled jQuery plugin stack is gone.
 	if ( ! is_singular() ) {
+		wp_enqueue_script(
+			'ipin-grid',
+			"$uri/assets/js/ipin.grid.js",
+			[ 'ipin-custom' ], $v,   // after ipin-custom so ipinData is localized first
+			true
+		);
 		wp_enqueue_script(
 			'ipin-lightbox',
 			"$uri/assets/js/lightbox.js",
-			[ 'jquery', 'ipin-custom' ], $v,
+			[ 'ipin-custom' ], $v,
 			true
 		);
 	}
 
 	// PHP → JS data bridge
 	wp_localize_script( 'ipin-custom', 'ipinData', [
-		'allLoaded'       => __( 'All items loaded', 'ipin' ),
-		'themeUrl'        => $uri,
-		'ajaxUrl'         => admin_url( 'admin-ajax.php' ),
-		'darkModeDefault' => (int) get_option( 'ipin_dark_mode_default', 0 ),
-		'colourScheme'    => sanitize_key( get_option( 'ipin_colour_scheme', 'vivid' ) ),
-		'cardWidth'       => (int) get_option( 'ipin_card_width', 220 ),
-		'roundedCards'    => (int) get_option( 'ipin_rounded_cards', 1 ),
+		'allLoaded'   => __( 'All items loaded', 'ipin' ),
+		'loadingText' => __( 'Loading more pins…', 'ipin' ),
+		'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+		'icons'       => [
+			'pinterest' => ipin_social_icon( 'pinterest' ),
+			'x'         => ipin_social_icon( 'x' ),
+			'facebook'  => ipin_social_icon( 'facebook' ),
+		],
 	] );
 }
 add_action( 'wp_enqueue_scripts', 'ipin_enqueue_assets' );

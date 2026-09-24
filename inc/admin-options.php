@@ -34,6 +34,7 @@ function ipin_register_settings(): void {
 		'ipin_hero_enabled'       => [ 'absint',              1  ],
 		'ipin_hero_title'         => [ 'sanitize_text_field', '' ],
 		'ipin_hero_lede'          => [ 'wp_kses_post',        '' ],
+		'ipin_hero_bento'         => [ 'absint',              1  ],
 	];
 
 	foreach ( $settings as $key => [ $sanitize, $default ] ) {
@@ -73,6 +74,7 @@ function ipin_ajax_save_options(): void {
 		'ipin_hero_enabled'          => 'absint',
 		'ipin_hero_title'            => 'sanitize_text_field',
 		'ipin_hero_lede'             => 'wp_kses_post',
+		'ipin_hero_bento'            => 'absint',
 	];
 
 	foreach ( $fields as $key => $cb ) {
@@ -475,6 +477,23 @@ function ipin_render_settings_page(): void {
 					</div>
 					<div class="ipin-toggle-body">
 						<span class="ipin-toggle-label"><?php esc_html_e( 'Show homepage hero', 'ipin' ); ?></span>
+					</div>
+				</div>
+
+				<div class="ipin-toggle-row">
+					<div class="ipin-toggle-cell">
+						<label class="ipin-switch" for="ipin_hero_bento"
+							aria-label="<?php esc_html_e( 'Show featured-pin bento panel', 'ipin' ); ?>">
+							<input type="hidden" name="ipin_hero_bento" value="0">
+							<input type="checkbox" id="ipin_hero_bento" name="ipin_hero_bento" value="1"
+								<?php checked( 1, (int) ipin_get( 'ipin_hero_bento', 1 ) ); ?>>
+							<span class="ipin-switch__track"></span>
+							<span class="ipin-switch__thumb"></span>
+						</label>
+					</div>
+					<div class="ipin-toggle-body">
+						<span class="ipin-toggle-label"><?php esc_html_e( 'Show featured-pin bento panel', 'ipin' ); ?></span>
+						<span class="ipin-toggle-desc"><?php esc_html_e( 'Featured pin (first sticky post, or the newest pin) plus board stats beside the hero text.', 'ipin' ); ?></span>
 					</div>
 				</div>
 

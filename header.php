@@ -14,10 +14,6 @@
 <!-- Skip to main content (WCAG 2.4.1) -->
 <a class="skip-link" href="#main-content"><?php esc_html_e( 'Skip to main content', 'ipin' ); ?></a>
 
-<noscript>
-	<style>#masonry { visibility: visible !important; }</style>
-</noscript>
-
 <!-- =======================================================
      TOP NAVIGATION  (landmark: <nav>, WCAG 1.3.6 / 4.1.2)
      ======================================================= -->

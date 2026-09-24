@@ -209,7 +209,9 @@ function ipin_lightbox_data_handler(): void {
 	}
 
 	$post = get_post( $post_id );
-	if ( ! $post || $post->post_status !== 'publish' ) {
+	if ( ! $post
+		|| ! is_post_publicly_viewable( $post )   // covers status AND post-type visibility
+		|| post_password_required( $post ) ) {
 		wp_send_json_error( 'Not found', 404 );
 	}
 
@@ -252,7 +254,7 @@ function ipin_lightbox_data_handler(): void {
 		'permalink'     => get_permalink( $post_id ),
 		'img_url'       => $img_url,
 		'is_video'      => $is_video,
-		'embed_url'     => $embed_url,
+		'embed_url'     => esc_url_raw( $embed_url ),
 		'author_name'   => esc_html( $author_name ),
 		'author_url'    => esc_url( $author_url ),
 		'author_avatar' => esc_url( $author_avatar ),

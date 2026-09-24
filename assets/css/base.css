@@ -206,3 +206,24 @@ img.alignleft  { float: left;  margin: 0.25rem 1.5rem 1rem 0; border-radius: var
   height: 1em;
   vertical-align: -0.125em;
 }
+
+/* ── Cross-document View Transitions ──
+   Same-origin navigations morph in supporting browsers: the grid
+   card image and the single post's featured image share a
+   per-post view-transition-name, so the clicked pin's image
+   travels to its place on the post page. Everything else
+   crossfades. No-ops entirely in browsers without support. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: .22s;
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

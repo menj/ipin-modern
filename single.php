@@ -38,6 +38,9 @@
 				the_post_thumbnail( 'large', [
 					'class' => 'aligncenter',
 					'alt'   => get_the_title(),
+					// Pairs with the same name on this post's grid card, so
+					// supporting browsers morph the image across navigation.
+					'style' => 'view-transition-name: ipin-media-' . get_the_ID(),
 				] );
 			}
 			the_content();

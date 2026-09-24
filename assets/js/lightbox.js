@@ -1,122 +1,123 @@
 /**
- * iPin Modern — Lightbox JS
- * Opens on card click/enter. Accessible: aria-modal dialog,
- * focus trap, Escape closes, Arrow keys navigate prev/next.
+ * iPin Modern — Lightbox JS (no jQuery)
+ * Opens on card click. Accessible: aria-modal dialog, focus trap,
+ * Escape closes, Arrow keys navigate prev/next.
+ *
+ * All server-provided values are written with textContent or element
+ * properties — nothing is string-concatenated into HTML — and the
+ * video embed URL is scheme-checked before it reaches the iframe.
  */
-(function ($) {
+(function () {
   'use strict';
 
-  var ajaxUrl    = (window.ipinData || {}).ajaxUrl || '/wp-admin/admin-ajax.php';
-  var nonce      = '';   // no social actions in design-only build
-  var $overlay   = null;
-  var $dialog    = null;
-  var pinIds     = [];   // array of post IDs on current page
+  var data       = window.ipinData || {};
+  var ajaxUrl    = data.ajaxUrl || '/wp-admin/admin-ajax.php';
+  var icons      = data.icons || {};
+  var overlay    = null;
+  var pinIds     = [];
   var currentIdx = -1;
   var lastFocused = null;
+  var el = {};   // cached refs into the overlay
+
+  var SVG_CLOSE = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="16" height="16"><path fill="currentColor" d="M18.3 5.7a1 1 0 0 0-1.4-1.4L12 9.2 7.1 4.3a1 1 0 0 0-1.4 1.4l4.9 4.9-4.9 4.9a1 1 0 1 0 1.4 1.4l4.9-4.9 4.9 4.9a1 1 0 0 0 1.4-1.4L13.4 10.6Z" transform="translate(0 1.4)"/></svg>';
+  var SVG_PREV  = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="18" height="18"><path fill="currentColor" d="M15.4 5.3a1 1 0 0 0-1.4-1.4l-7 7a1 1 0 0 0 0 1.4l7 7a1 1 0 0 0 1.4-1.4L9.1 11.6Z" transform="translate(0 .4)"/></svg>';
+  var SVG_NEXT  = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="18" height="18"><path fill="currentColor" d="M8.6 4.9a1 1 0 0 1 1.4-1.4l7 7a1 1 0 0 1 0 1.4l-7 7a1 1 0 0 1-1.4-1.4l6.3-6.3Z" transform="translate(0 .4)"/></svg>';
+  var SVG_LINK  = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="13" height="13"><path fill="currentColor" d="M14 3a1 1 0 1 0 0 2h3.6l-8.3 8.3a1 1 0 0 0 1.4 1.4L19 6.4V10a1 1 0 1 0 2 0V4a1 1 0 0 0-1-1Zm-9 4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-5a1 1 0 1 0-2 0v5H5V9h5a1 1 0 1 0 0-2Z"/></svg>';
+  var SVG_VIEW  = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" width="13" height="13"><path fill="currentColor" d="M4 4h6a1 1 0 1 1 0 2H6v4a1 1 0 1 1-2 0Zm16 16h-6a1 1 0 1 1 0-2h4v-4a1 1 0 1 1 2 0Z"/></svg>';
 
   /* ========================================================
-     BUILD DOM ON FIRST OPEN
+     BUILD DOM ON FIRST OPEN (static template — no user data)
   ======================================================== */
   function ensureDom() {
-    if ($overlay) return;
+    if (overlay) return;
 
-    $overlay = $([
-      '<div class="lightbox-overlay" id="lightbox-overlay" role="dialog"',
-      '     aria-modal="true" aria-labelledby="lightbox-title"',
-      '     hidden tabindex="-1">',
-      '  <div class="lightbox-dialog" id="lightbox-dialog">',
+    overlay = document.createElement('div');
+    overlay.className = 'lightbox-overlay';
+    overlay.id = 'lightbox-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-labelledby', 'lightbox-title');
+    overlay.hidden = true;
+    overlay.tabIndex = -1;
 
-      '    <!-- Image panel -->',
-      '    <div class="lightbox-image-panel" id="lightbox-image-panel">',
-      '      <div class="lightbox-loading" id="lightbox-loading">',
-      '        <div class="lightbox-spinner" aria-hidden="true"></div>',
-      '      </div>',
-      '      <img class="lightbox-img" id="lightbox-img" src="" alt="" decoding="async">',
-      '      <div class="lightbox-video" id="lightbox-video" hidden></div>',
-      '      <a class="lightbox-source-link" id="lightbox-source" href="#" target="_blank" rel="noopener noreferrer" hidden>',
-      '        <i class="fa fa-external-link-alt" aria-hidden="true"></i> <span id="lightbox-source-text"></span>',
-      '      </a>',
-      '    </div>',
+    overlay.innerHTML =
+      '<div class="lightbox-dialog" id="lightbox-dialog">' +
+      '  <div class="lightbox-image-panel" id="lightbox-image-panel">' +
+      '    <div class="lightbox-loading" id="lightbox-loading">' +
+      '      <div class="lightbox-spinner" aria-hidden="true"></div>' +
+      '    </div>' +
+      '    <img class="lightbox-img" id="lightbox-img" src="" alt="" decoding="async">' +
+      '    <div class="lightbox-video" id="lightbox-video" hidden></div>' +
+      '    <a class="lightbox-source-link" id="lightbox-source" href="#" target="_blank" rel="noopener noreferrer" hidden>' +
+      SVG_LINK + ' <span id="lightbox-source-text"></span>' +
+      '    </a>' +
+      '  </div>' +
+      '  <div class="lightbox-info-panel">' +
+      '    <div class="social-actions" id="lightbox-social-actions"></div>' +
+      '    <h2 class="lightbox-title" id="lightbox-title"><a id="lightbox-title-link" href="#"></a></h2>' +
+      '    <div class="lightbox-meta" id="lightbox-meta"></div>' +
+      '    <p class="lightbox-description" id="lightbox-desc"></p>' +
+      '    <div class="lightbox-comments-preview" id="lightbox-comments" hidden>' +
+      '      <div class="lightbox-comments-preview__title">Comments</div>' +
+      '      <ul class="lightbox-comments-list" id="lightbox-comments-list"></ul>' +
+      '      <a class="lightbox-view-all" id="lightbox-view-all" href="#">View all</a>' +
+      '    </div>' +
+      '  </div>' +
+      '</div>' +
+      // Controls sit inside the overlay so the focus trap contains
+      // them (WCAG 2.1.2 — focus must not escape an open modal).
+      '<button class="lightbox-close" aria-label="Close lightbox">' + SVG_CLOSE + '</button>' +
+      '<button class="lightbox-nav lightbox-nav--prev" id="lb-prev" aria-label="Previous pin">' + SVG_PREV + '</button>' +
+      '<button class="lightbox-nav lightbox-nav--next" id="lb-next" aria-label="Next pin">' + SVG_NEXT + '</button>';
 
-      '    <!-- Info panel -->',
-      '    <div class="lightbox-info-panel">',
-      '      <div class="social-actions" id="lightbox-social-actions"></div>',
-      '      <h2 class="lightbox-title" id="lightbox-title"><a id="lightbox-title-link" href="#"></a></h2>',
-      '      <div class="lightbox-meta" id="lightbox-meta"></div>',
-      '      <p class="lightbox-description" id="lightbox-desc"></p>',
-      '      <div class="lightbox-comments-preview" id="lightbox-comments" hidden>',
-      '        <div class="lightbox-comments-preview__title">Comments</div>',
-      '        <ul class="lightbox-comments-list" id="lightbox-comments-list"></ul>',
-      '        <a class="lightbox-view-all" id="lightbox-view-all" href="#">View all</a>',
-      '      </div>',
-      '    </div>',
+    document.body.appendChild(overlay);
 
-      '  </div><!-- /.lightbox-dialog -->',
-      '</div>',
-    ].join(''))[0];
+    ['lightbox-loading', 'lightbox-img', 'lightbox-video', 'lightbox-source', 'lightbox-source-text',
+     'lightbox-social-actions', 'lightbox-title-link', 'lightbox-meta', 'lightbox-desc',
+     'lightbox-comments', 'lightbox-comments-list', 'lightbox-view-all', 'lb-prev', 'lb-next'
+    ].forEach(function (id) { el[id] = document.getElementById(id); });
 
-    // Close button — will be appended inside $overlay (see below)
-    var $close = $('<button class="lightbox-close" aria-label="Close lightbox"><i class="fa fa-times" aria-hidden="true"></i></button>');
-    // Prev/Next
-    var $prev = $('<button class="lightbox-nav lightbox-nav--prev" id="lb-prev" aria-label="Previous pin"><i class="fa fa-chevron-left" aria-hidden="true"></i></button>');
-    var $next = $('<button class="lightbox-nav lightbox-nav--next" id="lb-next" aria-label="Next pin"><i class="fa fa-chevron-right" aria-hidden="true"></i></button>');
+    overlay.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+    el['lb-prev'].addEventListener('click', function () { navigate(-1); });
+    el['lb-next'].addEventListener('click', function () { navigate(1); });
 
-    $('body').append($overlay);
-    // Append nav controls INSIDE the overlay so trapFocus() contains them
-    // (WCAG 2.1.2 — keyboard focus must not escape an open modal dialog)
-    $($overlay).append($close).append($prev).append($next);
-
-    $overlay = $('#lightbox-overlay');
-    $dialog  = $('#lightbox-dialog');
-
-    // Event binding
-    $close.on('click', closeLightbox);
-    $prev.on('click', function () { navigate(-1); });
-    $next.on('click', function () { navigate(+1); });
-
-    $overlay.on('click', function (e) {
-      if (!$(e.target).closest('.lightbox-dialog').length) closeLightbox();
+    overlay.addEventListener('click', function (e) {
+      if (!e.target.closest('.lightbox-dialog') && !e.target.closest('button')) closeLightbox();
     });
 
-    $(document).on('keydown.lightbox', function (e) {
-      if ($overlay.attr('hidden') !== undefined && $overlay[0].hidden) return;
-      if (e.key === 'Escape')      closeLightbox();
-      if (e.key === 'ArrowLeft')   navigate(-1);
-      if (e.key === 'ArrowRight')  navigate(+1);
+    document.addEventListener('keydown', function (e) {
+      if (!overlay || overlay.hidden) return;
+      if (e.key === 'Escape')     closeLightbox();
+      if (e.key === 'ArrowLeft')  navigate(-1);
+      if (e.key === 'ArrowRight') navigate(1);
+      if (e.key === 'Tab')        trapFocus(e);
     });
   }
 
-
   /* ========================================================
-     OPEN LIGHTBOX
+     OPEN / CLOSE
   ======================================================== */
   function openLightbox(postId) {
     ensureDom();
+    collectPinIds();                     // never stale, even if an append event was missed
     lastFocused = document.activeElement;
 
     showLoading();
-    $overlay.removeAttr('hidden');
-    $overlay.removeAttr('aria-hidden');
+    overlay.hidden = false;
     document.body.style.overflow = 'hidden';
-
-    // Focus overlay for screen readers
-    $overlay[0].focus();
-    trapFocus($overlay[0]);
+    overlay.focus();
 
     loadPin(postId);
-    updateNavButtons();
   }
 
   function closeLightbox() {
-    if (!$overlay) return;
-    $overlay.attr('hidden', '');
+    if (!overlay) return;
+    overlay.hidden = true;
     document.body.style.overflow = '';
-    // Clear video to stop playback
-    $('#lightbox-video').attr('hidden', '').empty();
-    // Return focus
-    if (lastFocused) { try { lastFocused.focus(); } catch(e) {} }
+    el['lightbox-video'].hidden = true;
+    el['lightbox-video'].textContent = ''; // stop playback
+    if (lastFocused) { try { lastFocused.focus(); } catch (e) {} }
   }
-
 
   /* ========================================================
      LOAD PIN DATA VIA AJAX
@@ -124,229 +125,283 @@
   function loadPin(postId) {
     currentIdx = pinIds.indexOf(postId);
     showLoading();
+    updateNavButtons();
 
-    $.post(ajaxUrl, {
-      action:  'ipin_lightbox_data',
-      post_id: postId,
-      nonce:   nonce,
-    }, function (resp) {
-      if (resp.success) {
-        renderPin(resp.data);
-      }
-    }).fail(function () {
-      hideLoading();
-    });
+    var body = new URLSearchParams();
+    body.set('action', 'ipin_lightbox_data');
+    body.set('post_id', String(postId));
+
+    fetch(ajaxUrl, { method: 'POST', credentials: 'same-origin', body: body })
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (resp) {
+        if (!resp || !resp.success) throw new Error('bad response');
+        renderPin(resp.data || {});
+      })
+      .catch(function () {
+        renderError();
+      });
   }
 
-
   /* ========================================================
-     RENDER PIN DATA
+     RENDER
   ======================================================== */
+  function safeHttpUrl(raw) {
+    try {
+      var u = new URL(raw, window.location.href);
+      if (u.protocol === 'http:' || u.protocol === 'https:') return u.href;
+    } catch (e) {}
+    return '';
+  }
+
   function renderPin(d) {
+    var img = el['lightbox-img'];
+    var vid = el['lightbox-video'];
+
     // Image or video
-    if (d.is_video && d.embed_url) {
-      $('#lightbox-img').attr('src', '').attr('hidden', '');
-      var $vid = $('#lightbox-video').removeAttr('hidden');
-      $vid.html('<iframe src="' + d.embed_url + '" allowfullscreen loading="lazy" title="' + escHtml(d.title) + '"></iframe>');
+    var embed = d.is_video ? safeHttpUrl(d.embed_url) : '';
+    if (embed) {
+      img.hidden = true;
+      img.src = '';
+      vid.textContent = '';
+      var frame = document.createElement('iframe');
+      frame.src = embed;
+      frame.title = d.title || '';
+      frame.loading = 'lazy';
+      frame.setAttribute('allowfullscreen', '');
+      frame.addEventListener('load', hideLoading);
+      vid.appendChild(frame);
+      vid.hidden = false;
+      hideLoading();                     // never leave the spinner over a video
     } else {
-      $('#lightbox-video').attr('hidden', '').empty();
-      var $img = $('#lightbox-img').removeAttr('hidden');
-      $img.attr('src', d.img_url || '').attr('alt', d.title || '');
-      $img.off('load error').on('load error', hideLoading);
-      if ($img[0].complete) hideLoading();
+      vid.hidden = true;
+      vid.textContent = '';
+      img.hidden = false;
+      img.alt = d.title || '';
+      img.addEventListener('load', hideLoading);
+      img.addEventListener('error', hideLoading);
+      img.src = d.img_url || '';
+      if (img.complete && img.src) hideLoading();
     }
 
     // Title
-    $('#lightbox-title-link').attr('href', d.permalink).text(d.title);
+    el['lightbox-title-link'].href = safeHttpUrl(d.permalink) || '#';
+    el['lightbox-title-link'].textContent = d.title || '';
 
-    // Meta
-    $('#lightbox-meta').html(
-      '<img src="' + escAttr(d.author_avatar) + '" width="22" height="22" alt="" style="border-radius:50%">' +
-      '<a href="' + escAttr(d.author_url) + '">' + escHtml(d.author_name) + '</a>' +
-      '&nbsp;·&nbsp;' + escHtml(d.date)
-    );
+    // Meta: avatar + author link + date, built as nodes
+    var meta = el['lightbox-meta'];
+    meta.textContent = '';
+    if (d.author_avatar) {
+      var av = document.createElement('img');
+      av.src = safeHttpUrl(d.author_avatar);
+      av.width = 22;
+      av.height = 22;
+      av.alt = '';
+      av.style.borderRadius = '50%';
+      meta.appendChild(av);
+    }
+    var author = document.createElement('a');
+    author.href = safeHttpUrl(d.author_url) || '#';
+    author.textContent = d.author_name || '';
+    meta.appendChild(author);
+    meta.appendChild(document.createTextNode(' · ' + (d.date || '')));
 
     // Description
-    $('#lightbox-desc').text(d.description || '');
+    el['lightbox-desc'].textContent = d.description || '';
 
     // Source link
-    if (d.source_url) {
-      var sourceHost = '';
-      try { sourceHost = new URL(d.source_url).hostname; } catch(e) { sourceHost = d.source_url; }
-      $('#lightbox-source').removeAttr('hidden').attr('href', d.source_url);
-      $('#lightbox-source-text').text(sourceHost);
+    var srcUrl = safeHttpUrl(d.source_url);
+    if (srcUrl) {
+      var host = '';
+      try { host = new URL(srcUrl).hostname; } catch (e) { host = srcUrl; }
+      el['lightbox-source'].hidden = false;
+      el['lightbox-source'].href = srcUrl;
+      el['lightbox-source-text'].textContent = host;
     } else {
-      $('#lightbox-source').attr('hidden', '');
+      el['lightbox-source'].hidden = true;
     }
 
-    // Social actions
     renderSocialActions(d);
 
     // Comments preview
+    var list = el['lightbox-comments-list'];
+    list.textContent = '';
     if (d.comments && d.comments.length) {
-      var $clist = $('#lightbox-comments-list').empty();
       d.comments.forEach(function (c) {
-        $clist.append(
-          '<li class="lightbox-comment-item">' +
-          '<img src="' + escAttr(c.avatar) + '" alt="" loading="lazy">' +
-          '<div class="lightbox-comment-item__text">' +
-          '<span class="lightbox-comment-item__author">' + escHtml(c.author) + '</span>' +
-          escHtml(c.text) +
-          '</div></li>'
-        );
+        var li = document.createElement('li');
+        li.className = 'lightbox-comment-item';
+        var cav = document.createElement('img');
+        cav.src = safeHttpUrl(c.avatar);
+        cav.alt = '';
+        cav.loading = 'lazy';
+        li.appendChild(cav);
+        var txt = document.createElement('div');
+        txt.className = 'lightbox-comment-item__text';
+        var who = document.createElement('span');
+        who.className = 'lightbox-comment-item__author';
+        who.textContent = c.author || '';
+        txt.appendChild(who);
+        txt.appendChild(document.createTextNode(c.text || ''));
+        li.appendChild(txt);
+        list.appendChild(li);
       });
-      $('#lightbox-view-all').attr('href', d.permalink + '#comments');
-      $('#lightbox-comments').removeAttr('hidden');
+      el['lightbox-view-all'].href = (safeHttpUrl(d.permalink) || '#') + '#comments';
+      el['lightbox-comments'].hidden = false;
     } else {
-      $('#lightbox-comments').attr('hidden', '');
+      el['lightbox-comments'].hidden = true;
     }
 
     updateNavButtons();
   }
 
-
-  /* ========================================================
-     SHARE ACTIONS IN LIGHTBOX
-  ======================================================== */
-  function renderSocialActions(d) {
-    var $sa = $('#lightbox-social-actions').empty();
-
-    // Pinterest share
-    var pinUrl = 'https://pinterest.com/pin/create/button/?url=' + encodeURIComponent(d.permalink)
-               + '&description=' + encodeURIComponent(d.title);
-    $sa.append(
-      '<a class="btn-social btn-share-pinterest" href="' + pinUrl + '" target="_blank" rel="noopener noreferrer"' +
-      '  aria-label="Save to Pinterest (opens in new tab)">' +
-      '  <i class="fa-brands fa-pinterest" aria-hidden="true"></i>' +
-      '</a>'
-    );
-
-    // Twitter / X share
-    var twUrl = 'https://twitter.com/intent/tweet?url=' + encodeURIComponent(d.permalink)
-              + '&text=' + encodeURIComponent(d.title);
-    $sa.append(
-      '<a class="btn-social btn-share-twitter" href="' + twUrl + '" target="_blank" rel="noopener noreferrer"' +
-      '  aria-label="Share on X / Twitter (opens in new tab)">' +
-      '  <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>' +
-      '</a>'
-    );
-
-    // Facebook share
-    var fbUrl = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(d.permalink);
-    $sa.append(
-      '<a class="btn-social btn-share-facebook" href="' + fbUrl + '" target="_blank" rel="noopener noreferrer"' +
-      '  aria-label="Share on Facebook (opens in new tab)">' +
-      '  <i class="fa-brands fa-facebook" aria-hidden="true"></i>' +
-      '</a>'
-    );
-
-    // View full post
-    $sa.append(
-      '<a class="btn-social btn-view-post" href="' + d.permalink + '">' +
-      '  <i class="fa fa-expand-alt" aria-hidden="true"></i> View' +
-      '</a>'
-    );
-  }
-
-
-  /* ========================================================
-     NAVIGATE PREV / NEXT
-  ======================================================== */
-  function navigate(dir) {
-    if (!pinIds.length) return;
-    var newIdx = currentIdx + dir;
-    if (newIdx < 0 || newIdx >= pinIds.length) return;
-    currentIdx = newIdx;
-    loadPin(pinIds[currentIdx]);
+  function renderError() {
+    hideLoading();
+    el['lightbox-img'].hidden = true;
+    el['lightbox-video'].hidden = true;
+    el['lightbox-title-link'].textContent = 'This pin could not be loaded.';
+    el['lightbox-title-link'].removeAttribute('href');
+    el['lightbox-meta'].textContent = '';
+    el['lightbox-desc'].textContent = 'Please try again, or open the post directly.';
+    el['lightbox-social-actions'].textContent = '';
+    el['lightbox-comments'].hidden = true;
+    el['lightbox-source'].hidden = true;
     updateNavButtons();
   }
 
-  function updateNavButtons() {
-    var $prev = $('#lb-prev');
-    var $next = $('#lb-next');
-    $prev.prop('disabled', currentIdx <= 0);
-    $next.prop('disabled', currentIdx >= pinIds.length - 1);
+  /* ========================================================
+     SHARE ACTIONS
+  ======================================================== */
+  function shareLink(className, label, href, iconSvg, extraText) {
+    var a = document.createElement('a');
+    a.className = 'btn-social ' + className;
+    a.href = href;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.setAttribute('aria-label', label);
+    if (iconSvg) a.innerHTML = iconSvg;   // theme-bundled icon markup, not user data
+    if (extraText) a.appendChild(document.createTextNode(' ' + extraText));
+    return a;
   }
 
+  function renderSocialActions(d) {
+    var sa = el['lightbox-social-actions'];
+    sa.textContent = '';
+    var permalink = safeHttpUrl(d.permalink);
+    if (!permalink) return;
+    var title = d.title || '';
+
+    sa.appendChild(shareLink(
+      'btn-share-pinterest',
+      'Save to Pinterest (opens in new tab)',
+      'https://pinterest.com/pin/create/button/?url=' + encodeURIComponent(permalink) + '&description=' + encodeURIComponent(title),
+      icons.pinterest || ''
+    ));
+    sa.appendChild(shareLink(
+      'btn-share-twitter',
+      'Share on X / Twitter (opens in new tab)',
+      'https://twitter.com/intent/tweet?url=' + encodeURIComponent(permalink) + '&text=' + encodeURIComponent(title),
+      icons.x || ''
+    ));
+    sa.appendChild(shareLink(
+      'btn-share-facebook',
+      'Share on Facebook (opens in new tab)',
+      'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(permalink),
+      icons.facebook || ''
+    ));
+
+    var view = document.createElement('a');
+    view.className = 'btn-social btn-view-post';
+    view.href = permalink;
+    view.innerHTML = SVG_VIEW;
+    view.appendChild(document.createTextNode(' View'));
+    sa.appendChild(view);
+  }
+
+  /* ========================================================
+     NAVIGATION
+  ======================================================== */
+  function navigate(dir) {
+    if (!pinIds.length) return;
+    var idx = currentIdx + dir;
+    if (idx < 0 || idx >= pinIds.length) return;
+    currentIdx = idx;
+    loadPin(pinIds[idx]);
+  }
+
+  function updateNavButtons() {
+    var prev = el['lb-prev'];
+    var next = el['lb-next'];
+    var wasFocused = document.activeElement;
+    prev.disabled = currentIdx <= 0;
+    next.disabled = currentIdx >= pinIds.length - 1;
+    // A button disabled while focused would drop keyboard focus out
+    // of the modal (WCAG 2.1.2) — hand it back to the overlay.
+    if (wasFocused && wasFocused.disabled) overlay.focus();
+  }
 
   /* ========================================================
      LOADING STATE
   ======================================================== */
   function showLoading() {
-    $('#lightbox-loading').removeAttr('hidden');
-    $('#lightbox-img').attr('src', '');
+    el['lightbox-loading'].hidden = false;
+    el['lightbox-img'].src = '';
   }
 
   function hideLoading() {
-    $('#lightbox-loading').attr('hidden', '');
+    el['lightbox-loading'].hidden = true;
   }
-
 
   /* ========================================================
-     FOCUS TRAP
+     FOCUS TRAP — recomputed per keypress, disabled controls
+     excluded, focus recovered when it has left the overlay.
   ======================================================== */
-  function trapFocus(element) {
+  function trapFocus(e) {
     var sel = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-    $(element).off('keydown.lbtrap').on('keydown.lbtrap', function (e) {
-      if (e.key !== 'Tab') return;
-      var foc = Array.from(element.querySelectorAll(sel)).filter(function (el) {
-        return !el.hidden && !el.closest('[hidden]') && !el.disabled;
-      });
-      if (!foc.length) return;
-      var first = foc[0], last = foc[foc.length - 1];
-      if (e.shiftKey) {
-        if (document.activeElement === first) { e.preventDefault(); last.focus(); }
-      } else {
-        if (document.activeElement === last)  { e.preventDefault(); first.focus(); }
-      }
+    var foc = Array.prototype.filter.call(overlay.querySelectorAll(sel), function (n) {
+      return !n.hidden && !n.closest('[hidden]') && !n.disabled;
     });
+    if (!foc.length) { e.preventDefault(); overlay.focus(); return; }
+    var first = foc[0];
+    var last  = foc[foc.length - 1];
+    var active = document.activeElement;
+    if (!overlay.contains(active)) { e.preventDefault(); first.focus(); return; }
+    if (e.shiftKey && (active === first || active === overlay)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
   }
-
 
   /* ========================================================
      INIT: collect pin IDs + bind card clicks
   ======================================================== */
-  $(function () {
-    // Build ordered array of post IDs from current grid
-    function collectPinIds() {
-      pinIds = [];
-      $('#masonry .thumb[data-post-id]').each(function () {
-        pinIds.push(+$(this).data('post-id'));
-      });
-    }
+  function collectPinIds() {
+    pinIds = Array.prototype.map.call(
+      document.querySelectorAll('#masonry .thumb[data-post-id]'),
+      function (n) { return parseInt(n.getAttribute('data-post-id'), 10); }
+    ).filter(Boolean);
+  }
 
-    collectPinIds();
+  collectPinIds();
+  document.addEventListener('ipin:infiniteScrollLoaded', collectPinIds);
 
-    // Re-collect after infinite scroll appends items
-    $(document).on('ipin:infiniteScrollLoaded', collectPinIds);
-
-    // Card click — open lightbox
-    $(document).on('click', '.thumb-img-wrap[data-post-id], .thumb[data-post-id] .thumb-img-wrap', function (e) {
-      e.preventDefault();
-      var postId = +$(this).closest('[data-post-id]').data('post-id');
-      if (postId) openLightbox(postId);
-    });
-
-    // Also support Enter key on focusable card links
-    $(document).on('keydown', '.thumb .thumbtitle a', function (e) {
-      if (e.key === 'Enter' && e.shiftKey) {
-        e.preventDefault();
-        var postId = +$(this).closest('[data-post-id]').data('post-id');
-        if (postId) openLightbox(postId);
-      }
-    });
+  // Card click — open lightbox
+  document.addEventListener('click', function (e) {
+    var wrapLink = e.target.closest('.thumb-img-wrap');
+    if (!wrapLink) return;
+    var card = wrapLink.closest('[data-post-id]');
+    if (!card) return;
+    e.preventDefault();
+    openLightbox(parseInt(card.getAttribute('data-post-id'), 10));
   });
 
-
-  /* ========================================================
-     HELPERS
-  ======================================================== */
-  function escHtml(s) {
-    return $('<span>').text(s || '').html();
-  }
-
-  function escAttr(s) {
-    return (s || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  }
-
-})(jQuery);
+  // Shift+Enter on a card title link opens the lightbox instead
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter' || !e.shiftKey) return;
+    var link = e.target.closest('.thumb .thumbtitle a');
+    if (!link) return;
+    var card = link.closest('[data-post-id]');
+    if (!card) return;
+    e.preventDefault();
+    openLightbox(parseInt(card.getAttribute('data-post-id'), 10));
+  });
+})();
