@@ -148,11 +148,22 @@
 				</a>
 				<?php endif; ?>
 
-				<!-- Dark-mode toggle (WCAG 4.1.2: aria-pressed updated by JS) -->
+				<!-- Dark-mode toggle: sun/moon pill switch with sliding
+				     gradient thumb (WCAG 4.1.2: aria-pressed + aria-label
+				     updated by JS via the data-label-* attributes) -->
 				<button id="dark-mode-toggle"
+				        class="mode-switch"
 				        aria-label="<?php esc_attr_e( 'Switch to dark mode', 'ipin' ); ?>"
-				        aria-pressed="false">
-					<i class="fa fa-moon" aria-hidden="true"></i>
+				        aria-pressed="false"
+				        data-label-dark="<?php esc_attr_e( 'Switch to dark mode', 'ipin' ); ?>"
+				        data-label-light="<?php esc_attr_e( 'Switch to light mode', 'ipin' ); ?>">
+					<span class="mode-switch__thumb" aria-hidden="true"></span>
+					<span class="mode-switch__icon mode-switch__icon--sun" aria-hidden="true">
+						<svg viewBox="0 0 24 24"><path d="M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0-15a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1Zm0 17a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1ZM2 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1Zm17-1a1 1 0 1 0 0 2h2a1 1 0 1 0 0-2h-2ZM4.9 4.9a1 1 0 0 1 1.4 0l1.5 1.5a1 1 0 0 1-1.5 1.4L4.9 6.3a1 1 0 0 1 0-1.4Zm12.3 12.3a1 1 0 0 1 1.4 0l1.5 1.5a1 1 0 0 1-1.4 1.4l-1.5-1.5a1 1 0 0 1 0-1.4Zm1.5-12.3a1 1 0 0 1 0 1.4l-1.5 1.5a1 1 0 1 1-1.4-1.5l1.5-1.4a1 1 0 0 1 1.4 0ZM6.3 17.2a1 1 0 0 1 0 1.4l-1.4 1.5a1 1 0 0 1-1.5-1.4l1.5-1.5a1 1 0 0 1 1.4 0Z"/></svg>
+					</span>
+					<span class="mode-switch__icon mode-switch__icon--moon" aria-hidden="true">
+						<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z"/></svg>
+					</span>
 				</button>
 
 			</div><!-- /.topmenu-social-wrap -->
