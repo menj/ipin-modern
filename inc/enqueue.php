@@ -190,3 +190,20 @@ function ipin_dynamic_css_and_scheme(): void {
 JS;
 }
 add_action( 'wp_head', 'ipin_dynamic_css_and_scheme', 1 );
+
+/* -------------------------------------------------------
+   FAVICON FALLBACK
+   Prints the bundled brand favicon only when no Site Icon
+   is set (Customizer → Site Identity → Site Icon). When a
+   Site Icon exists, core outputs its own <link> tags and
+   this fallback stays silent so the owner's icon wins.
+   ------------------------------------------------------- */
+function ipin_favicon_fallback(): void {
+	if ( has_site_icon() ) {
+		return;
+	}
+	$base = get_template_directory_uri();
+	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.ico' ) . '" sizes="48x48">' . "\n";
+	echo '<link rel="icon" href="' . esc_url( $base . '/favicon.svg' ) . '" type="image/svg+xml" sizes="any">' . "\n";
+}
+add_action( 'wp_head', 'ipin_favicon_fallback', 2 );
