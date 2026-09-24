@@ -178,19 +178,19 @@ function ipin_human_time_diff( int $from, int $to = 0 ): string {
 	if ( $diff <= 3600 ) {
 		$n = max( 1, (int) round( $diff / 60 ) );
 		/* translators: %d = number of minutes */
-		return sprintf( _n( '%d min ago', '%d mins ago', $n, 'ipin' ), $n );
+		return sprintf( _n( '%d min ago', '%d mins ago', $n, 'ipin-modern' ), $n );
 	}
 
 	if ( $diff <= 86400 ) {
 		$n = max( 1, (int) round( $diff / 3600 ) );
 		/* translators: %d = number of hours */
-		return sprintf( _n( '%d hour ago', '%d hours ago', $n, 'ipin' ), $n );
+		return sprintf( _n( '%d hour ago', '%d hours ago', $n, 'ipin-modern' ), $n );
 	}
 
 	if ( $diff <= 31536000 ) {
 		$n = max( 1, (int) round( $diff / 86400 ) );
 		/* translators: %d = number of days */
-		return sprintf( _n( '%d day ago', '%d days ago', $n, 'ipin' ), $n );
+		return sprintf( _n( '%d day ago', '%d days ago', $n, 'ipin-modern' ), $n );
 	}
 
 	return (string) get_the_date();
@@ -214,7 +214,7 @@ function ipin_comment( \WP_Comment $comment, array $args, int $depth ): void {
 
 		<div class="comment-reply-wrap">
 			<?php comment_reply_link( [
-				'reply_text' => __( 'Reply', 'ipin' ),
+				'reply_text' => __( 'Reply', 'ipin-modern' ),
 				'depth'      => $depth,
 				'max_depth'  => $args['max_depth'],
 			] ); ?>
@@ -228,15 +228,15 @@ function ipin_comment( \WP_Comment $comment, array $args, int $depth ): void {
 			// Same test core uses for the li's .bypostauthor class.
 			$post_author = (int) get_post_field( 'post_author', (int) $comment->comment_post_ID );
 			if ( $comment->user_id && (int) $comment->user_id === $post_author ) : ?>
-				<span class="comment-author-badge"><?php esc_html_e( 'Author', 'ipin' ); ?></span>
+				<span class="comment-author-badge"><?php esc_html_e( 'Author', 'ipin-modern' ); ?></span>
 			<?php endif; ?>
 			&mdash;
 			<?php comment_date( 'j M Y g:ia' ); ?>
-			<a href="#comment-<?php comment_ID(); ?>" title="<?php esc_attr_e( 'Permalink', 'ipin' ); ?>">#</a>
-			<?php edit_comment_link( __( 'Edit', 'ipin' ), ' ', '' ); ?>
+			<a href="#comment-<?php comment_ID(); ?>" title="<?php esc_attr_e( 'Permalink', 'ipin-modern' ); ?>">#</a>
+			<?php edit_comment_link( __( 'Edit', 'ipin-modern' ), ' ', '' ); ?>
 
 			<?php if ( '0' === $comment->comment_approved ) : ?>
-				<br><em><?php esc_html_e( 'Your comment is awaiting moderation.', 'ipin' ); ?></em>
+				<br><em><?php esc_html_e( 'Your comment is awaiting moderation.', 'ipin-modern' ); ?></em>
 			<?php endif; ?>
 
 			<?php comment_text(); ?>
@@ -258,19 +258,19 @@ function ipin_comment_form_fields( array $fields ): array {
 
 	$fields['author'] =
 		'<div>'
-		. '<label for="author">' . esc_html__( 'Name', 'ipin' ) . $required . '</label>'
+		. '<label for="author">' . esc_html__( 'Name', 'ipin-modern' ) . $required . '</label>'
 		. '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '"' . $aria . ' autocomplete="name">'
 		. '</div>';
 
 	$fields['email'] =
 		'<div>'
-		. '<label for="email">' . esc_html__( 'Email', 'ipin' ) . $required . '</label>'
+		. '<label for="email">' . esc_html__( 'Email', 'ipin-modern' ) . $required . '</label>'
 		. '<input id="email" name="email" type="email" value="' . esc_attr( $commenter['comment_author_email'] ) . '"' . $aria . ' autocomplete="email">'
 		. '</div>';
 
 	$fields['url'] =
 		'<div>'
-		. '<label for="url">' . esc_html__( 'Website', 'ipin' ) . '</label>'
+		. '<label for="url">' . esc_html__( 'Website', 'ipin-modern' ) . '</label>'
 		. '<input id="url" name="url" type="url" value="' . esc_attr( $commenter['comment_author_url'] ) . '" autocomplete="url">'
 		. '</div>';
 
@@ -435,7 +435,7 @@ function ipin_lightbox_payload( int $post_id ): ?array {
 function ipin_rest_pin( \WP_REST_Request $request ): \WP_REST_Response|\WP_Error {
 	$payload = ipin_lightbox_payload( (int) $request['id'] );
 	if ( ! $payload ) {
-		return new \WP_Error( 'ipin_pin_not_found', __( 'Pin not found.', 'ipin' ), [ 'status' => 404 ] );
+		return new \WP_Error( 'ipin_pin_not_found', __( 'Pin not found.', 'ipin-modern' ), [ 'status' => 404 ] );
 	}
 	$response = rest_ensure_response( $payload );
 	$response->header( 'Cache-Control', 'public, max-age=300' );

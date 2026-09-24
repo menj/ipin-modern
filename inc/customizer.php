@@ -22,9 +22,9 @@ function ipin_customizer_register( \WP_Customize_Manager $wp_customize ): void {
 			public function render_content(): void {
 				printf(
 					'<p>%s</p><p><a class="button button-primary" href="%s">%s</a></p>',
-					esc_html__( 'Colour scheme, dark mode, the homepage hero, social profiles and layout are managed on the iPin Settings page.', 'ipin' ),
+					esc_html__( 'Colour scheme, dark mode, the homepage hero, social profiles and layout are managed on the iPin Settings page.', 'ipin-modern' ),
 					esc_url( admin_url( 'themes.php?page=ipin-settings' ) ),
-					esc_html__( 'Open iPin Settings', 'ipin' )
+					esc_html__( 'Open iPin Settings', 'ipin-modern' )
 				);
 			}
 		}
@@ -51,7 +51,7 @@ function ipin_customizer_register( \WP_Customize_Manager $wp_customize ): void {
 	// A section with no controls is never displayed, so the notice is a
 	// setting-less control that only prints its content.
 	$wp_customize->add_section( 'ipin_customizer_notice', [
-		'title'    => __( 'iPin Theme Settings', 'ipin' ),
+		'title'    => __( 'iPin Theme Settings', 'ipin-modern' ),
 		'priority' => 1,
 	] );
 	$wp_customize->add_control( new Ipin_Customize_Notice_Control( $wp_customize, 'ipin_customizer_notice', [

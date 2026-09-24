@@ -52,7 +52,7 @@ function ipin_video_source( string $url ): ?array {
 			'type'  => 'file',
 			'src'   => $url,
 			'mime'  => $ft['type'],
-			'label' => __( 'Video file', 'ipin' ),
+			'label' => __( 'Video file', 'ipin-modern' ),
 		];
 	}
 
@@ -139,7 +139,7 @@ function ipin_video_add_meta_box(): void {
 	foreach ( [ 'post', 'ipin_article' ] as $type ) {
 		add_meta_box(
 			'ipin-video-pin',
-			__( 'Video pin', 'ipin' ),
+			__( 'Video pin', 'ipin-modern' ),
 			'ipin_video_render_meta_box',
 			$type,
 			'side'
@@ -155,24 +155,24 @@ function ipin_video_render_meta_box( WP_Post $post ): void {
 	wp_nonce_field( 'ipin_video_save', 'ipin_video_nonce' );
 	?>
 	<p>
-		<label for="ipin_video_url"><?php esc_html_e( 'Video URL', 'ipin' ); ?></label>
+		<label for="ipin_video_url"><?php esc_html_e( 'Video URL', 'ipin-modern' ); ?></label>
 		<input type="url" id="ipin_video_url" name="ipin_video_url" class="widefat"
 			value="<?php echo esc_attr( $url ); ?>"
 			placeholder="https://menj.bio/…/clip.mp4">
 	</p>
 	<p class="description">
-		<?php esc_html_e( 'A direct video file link (.mp4, .webm), or a YouTube or Vimeo link. The featured image becomes the poster. Leave blank for a photo pin.', 'ipin' ); ?>
+		<?php esc_html_e( 'A direct video file link (.mp4, .webm), or a YouTube or Vimeo link. The featured image becomes the poster. Leave blank for a photo pin.', 'ipin-modern' ); ?>
 	</p>
 	<?php if ( $url ) : ?>
 	<p>
 		<?php if ( $source ) : ?>
 			<strong style="color:#007a53">&#10003; <?php echo esc_html( sprintf(
 				/* translators: %s = source kind, e.g. "Video file" or "YouTube" */
-				__( 'Playable: %s', 'ipin' ),
+				__( 'Playable: %s', 'ipin-modern' ),
 				$source['label']
 			) ); ?></strong>
 		<?php else : ?>
-			<strong style="color:#b32d2e">&#9888; <?php esc_html_e( 'Not playable. Paste the direct file link (ending in .mp4 or .webm), not the page that shows the video.', 'ipin' ); ?></strong>
+			<strong style="color:#b32d2e">&#9888; <?php esc_html_e( 'Not playable. Paste the direct file link (ending in .mp4 or .webm), not the page that shows the video.', 'ipin-modern' ); ?></strong>
 		<?php endif; ?>
 	</p>
 	<?php endif;

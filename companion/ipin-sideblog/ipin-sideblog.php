@@ -8,7 +8,7 @@
  * Author:            MENJ
  * Author URI:        https://menj.org
  * License:           GPL-2.0-or-later
- * Text Domain:       ipin
+ * Text Domain:       ipin-modern
  *
  * The iPin Modern theme loads this same file itself when the plugin is not
  * active, so content never disappears; installing the plugin just moves the
@@ -27,10 +27,10 @@ if ( ! function_exists( 'ipin_sideblog_register' ) ) {
 	function ipin_sideblog_register(): void {
 		register_post_type( 'ipin_article', [
 			'labels' => [
-				'name'          => __( 'Articles',        'ipin' ),
-				'singular_name' => __( 'Article',         'ipin' ),
-				'add_new_item'  => __( 'Add New Article', 'ipin' ),
-				'menu_name'     => __( 'Sideblog',        'ipin' ),
+				'name'          => __( 'Articles',        'ipin-modern' ),
+				'singular_name' => __( 'Article',         'ipin-modern' ),
+				'add_new_item'  => __( 'Add New Article', 'ipin-modern' ),
+				'menu_name'     => __( 'Sideblog',        'ipin-modern' ),
 			],
 			'public'          => true,
 			'rewrite'         => [ 'slug' => 'article', 'with_front' => false ],

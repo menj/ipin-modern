@@ -62,11 +62,11 @@
 				<span class="bento-feature__meta">
 					<strong><?php echo esc_html( get_the_title( $b_id ) ); ?></strong>
 					<span>
-						<?php esc_html_e( 'Featured', 'ipin' ); ?><?php
+						<?php esc_html_e( 'Featured', 'ipin-modern' ); ?><?php
 						if ( $b_cats ) { echo ' · ' . esc_html( $b_cats[0]->name ); }
 						if ( $b_com ) {
 							/* translators: %d = number of comments */
-							echo ' · ' . esc_html( sprintf( _n( '%d comment', '%d comments', $b_com, 'ipin' ), $b_com ) );
+							echo ' · ' . esc_html( sprintf( _n( '%d comment', '%d comments', $b_com, 'ipin-modern' ), $b_com ) );
 						}
 						?>
 					</span>
@@ -74,12 +74,12 @@
 			</a>
 			<div class="bento-side">
 				<div class="bento-tile">
-					<span class="bento-tile__label"><?php esc_html_e( 'This board', 'ipin' ); ?></span>
-					<span class="bento-tile__stat"><?php echo esc_html( number_format_i18n( $n_pins ) ); ?> <small><?php esc_html_e( 'pins', 'ipin' ); ?></small></span>
+					<span class="bento-tile__label"><?php esc_html_e( 'This board', 'ipin-modern' ); ?></span>
+					<span class="bento-tile__stat"><?php echo esc_html( number_format_i18n( $n_pins ) ); ?> <small><?php esc_html_e( 'pins', 'ipin-modern' ); ?></small></span>
 					<p class="bento-tile__note">
 						<?php printf(
 							/* translators: 1: category count, 2: comment count */
-							esc_html__( '%1$s categories · %2$s comments', 'ipin' ),
+							esc_html__( '%1$s categories · %2$s comments', 'ipin-modern' ),
 							esc_html( number_format_i18n( $n_cats ) ),
 							esc_html( number_format_i18n( $n_coms ) )
 						); ?>
@@ -87,7 +87,7 @@
 				</div>
 				<?php if ( $chips ) : ?>
 				<div class="bento-tile">
-					<span class="bento-tile__label"><?php esc_html_e( 'Browse', 'ipin' ); ?></span>
+					<span class="bento-tile__label"><?php esc_html_e( 'Browse', 'ipin-modern' ); ?></span>
 					<div class="bento-tile__chips">
 						<?php foreach ( $chips as $chip ) : ?>
 						<a class="bento-chip" href="<?php echo esc_url( get_category_link( $chip ) ); ?>"><?php echo esc_html( $chip->name ); ?></a>
@@ -106,29 +106,29 @@
 	$current_sort = sanitize_key( $_GET['popular'] ?? '' );
 	if ( is_home() || is_front_page() ) :
 	?>
-	<nav class="sort-bar" aria-label="<?php esc_attr_e( 'Sort posts', 'ipin' ); ?>">
+	<nav class="sort-bar" aria-label="<?php esc_attr_e( 'Sort posts', 'ipin-modern' ); ?>">
 		<a class="sort-bar__btn<?php echo ! $current_sort ? ' active' : ''; ?>"
 		   href="<?php echo esc_url( ipin_popular_sort_url() ); ?>"
 		   aria-current="<?php echo ! $current_sort ? 'page' : 'false'; ?>">
-			<?php esc_html_e( 'Latest', 'ipin' ); ?>
+			<?php esc_html_e( 'Latest', 'ipin-modern' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === '7days' ? ' active' : ''; ?>"
 		   href="<?php echo esc_url( ipin_popular_sort_url( '7days' ) ); ?>"
 		   aria-current="<?php echo $current_sort === '7days' ? 'page' : 'false'; ?>">
 			<?php echo ipin_icon( 'fire' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-			<?php esc_html_e( 'Last 7 days', 'ipin' ); ?>
+			<?php esc_html_e( 'Last 7 days', 'ipin-modern' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === '30days' ? ' active' : ''; ?>"
 		   href="<?php echo esc_url( ipin_popular_sort_url( '30days' ) ); ?>"
 		   aria-current="<?php echo $current_sort === '30days' ? 'page' : 'false'; ?>">
 			<?php echo ipin_icon( 'chart-line' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-			<?php esc_html_e( 'This month', 'ipin' ); ?>
+			<?php esc_html_e( 'This month', 'ipin-modern' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === 'all' ? ' active' : ''; ?>"
 		   href="<?php echo esc_url( ipin_popular_sort_url( 'all' ) ); ?>"
 		   aria-current="<?php echo $current_sort === 'all' ? 'page' : 'false'; ?>">
 			<?php echo ipin_icon( 'crown' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-			<?php esc_html_e( 'All time', 'ipin' ); ?>
+			<?php esc_html_e( 'All time', 'ipin-modern' ); ?>
 		</a>
 	</nav>
 	<?php endif; ?>
@@ -198,16 +198,13 @@
 					</span>
 					<?php endif; ?>
 
-					<!-- Hover/focus action bar — decorative (aria-hidden, no pointer
-					     events). Spans, not links: an <a> nested in the wrapping <a>
-					     is invalid HTML and makes browsers restructure the card. -->
+					<!-- Hover/focus hint — decorative (aria-hidden, no pointer events).
+					     One "View" chip, because a click anywhere on the image opens
+					     the lightbox; a span, since an <a> inside the wrapping <a> is
+					     invalid HTML. -->
 					<div class="masonry-actionbar" aria-hidden="true">
-						<span class="btn btn-comment">
-							<?php echo ipin_icon( 'comment' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-							<?php esc_html_e( 'Comment', 'ipin' ); ?>
-						</span>
 						<span class="btn btn-view">
-							<?php esc_html_e( 'View', 'ipin' ); ?>
+							<?php esc_html_e( 'View', 'ipin-modern' ); ?>
 							<?php echo ipin_icon( 'arrow-right' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						</span>
 					</div>
@@ -219,7 +216,7 @@
 					<h2 class="thumbtitle">
 						<a href="<?php the_permalink(); ?>" aria-keyshortcuts="Shift+Enter"><?php the_title(); ?><?php
 							if ( $is_video_pin ) {
-								echo ' <span class="screen-reader-text">' . esc_html__( '(video)', 'ipin' ) . '</span>';
+								echo ' <span class="screen-reader-text">' . esc_html__( '(video)', 'ipin-modern' ) . '</span>';
 							}
 						?></a>
 					</h2>
@@ -237,7 +234,7 @@
 						<?php endif; ?>
 						<div>
 							<span class="masonry-meta-author"><?php the_author(); ?></span>
-							<?php esc_html_e( 'in', 'ipin' ); ?>
+							<?php esc_html_e( 'in', 'ipin-modern' ); ?>
 							<span class="masonry-meta-content"><?php the_category( ', ' ); ?></span>
 						</div>
 					</div>
@@ -265,7 +262,8 @@
 						<div class="masonry-meta text-center">
 							<a href="<?php the_permalink(); ?>#comments">
 								<?php printf(
-									esc_html( _n( 'View all %d comment', 'View all %d comments', $comments_number, 'ipin' ) ),
+									/* translators: %d = number of comments on the pin */
+									esc_html( _n( 'View all %d comment', 'View all %d comments', $comments_number, 'ipin-modern' ) ),
 									$comments_number
 								); ?>
 							</a>
@@ -279,23 +277,23 @@
 		</div><!-- /#masonry -->
 
 		<!-- Pagination — landmark nav with distinct label (WCAG 2.4.6) -->
-		<nav id="navigation" aria-label="<?php esc_attr_e( 'Posts pagination', 'ipin' ); ?>">
+		<nav id="navigation" aria-label="<?php esc_attr_e( 'Posts pagination', 'ipin-modern' ); ?>">
 			<ul class="pager" role="list">
 				<li id="navigation-next">
-					<?php next_posts_link( '<span aria-hidden="true">&laquo;</span> ' . esc_html__( 'Older posts', 'ipin' ) ); ?>
+					<?php next_posts_link( '<span aria-hidden="true">&laquo;</span> ' . esc_html__( 'Older posts', 'ipin-modern' ) ); ?>
 				</li>
 				<li id="navigation-previous">
-					<?php previous_posts_link( esc_html__( 'Newer posts', 'ipin' ) . ' <span aria-hidden="true">&raquo;</span>' ); ?>
+					<?php previous_posts_link( esc_html__( 'Newer posts', 'ipin-modern' ) . ' <span aria-hidden="true">&raquo;</span>' ); ?>
 				</li>
 			</ul>
 		</nav>
 
 	<?php else : ?>
 
-		<section class="empty-state" aria-label="<?php esc_attr_e( 'No content found', 'ipin' ); ?>">
+		<section class="empty-state" aria-label="<?php esc_attr_e( 'No content found', 'ipin-modern' ); ?>">
 			<span class="empty-icon" aria-hidden="true">📌</span>
-			<h1><?php esc_html_e( 'Nothing pinned here yet', 'ipin' ); ?></h1>
-			<p><?php esc_html_e( 'Perhaps searching will help.', 'ipin' ); ?></p>
+			<h1><?php esc_html_e( 'Nothing pinned here yet', 'ipin-modern' ); ?></h1>
+			<p><?php esc_html_e( 'Perhaps searching will help.', 'ipin-modern' ); ?></p>
 			<?php get_search_form(); ?>
 		</section>
 

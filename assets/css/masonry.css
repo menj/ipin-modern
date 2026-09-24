@@ -139,8 +139,7 @@
   border: none;
   pointer-events: none; /* visual only */
 }
-.btn-comment { background: var(--clr-fill-1); color: var(--clr-on-fill); }
-.btn-view    { background: var(--clr-fill-3); color: var(--clr-on-fill); }
+.btn-view { background: var(--clr-fill-1); color: var(--clr-on-fill); }
 
 /* ── Card body ── */
 .thumb-body { padding: 12px 13px 9px; }

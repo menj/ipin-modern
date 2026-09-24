@@ -48,7 +48,7 @@ unset( $ipin_inc );
    THEME SETUP
    ------------------------------------------------------- */
 function ipin_setup(): void {
-	load_theme_textdomain( 'ipin', get_template_directory() . '/languages' );
+	load_theme_textdomain( 'ipin-modern', get_template_directory() . '/languages' );
 
 	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'title-tag' );
@@ -76,7 +76,7 @@ function ipin_setup(): void {
 	add_theme_support( 'responsive-embeds' );
 
 	register_nav_menus( [
-		'top_nav' => __( 'Top Navigation', 'ipin' ),
+		'top_nav' => __( 'Top Navigation', 'ipin-modern' ),
 	] );
 
 	// Block editor styles. 'editor-styles' support is what makes the block

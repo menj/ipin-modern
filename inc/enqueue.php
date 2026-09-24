@@ -81,22 +81,22 @@ function ipin_enqueue_assets(): void {
 
 	// PHP → JS data bridge
 	wp_localize_script( 'ipin-custom', 'ipinData', [
-		'allLoaded'   => __( 'All items loaded', 'ipin' ),
-		'loadingText' => __( 'Loading more pins…', 'ipin' ),
+		'allLoaded'   => __( 'All items loaded', 'ipin-modern' ),
+		'loadingText' => __( 'Loading more pins…', 'ipin-modern' ),
 		'i18n'        => [
-			'comments'      => __( 'Comments', 'ipin' ),
-			'viewAll'       => __( 'View all', 'ipin' ),
-			'view'          => __( 'View', 'ipin' ),
-			'close'         => __( 'Close lightbox', 'ipin' ),
-			'prev'          => __( 'Previous pin', 'ipin' ),
-			'next'          => __( 'Next pin', 'ipin' ),
-			'pinError'      => __( 'This pin could not be loaded.', 'ipin' ),
-			'pinErrorHint'  => __( 'Please try again, or open the post directly.', 'ipin' ),
-			'sharePinterest'=> __( 'Save to Pinterest (opens in new tab)', 'ipin' ),
-			'shareX'        => __( 'Share on X (opens in new tab)', 'ipin' ),
-			'shareFacebook' => __( 'Share on Facebook (opens in new tab)', 'ipin' ),
-			'copied'        => __( 'Copied!', 'ipin' ),
-			'linkCopied'    => __( 'Link copied to clipboard.', 'ipin' ),
+			'comments'      => __( 'Comments', 'ipin-modern' ),
+			'viewAll'       => __( 'View all', 'ipin-modern' ),
+			'view'          => __( 'View', 'ipin-modern' ),
+			'close'         => __( 'Close lightbox', 'ipin-modern' ),
+			'prev'          => __( 'Previous pin', 'ipin-modern' ),
+			'next'          => __( 'Next pin', 'ipin-modern' ),
+			'pinError'      => __( 'This pin could not be loaded.', 'ipin-modern' ),
+			'pinErrorHint'  => __( 'Please try again, or open the post directly.', 'ipin-modern' ),
+			'sharePinterest'=> __( 'Save to Pinterest (opens in new tab)', 'ipin-modern' ),
+			'shareX'        => __( 'Share on X (opens in new tab)', 'ipin-modern' ),
+			'shareFacebook' => __( 'Share on Facebook (opens in new tab)', 'ipin-modern' ),
+			'copied'        => __( 'Copied!', 'ipin-modern' ),
+			'linkCopied'    => __( 'Link copied to clipboard.', 'ipin-modern' ),
 		],
 		'pinUrl'      => esc_url_raw( rest_url( 'ipin/v1/pin/' ) ),
 		'icons'       => [
@@ -141,8 +141,8 @@ function ipin_enqueue_admin_assets( string $hook ): void {
 	wp_localize_script( 'ipin-admin-js', 'ipinAdmin', [
 		'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 		'nonce'   => wp_create_nonce( 'ipin_save_options' ),
-		'saving'  => __( 'Saving…', 'ipin' ),
-		'error'   => __( 'Settings could not be saved. Check your connection and try again.', 'ipin' ),
+		'saving'  => __( 'Saving…', 'ipin-modern' ),
+		'error'   => __( 'Settings could not be saved. Check your connection and try again.', 'ipin-modern' ),
 	] );
 }
 add_action( 'admin_enqueue_scripts', 'ipin_enqueue_admin_assets' );

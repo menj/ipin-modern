@@ -27,11 +27,11 @@
      - aria-hidden when not yet visible; JS removes aria-hidden + sets aria-label
      - Uses <button> not <a href="#"> so it's operable without a pointing device -->
 <button id="scrolltotop"
-        aria-label="<?php esc_attr_e( 'Scroll back to top', 'ipin' ); ?>"
+        aria-label="<?php esc_attr_e( 'Scroll back to top', 'ipin-modern' ); ?>"
         aria-hidden="true"
         hidden>
 	<?php echo ipin_icon( 'chevron-up' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-	<span class="sr-only"><?php esc_html_e( 'Top', 'ipin' ); ?></span>
+	<span class="sr-only"><?php esc_html_e( 'Top', 'ipin-modern' ); ?></span>
 </button>
 
 <?php wp_footer(); ?>

@@ -54,7 +54,7 @@ class Ipin_Nav_Walker extends \Walker_Nav_Menu {
 				esc_attr( $sub_id ),
 				esc_html( sprintf(
 					/* translators: %s = parent menu item title */
-					__( 'Show submenu for %s', 'ipin' ),
+					__( 'Show submenu for %s', 'ipin-modern' ),
 					wp_strip_all_tags( (string) $item->title )
 				) )
 			);

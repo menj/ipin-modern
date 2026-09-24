@@ -15,7 +15,7 @@
 			<?php
 			the_content();
 			wp_link_pages( [
-				'before' => '<nav class="page-links" aria-label="' . esc_attr__( 'Page sections', 'ipin' ) . '"><strong>' . esc_html__( 'Pages:', 'ipin' ) . '</strong>',
+				'before' => '<nav class="page-links" aria-label="' . esc_attr__( 'Page sections', 'ipin-modern' ) . '"><strong>' . esc_html__( 'Pages:', 'ipin-modern' ) . '</strong>',
 				'after'  => '</nav>',
 			] );
 			?>
@@ -28,7 +28,7 @@
 		</div>
 		<?php endif; ?>
 
-		<?php edit_post_link( esc_html__( 'Edit this page', 'ipin' ), '<p class="post-meta-top">', '</p>' ); ?>
+		<?php edit_post_link( esc_html__( 'Edit this page', 'ipin-modern' ), '<p class="post-meta-top">', '</p>' ); ?>
 
 	</article>
 

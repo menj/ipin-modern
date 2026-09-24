@@ -22,13 +22,13 @@
 			<span class="meta-right">
 				<a href="#comments">
 					<?php comments_number(
-						esc_html__( '0 Comments', 'ipin' ),
-						esc_html__( '1 Comment', 'ipin' ),
+						esc_html__( '0 Comments', 'ipin-modern' ),
+						esc_html__( '1 Comment', 'ipin-modern' ),
 						/* translators: %s = comment count */
-						esc_html__( '% Comments', 'ipin' )
+						esc_html__( '% Comments', 'ipin-modern' )
 					); ?>
 				</a>
-				<?php edit_post_link( esc_html__( 'Edit', 'ipin' ), ' &mdash; ', '' ); ?>
+				<?php edit_post_link( esc_html__( 'Edit', 'ipin-modern' ), ' &mdash; ', '' ); ?>
 			</span>
 		</div>
 
@@ -50,7 +50,7 @@
 			}
 			the_content();
 			wp_link_pages( [
-				'before' => '<nav class="page-links" aria-label="' . esc_attr__( 'Post pages', 'ipin' ) . '"><strong>' . esc_html__( 'Pages:', 'ipin' ) . '</strong>',
+				'before' => '<nav class="page-links" aria-label="' . esc_attr__( 'Post pages', 'ipin-modern' ) . '"><strong>' . esc_html__( 'Pages:', 'ipin-modern' ) . '</strong>',
 				'after'  => '</nav>',
 			] );
 			?>
@@ -58,9 +58,9 @@
 		</div>
 
 		<footer class="post-meta-category-tag">
-			<strong><?php esc_html_e( 'Categories:', 'ipin' ); ?></strong>
+			<strong><?php esc_html_e( 'Categories:', 'ipin-modern' ); ?></strong>
 			<?php the_category( ', ' ); ?>
-			<?php the_tags( ' &mdash; <strong>' . esc_html__( 'Tags:', 'ipin' ) . '</strong> ', ', ' ); ?>
+			<?php the_tags( ' &mdash; <strong>' . esc_html__( 'Tags:', 'ipin-modern' ) . '</strong> ', ', ' ); ?>
 		</footer>
 
 		<!-- ── Share buttons ───────────────────────── -->
@@ -73,13 +73,13 @@
 			$share_img = $src ? rawurlencode( $src[0] ) : '';
 		}
 		?>
-		<div class="post-share" aria-label="<?php esc_attr_e( 'Share this post', 'ipin' ); ?>">
-			<span class="post-share__label"><?php esc_html_e( 'Share:', 'ipin' ); ?></span>
+		<div class="post-share" aria-label="<?php esc_attr_e( 'Share this post', 'ipin-modern' ); ?>">
+			<span class="post-share__label"><?php esc_html_e( 'Share:', 'ipin-modern' ); ?></span>
 
 			<a class="btn-share btn-share--pinterest"
 			   href="https://pinterest.com/pin/create/button/?url=<?php echo $share_url; ?>&media=<?php echo $share_img; ?>&description=<?php echo $share_title; ?>"
 			   target="_blank" rel="noopener noreferrer"
-			   aria-label="<?php esc_attr_e( 'Save to Pinterest (opens in new tab)', 'ipin' ); ?>">
+			   aria-label="<?php esc_attr_e( 'Save to Pinterest (opens in new tab)', 'ipin-modern' ); ?>">
 				<?php echo ipin_social_icon( 'pinterest' ); ?>
 				<span class="btn-share__label">Pinterest</span>
 			</a>
@@ -87,7 +87,7 @@
 			<a class="btn-share btn-share--twitter"
 			   href="https://twitter.com/intent/tweet?url=<?php echo $share_url; ?>&text=<?php echo $share_title; ?>"
 			   target="_blank" rel="noopener noreferrer"
-			   aria-label="<?php esc_attr_e( 'Share on X / Twitter (opens in new tab)', 'ipin' ); ?>">
+			   aria-label="<?php esc_attr_e( 'Share on X / Twitter (opens in new tab)', 'ipin-modern' ); ?>">
 				<?php echo ipin_social_icon( 'x' ); ?>
 				<span class="btn-share__label">X</span>
 			</a>
@@ -95,20 +95,20 @@
 			<a class="btn-share btn-share--facebook"
 			   href="https://www.facebook.com/sharer/sharer.php?u=<?php echo $share_url; ?>"
 			   target="_blank" rel="noopener noreferrer"
-			   aria-label="<?php esc_attr_e( 'Share on Facebook (opens in new tab)', 'ipin' ); ?>">
+			   aria-label="<?php esc_attr_e( 'Share on Facebook (opens in new tab)', 'ipin-modern' ); ?>">
 				<?php echo ipin_social_icon( 'facebook' ); ?>
 				<span class="btn-share__label">Facebook</span>
 			</a>
 
 			<button class="btn-share btn-share--copy"
 			        data-copy-url="<?php echo esc_attr( get_permalink() ); ?>"
-			        aria-label="<?php esc_attr_e( 'Copy link to clipboard', 'ipin' ); ?>">
+			        aria-label="<?php esc_attr_e( 'Copy link to clipboard', 'ipin-modern' ); ?>">
 				<?php echo ipin_icon( 'link' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-				<span class="btn-share__label"><?php esc_html_e( 'Copy link', 'ipin' ); ?></span>
+				<span class="btn-share__label"><?php esc_html_e( 'Copy link', 'ipin-modern' ); ?></span>
 			</button>
 		</div><!-- /.post-share -->
 
-		<nav id="navigation" class="post-nav" aria-label="<?php esc_attr_e( 'Post navigation', 'ipin' ); ?>">
+		<nav id="navigation" class="post-nav" aria-label="<?php esc_attr_e( 'Post navigation', 'ipin-modern' ); ?>">
 			<ul class="pager" role="list">
 				<li class="previous"><?php previous_post_link( '%link', '<span aria-hidden="true">&laquo;</span> %title' ); ?></li>
 				<li class="next"><?php next_post_link( '%link', '%title <span aria-hidden="true">&raquo;</span>' ); ?></li>

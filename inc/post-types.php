@@ -42,7 +42,7 @@ function ipin_sideblog_notice(): void {
 		wp_kses(
 			sprintf(
 				/* translators: %s = folder path inside the theme */
-				__( '<strong>Keep your Sideblog articles safe:</strong> copy %s from the iPin Modern theme folder to <code>wp-content/plugins/</code> and activate <em>iPin Sideblog</em>. Your articles then stay available even if you switch themes.', 'ipin' ),
+				__( '<strong>Keep your Sideblog articles safe:</strong> copy %s from the iPin Modern theme folder to <code>wp-content/plugins/</code> and activate <em>iPin Sideblog</em>. Your articles then stay available even if you switch themes.', 'ipin-modern' ),
 				'<code>companion/ipin-sideblog</code>'
 			),
 			[ 'strong' => [], 'code' => [], 'em' => [] ]
