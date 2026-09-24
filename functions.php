@@ -80,7 +80,7 @@ function ipin_setup(): void {
 	// Block editor styles — registered here (after_setup_theme) so the block
 	// editor picks them up. Calling add_editor_style() in wp_enqueue_scripts
 	// only affects the frontend and has no effect in the editor.
-	add_editor_style( 'assets/css/editor-style.css' );
+	add_editor_style( [ 'assets/css/fonts.css', 'assets/css/editor-style.css' ] );
 
 	// Global content width (used by WP for oEmbed sizing etc.)
 	$GLOBALS['content_width'] ??= 860;

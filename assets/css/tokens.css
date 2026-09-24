@@ -79,8 +79,9 @@
   --dur-slow: 380ms;
 
   /* ── Typography ── */
-  --font-body:      'Plus Jakarta Sans', sans-serif;
-  --font-display:   'Syne', sans-serif;
+  --font-body:      'Sabon Next LT', 'EB Garamond', Georgia, serif;
+  --font-display:   'EB Garamond', Georgia, serif;
+  --font-accent:    'Special Elite', 'Courier New', monospace;
   --font-size-base: 15px;
   --line-height:    1.65;
 }

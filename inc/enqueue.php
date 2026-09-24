@@ -23,13 +23,9 @@ function ipin_enqueue_assets(): void {
 	$uri = get_template_directory_uri();
 	$v   = wp_get_theme()->get( 'Version' );
 
-	// ── External: Google Fonts ──────────────────────────
-	wp_enqueue_style(
-		'ipin-google-fonts',
-		'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Syne:wght@600;700;800&display=swap',
-		[],
-		null   // external — no version hash
-	);
+	// ── Self-hosted webfonts — /assets/fonts/ ───────────
+	// EB Garamond + Sabon Next LT + Special Elite, WOFF2.
+	wp_enqueue_style( 'ipin-fonts', "$uri/assets/css/fonts.css", [], $v );
 
 	// ── External: Font Awesome 6 ────────────────────────
 	wp_enqueue_style(
@@ -40,7 +36,7 @@ function ipin_enqueue_assets(): void {
 	);
 
 	// ── CSS modules — /assets/css/ ──────────────────────
-	wp_enqueue_style( 'ipin-tokens',  "$uri/assets/css/tokens.css",  [ 'ipin-google-fonts' ], $v );
+	wp_enqueue_style( 'ipin-tokens',  "$uri/assets/css/tokens.css",  [ 'ipin-fonts' ], $v );
 	wp_enqueue_style( 'ipin-base',    "$uri/assets/css/base.css",    [ 'ipin-tokens' ],       $v );
 	wp_enqueue_style( 'ipin-nav',     "$uri/assets/css/nav.css",     [ 'ipin-base' ],         $v );
 	wp_enqueue_style( 'ipin-single',  "$uri/assets/css/single.css",  [ 'ipin-base' ],         $v );
