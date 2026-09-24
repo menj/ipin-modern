@@ -43,6 +43,10 @@
 		   		__( '%s — go to homepage', 'ipin' ),
 		   		get_bloginfo( 'name' )
 		   ) ); ?>">
+			<span class="navbar-brand__icon" aria-hidden="true"><?php
+				// Same pin mark as favicon.svg — one source of truth for the brand glyph.
+				echo file_get_contents( get_template_directory() . '/favicon.svg' ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+			?></span>
 			<span aria-hidden="true"><?php bloginfo( 'name' ); ?></span>
 		</a>
 		<?php endif; ?>

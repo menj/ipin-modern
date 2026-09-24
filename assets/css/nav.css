@@ -46,6 +46,10 @@
 
 /* ── Brand / logo ── */
 .navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.75rem;
@@ -58,6 +62,9 @@
   line-height: 1;
   letter-spacing: -.01em;
 }
+.navbar-brand:hover { text-decoration: none; }
+.navbar-brand__icon { display: inline-flex; flex-shrink: 0; }
+.navbar-brand__icon svg { width: 32px; height: 32px; display: block; }
 .navbar-brand img { height: 52px; width: auto; background: none; -webkit-text-fill-color: initial; }
 
 /* ── Nav wrapper ── */

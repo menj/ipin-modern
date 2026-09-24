@@ -31,6 +31,68 @@ function ipin_seo_plugin_active(): bool {
 
 
 /* -------------------------------------------------------
+   URL-LIST SANITIZER
+   For the "sameAs" setting: one URL per line, each run
+   through esc_url_raw, blanks dropped.
+   ------------------------------------------------------- */
+function ipin_sanitize_url_list( mixed $value ): string {
+	$lines = preg_split( '/[\r\n]+/', (string) $value ) ?: [];
+	$urls  = array_filter( array_map( 'esc_url_raw', array_map( 'trim', $lines ) ) );
+	return implode( "\n", $urls );
+}
+
+
+/* -------------------------------------------------------
+   SAME-AS PROFILE URLS
+   The configured nav social profiles plus the "also me"
+   list from Settings → Social, deduplicated.
+   ------------------------------------------------------- */
+function ipin_same_as_urls(): array {
+	$urls = [
+		(string) get_option( 'ipin_twitter_url', '' ),
+		(string) get_option( 'ipin_facebook_url', '' ),
+		(string) get_option( 'ipin_instagram_url', '' ),
+	];
+	$extra = preg_split( '/[\r\n]+/', (string) get_option( 'ipin_author_sameas', '' ) ) ?: [];
+	$urls  = array_merge( $urls, $extra );
+	$urls  = array_filter( array_map( 'esc_url_raw', array_map( 'trim', $urls ) ) );
+	return array_values( array_unique( $urls ) );
+}
+
+
+/* -------------------------------------------------------
+   AUTHOR PERSON NODE
+   Referenced from Article.author and the author archive's
+   ProfilePage; carries the sameAs links that tie this site
+   to the author's other properties.
+   ------------------------------------------------------- */
+function ipin_person_node( int $author_id ): array {
+	$person = [
+		'@type' => 'Person',
+		'@id'   => get_author_posts_url( $author_id ) . '#person',
+		'name'  => get_the_author_meta( 'display_name', $author_id ),
+		'url'   => get_author_posts_url( $author_id ),
+	];
+
+	$site_url = (string) get_the_author_meta( 'user_url', $author_id );
+	$same_as  = ipin_same_as_urls();
+	if ( $site_url ) {
+		array_unshift( $same_as, esc_url_raw( $site_url ) );
+	}
+	if ( $same_as ) {
+		$person['sameAs'] = array_values( array_unique( $same_as ) );
+	}
+
+	$bio = trim( wp_strip_all_tags( (string) get_the_author_meta( 'description', $author_id ), true ) );
+	if ( $bio ) {
+		$person['description'] = $bio;
+	}
+
+	return $person;
+}
+
+
+/* -------------------------------------------------------
    DESCRIPTION META TAG
    Unique per page: excerpt on singular, term description
    on archives, author bio on author pages, tagline on the
@@ -84,10 +146,23 @@ function ipin_structured_data(): void {
 	$graph = [];
 
 	if ( is_front_page() || is_home() ) {
-		$graph[] = [
+		$website = [
 			'@type' => 'WebSite',
 			'name'  => get_bloginfo( 'name', 'display' ),
 			'url'   => home_url( '/' ),
+		];
+		$same_as = ipin_same_as_urls();
+		if ( $same_as ) {
+			$website['sameAs'] = $same_as;
+		}
+		$graph[] = $website;
+	}
+
+	if ( is_author() ) {
+		$author_id = (int) get_queried_object_id();
+		$graph[]   = [
+			'@type'      => 'ProfilePage',
+			'mainEntity' => ipin_person_node( $author_id ),
 		];
 	}
 
@@ -101,12 +176,9 @@ function ipin_structured_data(): void {
 			'datePublished'    => get_the_date( 'c', $post_id ),
 			'dateModified'     => get_the_modified_date( 'c', $post_id ),
 			'mainEntityOfPage' => get_permalink( $post_id ),
-			'author'           => [
-				'@type' => 'Person',
-				'name'  => get_the_author_meta( 'display_name', $author_id ),
-				'url'   => get_author_posts_url( $author_id ),
-			],
+			'author'           => [ '@id' => get_author_posts_url( $author_id ) . '#person' ],
 		];
+		$graph[] = ipin_person_node( $author_id );
 
 		if ( has_post_thumbnail( $post_id ) ) {
 			$img = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), 'full' );

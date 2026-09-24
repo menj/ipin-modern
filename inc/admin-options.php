@@ -25,6 +25,7 @@ function ipin_register_settings(): void {
 		'ipin_twitter_url'        => [ 'esc_url_raw',  ''  ],
 		'ipin_facebook_url'       => [ 'esc_url_raw',  ''  ],
 		'ipin_instagram_url'      => [ 'esc_url_raw',  ''  ],
+		'ipin_author_sameas'      => [ 'ipin_sanitize_url_list', '' ],
 		'ipin_rss_visible'        => [ 'absint',       1   ],
 		// Layout
 		'ipin_show_avatars_grid'  => [ 'absint',       1   ],
@@ -62,6 +63,7 @@ function ipin_ajax_save_options(): void {
 		'ipin_twitter_url'           => 'esc_url_raw',
 		'ipin_facebook_url'          => 'esc_url_raw',
 		'ipin_instagram_url'         => 'esc_url_raw',
+		'ipin_author_sameas'         => 'ipin_sanitize_url_list',
 		'ipin_rss_visible'           => 'absint',
 		'ipin_show_avatars_grid'     => 'absint',
 		'ipin_sidebar_position'      => 'sanitize_key',
@@ -346,6 +348,15 @@ function ipin_render_settings_page(): void {
 						placeholder="<?php echo esc_attr( $ph ); ?>">
 				</div>
 				<?php endforeach; ?>
+
+				<div class="ipin-field">
+					<label for="ipin_author_sameas"><?php esc_html_e( 'Also-me profile URLs (schema.org sameAs)', 'ipin' ); ?></label>
+					<div>
+						<textarea id="ipin_author_sameas" name="ipin_author_sameas" rows="4"
+							placeholder="https://menj.bio&#10;https://menj.blog"><?php echo esc_textarea( ipin_get( 'ipin_author_sameas', '' ) ); ?></textarea>
+						<p class="ipin-field-desc"><?php esc_html_e( 'One URL per line. Added to the author Person schema (together with the profiles above) so search engines link this site to your other properties.', 'ipin' ); ?></p>
+					</div>
+				</div>
 			</div>
 
 			<div class="ipin-card">
