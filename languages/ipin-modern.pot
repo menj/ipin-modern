@@ -1,0 +1,776 @@
+# Copyright (C) 2026 MENJ
+# This file is distributed under the GNU General Public License v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: iPin Modern 5.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/menj/ipin-modern/issues\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-24T12:09:42+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: ipin-modern\n"
+
+#. Theme Name of the theme
+#: style.css
+#: inc/admin-options.php:157
+msgid "iPin Modern"
+msgstr ""
+
+#. Theme URI of the theme
+#: style.css
+msgid "https://github.com/menj/ipin-modern"
+msgstr ""
+
+#. Description of the theme
+#: style.css
+msgid "A Pinterest-style masonry theme for images and video. Statement hero with a featured-pin panel, self-hosted Garamond and Sabon typography, five colour schemes with dark mode (all WCAG 2.2 AA), a full-screen lightbox, video pins, and a tabbed settings page. No jQuery, and the theme itself requests nothing from other servers. Rebuilt from Genkisan's original iPin."
+msgstr ""
+
+#. Author of the theme
+#: style.css
+msgid "MENJ"
+msgstr ""
+
+#. Author URI of the theme
+#: style.css
+msgid "https://menj.org"
+msgstr ""
+
+#: 404.php:6
+msgid "Page not found"
+msgstr ""
+
+#: 404.php:7
+msgid "Sorry, we couldn't find what you were looking for. Try searching instead."
+msgstr ""
+
+#: comments.php:3
+#: inc/enqueue.php:87
+msgid "Comments"
+msgstr ""
+
+#. translators: 1: number of comments, 2: post title
+#: comments.php:12
+#, php-format
+msgid "One comment on \"%2$s\""
+msgid_plural "%1$s comments on \"%2$s\""
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:24
+msgid "Comment pages"
+msgstr ""
+
+#: comments.php:26
+msgid "Older Comments"
+msgstr ""
+
+#: comments.php:27
+msgid "Newer Comments"
+msgstr ""
+
+#: comments.php:40
+msgid "Leave a Comment"
+msgstr ""
+
+#. translators: %s = name of the comment author being replied to
+#: comments.php:42
+#, php-format
+msgid "Reply to %s"
+msgstr ""
+
+#: comments.php:43
+msgid "Cancel reply"
+msgstr ""
+
+#: comments.php:44
+msgid "Post Comment"
+msgstr ""
+
+#: comments.php:49
+#: index.php:207
+msgid "Comment"
+msgstr ""
+
+#: comments.php:49
+msgid "required"
+msgstr ""
+
+#: companion/ipin-sideblog/ipin-sideblog.php:30
+msgid "Articles"
+msgstr ""
+
+#: companion/ipin-sideblog/ipin-sideblog.php:31
+msgid "Article"
+msgstr ""
+
+#: companion/ipin-sideblog/ipin-sideblog.php:32
+msgid "Add New Article"
+msgstr ""
+
+#: companion/ipin-sideblog/ipin-sideblog.php:33
+msgid "Sideblog"
+msgstr ""
+
+#: footer.php:30
+msgid "Scroll back to top"
+msgstr ""
+
+#: footer.php:34
+msgid "Top"
+msgstr ""
+
+#: functions.php:79
+msgid "Top Navigation"
+msgstr ""
+
+#: header.php:18
+msgid "Skip to main content"
+msgstr ""
+
+#: header.php:23
+msgid "Main navigation"
+msgstr ""
+
+#. translators: %s = site name
+#: header.php:40
+#, php-format
+msgid "%s — go to homepage"
+msgstr ""
+
+#: header.php:53
+#: header.php:56
+msgid "Open navigation menu"
+msgstr ""
+
+#: header.php:57
+msgid "Close navigation menu"
+msgstr ""
+
+#: header.php:86
+msgid "Site search"
+msgstr ""
+
+#: header.php:88
+#: header.php:100
+#: searchform.php:2
+#: searchform.php:10
+msgid "Search"
+msgstr ""
+
+#: header.php:94
+#: searchform.php:7
+msgid "Search…"
+msgstr ""
+
+#: header.php:107
+msgid "Social links"
+msgstr ""
+
+#: header.php:112
+msgid "RSS feed (opens in new tab)"
+msgstr ""
+
+#: header.php:123
+msgid "Follow us on X / Twitter (opens in new tab)"
+msgstr ""
+
+#: header.php:134
+msgid "Follow us on Facebook (opens in new tab)"
+msgstr ""
+
+#: header.php:145
+msgid "Follow us on Instagram (opens in new tab)"
+msgstr ""
+
+#: header.php:158
+#: header.php:160
+msgid "Switch to dark mode"
+msgstr ""
+
+#: header.php:161
+msgid "Switch to light mode"
+msgstr ""
+
+#. translators: %s = search query
+#: header.php:183
+#, php-format
+msgid "Search results for \"%s\""
+msgstr ""
+
+#. translators: %s = tag name
+#: header.php:192
+#, php-format
+msgid "Tag: %s"
+msgstr ""
+
+#. translators: %s = author name
+#: header.php:199
+#, php-format
+msgid "Posts by %s"
+msgstr ""
+
+#: inc/admin-options.php:49
+msgid "Vivid"
+msgstr ""
+
+#: inc/admin-options.php:50
+msgid "Ocean"
+msgstr ""
+
+#: inc/admin-options.php:51
+msgid "Ember"
+msgstr ""
+
+#: inc/admin-options.php:52
+msgid "Forest"
+msgstr ""
+
+#: inc/admin-options.php:53
+msgid "Mono"
+msgstr ""
+
+#: inc/admin-options.php:95
+msgid "You do not have permission to change these settings."
+msgstr ""
+
+#: inc/admin-options.php:106
+msgid "Settings saved."
+msgstr ""
+
+#: inc/admin-options.php:116
+#: inc/admin-options.php:117
+msgid "iPin Settings"
+msgstr ""
+
+#: inc/admin-options.php:142
+msgid "General"
+msgstr ""
+
+#: inc/admin-options.php:143
+msgid "Appearance"
+msgstr ""
+
+#: inc/admin-options.php:144
+msgid "Social"
+msgstr ""
+
+#: inc/admin-options.php:145
+msgid "Layout"
+msgstr ""
+
+#: inc/admin-options.php:158
+msgid "Pinterest-style masonry theme settings"
+msgstr ""
+
+#: inc/admin-options.php:194
+msgid "Homepage Grid"
+msgstr ""
+
+#: inc/admin-options.php:195
+msgid "Control how posts appear on your grid homepage."
+msgstr ""
+
+#: inc/admin-options.php:198
+msgid "Comments per card"
+msgstr ""
+
+#: inc/admin-options.php:202
+msgid "Number of recent comments per card. Set to 0 to hide."
+msgstr ""
+
+#: inc/admin-options.php:207
+msgid "Posts per page"
+msgstr ""
+
+#: inc/admin-options.php:211
+msgid "Pins per batch on the homepage, archives and search; infinite scroll loads the next batch. Overrides \"Blog pages show at most\" in Settings > Reading."
+msgstr ""
+
+#: inc/admin-options.php:217
+msgid "Display"
+msgstr ""
+
+#: inc/admin-options.php:222
+#: inc/admin-options.php:231
+msgid "Show author avatars on grid cards"
+msgstr ""
+
+#: inc/admin-options.php:232
+msgid "Requires \"Show Avatars\" enabled in Settings > Discussion."
+msgstr ""
+
+#: inc/admin-options.php:238
+msgid "Footer"
+msgstr ""
+
+#: inc/admin-options.php:241
+msgid "Footer text"
+msgstr ""
+
+#: inc/admin-options.php:245
+msgid "Optional custom footer text..."
+msgstr ""
+
+#: inc/admin-options.php:246
+msgid "Leave blank to use the default site name + tagline."
+msgstr ""
+
+#: inc/admin-options.php:261
+msgid "Colour Scheme"
+msgstr ""
+
+#: inc/admin-options.php:262
+msgid "Pick a palette. All accents and interactive colours update automatically. Dark mode is available on all schemes."
+msgstr ""
+
+#: inc/admin-options.php:280
+msgid "Dark Mode"
+msgstr ""
+
+#: inc/admin-options.php:285
+#: inc/admin-options.php:294
+msgid "Default to dark mode"
+msgstr ""
+
+#: inc/admin-options.php:295
+msgid "Serves dark mode by default. Visitor can still toggle. When off, follows OS preference."
+msgstr ""
+
+#: inc/admin-options.php:301
+msgid "Cards"
+msgstr ""
+
+#: inc/admin-options.php:304
+msgid "Card width"
+msgstr ""
+
+#: inc/admin-options.php:312
+msgid "Width of each pin card. 180-240 px recommended."
+msgstr ""
+
+#: inc/admin-options.php:319
+#: inc/admin-options.php:328
+msgid "Rounded card corners"
+msgstr ""
+
+#: inc/admin-options.php:329
+msgid "Disable for a sharper, more editorial look."
+msgstr ""
+
+#: inc/admin-options.php:344
+msgid "Social Profiles"
+msgstr ""
+
+#: inc/admin-options.php:345
+msgid "Icons appear in the top navigation bar. Leave blank to hide that icon."
+msgstr ""
+
+#: inc/admin-options.php:363
+msgid "Mastodon / fediverse handle"
+msgstr ""
+
+#: inc/admin-options.php:368
+msgid "Credits you on Mastodon link previews (fediverse:creator), adds a rel=\"me\" link so Mastodon can verify this site on your profile, and joins your sameAs links. A profile URL works too."
+msgstr ""
+
+#: inc/admin-options.php:373
+msgid "Also-me profile URLs (schema.org sameAs)"
+msgstr ""
+
+#: inc/admin-options.php:377
+msgid "One URL per line. Added to the author Person schema (together with the profiles above) so search engines link this site to your other properties."
+msgstr ""
+
+#: inc/admin-options.php:383
+msgid "RSS"
+msgstr ""
+
+#: inc/admin-options.php:388
+#: inc/admin-options.php:397
+msgid "Show RSS icon in navigation"
+msgstr ""
+
+#: inc/admin-options.php:412
+msgid "Homepage Hero"
+msgstr ""
+
+#: inc/admin-options.php:413
+msgid "Statement heading and lede paragraph shown above the grid on the first page of the homepage."
+msgstr ""
+
+#: inc/admin-options.php:418
+#: inc/admin-options.php:427
+msgid "Show homepage hero"
+msgstr ""
+
+#: inc/admin-options.php:434
+#: inc/admin-options.php:443
+msgid "Show featured-pin bento panel"
+msgstr ""
+
+#: inc/admin-options.php:444
+msgid "Featured pin (first sticky post, or the newest pin) plus board stats beside the hero text."
+msgstr ""
+
+#: inc/admin-options.php:449
+msgid "Hero heading"
+msgstr ""
+
+#: inc/admin-options.php:454
+msgid "Leave blank to use the site title. Wrap one word in *asterisks* to give it the gradient accent."
+msgstr ""
+
+#: inc/admin-options.php:459
+msgid "Lede paragraph"
+msgstr ""
+
+#: inc/admin-options.php:463
+msgid "Leave blank to use the site tagline. Basic HTML (links, emphasis) is allowed."
+msgstr ""
+
+#: inc/admin-options.php:475
+msgid "Developed by"
+msgstr ""
+
+#: inc/admin-options.php:490
+msgid "Save Settings"
+msgstr ""
+
+#: inc/admin-options.php:491
+msgid "Settings saved!"
+msgstr ""
+
+#: inc/customizer.php:25
+msgid "Colour scheme, dark mode, the homepage hero, social profiles and layout are managed on the iPin Settings page."
+msgstr ""
+
+#: inc/customizer.php:27
+msgid "Open iPin Settings"
+msgstr ""
+
+#: inc/customizer.php:54
+msgid "iPin Theme Settings"
+msgstr ""
+
+#: inc/enqueue.php:84
+msgid "All items loaded"
+msgstr ""
+
+#: inc/enqueue.php:85
+msgid "Loading more pins…"
+msgstr ""
+
+#: inc/enqueue.php:88
+msgid "View all"
+msgstr ""
+
+#: inc/enqueue.php:89
+#: index.php:210
+msgid "View"
+msgstr ""
+
+#: inc/enqueue.php:90
+msgid "Close lightbox"
+msgstr ""
+
+#: inc/enqueue.php:91
+msgid "Previous pin"
+msgstr ""
+
+#: inc/enqueue.php:92
+msgid "Next pin"
+msgstr ""
+
+#: inc/enqueue.php:93
+msgid "This pin could not be loaded."
+msgstr ""
+
+#: inc/enqueue.php:94
+msgid "Please try again, or open the post directly."
+msgstr ""
+
+#: inc/enqueue.php:95
+#: single.php:82
+msgid "Save to Pinterest (opens in new tab)"
+msgstr ""
+
+#: inc/enqueue.php:96
+msgid "Share on X (opens in new tab)"
+msgstr ""
+
+#: inc/enqueue.php:97
+#: single.php:98
+msgid "Share on Facebook (opens in new tab)"
+msgstr ""
+
+#: inc/enqueue.php:98
+msgid "Copied!"
+msgstr ""
+
+#: inc/enqueue.php:99
+msgid "Link copied to clipboard."
+msgstr ""
+
+#: inc/enqueue.php:144
+msgid "Saving…"
+msgstr ""
+
+#: inc/enqueue.php:145
+msgid "Settings could not be saved. Check your connection and try again."
+msgstr ""
+
+#. translators: %s = parent menu item title
+#: inc/nav-walker.php:57
+#, php-format
+msgid "Show submenu for %s"
+msgstr ""
+
+#. translators: %s = folder path inside the theme
+#: inc/post-types.php:45
+#, php-format
+msgid "<strong>Keep your Sideblog articles safe:</strong> copy %s from the iPin Modern theme folder to <code>wp-content/plugins/</code> and activate <em>iPin Sideblog</em>. Your articles then stay available even if you switch themes."
+msgstr ""
+
+#. translators: %d = number of minutes
+#: inc/template-tags.php:181
+#, php-format
+msgid "%d min ago"
+msgid_plural "%d mins ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d = number of hours
+#: inc/template-tags.php:187
+#, php-format
+msgid "%d hour ago"
+msgid_plural "%d hours ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#. translators: %d = number of days
+#: inc/template-tags.php:193
+#, php-format
+msgid "%d day ago"
+msgid_plural "%d days ago"
+msgstr[0] ""
+msgstr[1] ""
+
+#: inc/template-tags.php:217
+msgid "Reply"
+msgstr ""
+
+#: inc/template-tags.php:231
+msgid "Author"
+msgstr ""
+
+#: inc/template-tags.php:235
+msgid "Permalink"
+msgstr ""
+
+#: inc/template-tags.php:236
+#: single.php:31
+msgid "Edit"
+msgstr ""
+
+#: inc/template-tags.php:239
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: inc/template-tags.php:261
+msgid "Name"
+msgstr ""
+
+#: inc/template-tags.php:267
+msgid "Email"
+msgstr ""
+
+#: inc/template-tags.php:273
+msgid "Website"
+msgstr ""
+
+#: inc/template-tags.php:438
+msgid "Pin not found."
+msgstr ""
+
+#: inc/video.php:55
+msgid "Video file"
+msgstr ""
+
+#: inc/video.php:142
+msgid "Video pin"
+msgstr ""
+
+#: inc/video.php:158
+msgid "Video URL"
+msgstr ""
+
+#: inc/video.php:164
+msgid "A direct video file link (.mp4, .webm), or a YouTube or Vimeo link. The featured image becomes the poster. Leave blank for a photo pin."
+msgstr ""
+
+#. translators: %s = source kind, e.g. "Video file" or "YouTube"
+#: inc/video.php:171
+#, php-format
+msgid "Playable: %s"
+msgstr ""
+
+#: inc/video.php:175
+msgid "Not playable. Paste the direct file link (ending in .mp4 or .webm), not the page that shows the video."
+msgstr ""
+
+#: index.php:65
+msgid "Featured"
+msgstr ""
+
+#. translators: %d = number of comments
+#: index.php:69
+#, php-format
+msgid "%d comment"
+msgid_plural "%d comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: index.php:77
+msgid "This board"
+msgstr ""
+
+#: index.php:78
+msgid "pins"
+msgstr ""
+
+#. translators: 1: category count, 2: comment count
+#: index.php:82
+#, php-format
+msgid "%1$s categories · %2$s comments"
+msgstr ""
+
+#: index.php:90
+msgid "Browse"
+msgstr ""
+
+#: index.php:109
+msgid "Sort posts"
+msgstr ""
+
+#: index.php:113
+msgid "Latest"
+msgstr ""
+
+#: index.php:119
+msgid "Last 7 days"
+msgstr ""
+
+#: index.php:125
+msgid "This month"
+msgstr ""
+
+#: index.php:131
+msgid "All time"
+msgstr ""
+
+#: index.php:222
+msgid "(video)"
+msgstr ""
+
+#: index.php:240
+msgid "in"
+msgstr ""
+
+#. translators: %d = number of comments on the pin
+#: index.php:269
+#, php-format
+msgid "View all %d comment"
+msgid_plural "View all %d comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: index.php:283
+msgid "Posts pagination"
+msgstr ""
+
+#: index.php:286
+msgid "Older posts"
+msgstr ""
+
+#: index.php:289
+msgid "Newer posts"
+msgstr ""
+
+#: index.php:296
+msgid "No content found"
+msgstr ""
+
+#: index.php:298
+msgid "Nothing pinned here yet"
+msgstr ""
+
+#: index.php:299
+msgid "Perhaps searching will help."
+msgstr ""
+
+#: page.php:18
+msgid "Page sections"
+msgstr ""
+
+#: page.php:18
+#: single.php:53
+msgid "Pages:"
+msgstr ""
+
+#: page.php:31
+msgid "Edit this page"
+msgstr ""
+
+#: single.php:25
+msgid "0 Comments"
+msgstr ""
+
+#: single.php:26
+msgid "1 Comment"
+msgstr ""
+
+#. translators: %s = comment count
+#: single.php:28
+msgid "% Comments"
+msgstr ""
+
+#: single.php:53
+msgid "Post pages"
+msgstr ""
+
+#: single.php:61
+msgid "Categories:"
+msgstr ""
+
+#: single.php:63
+msgid "Tags:"
+msgstr ""
+
+#: single.php:76
+msgid "Share this post"
+msgstr ""
+
+#: single.php:77
+msgid "Share:"
+msgstr ""
+
+#: single.php:90
+msgid "Share on X / Twitter (opens in new tab)"
+msgstr ""
+
+#: single.php:105
+msgid "Copy link to clipboard"
+msgstr ""
+
+#: single.php:107
+msgid "Copy link"
+msgstr ""
+
+#: single.php:111
+msgid "Post navigation"
+msgstr ""

@@ -1,28 +1,30 @@
 /*
 Theme Name: iPin Modern
-Theme URI: https://github.com/ipin-wp
-Author: Genkisan (modernised)
-Author URI: #
-Description: A bold, colorful Pinterest-inspired masonry theme. PHP 8.x compatible, Bootstrap-free, fully modular CSS, dark mode, configurable colour schemes, tabbed admin settings.
-Version: 4.1.4
+Theme URI: https://github.com/menj/ipin-modern
+Author: MENJ
+Author URI: https://menj.org
+Description: A Pinterest-style masonry theme for images and video. Statement hero with a featured-pin panel, self-hosted Garamond and Sabon typography, five colour schemes with dark mode (all WCAG 2.2 AA), a full-screen lightbox, video pins, and a tabbed settings page. No jQuery, and the theme itself requests nothing from other servers. Rebuilt from Genkisan's original iPin.
+Version: 5.0.0
+Requires at least: 6.5
+Tested up to: 7.1
+Requires PHP: 8.0
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Tags: pinterest, photo, gallery, portfolio, masonry, dark-mode, responsive, custom-colors
-Text Domain: ipin
+Tags: blog, photography, portfolio, grid-layout, one-column, custom-background, custom-colors, custom-logo, custom-menu, editor-style, featured-images, threaded-comments, translation-ready, accessibility-ready
+Text Domain: ipin-modern
 */
 
 /*
- * ─────────────────────────────────────────────────────────
- *  NOTE: This file contains only the required WordPress
- *  theme header comment. All styles are in /css/:
+ * This file holds only the theme header. The styles live in assets/css/
+ * and are enqueued from inc/enqueue.php:
  *
- *    css/tokens.css   — Design tokens & colour schemes
- *    css/base.css     — Reset, typography, utilities
- *    css/nav.css      — Top navigation & hamburger
- *    css/masonry.css  — Grid cards, loaders, pagination
- *    css/single.css   — Posts, pages, sidebar, comments
- *    css/admin.css    — Admin options page (admin-only)
- *
- *  All files are enqueued via functions.php.
- * ─────────────────────────────────────────────────────────
+ *   fonts.css         Self-hosted webfonts (assets/fonts/)
+ *   tokens.css        Colour schemes and design tokens, in OKLCH
+ *   base.css          Reset, type, links, icons, footer, search form
+ *   nav.css           Top bar, dropdowns, mobile panel, dark-mode switch
+ *   masonry.css       Grid, hero and bento, cards, sort bar (grid views)
+ *   lightbox.css      Pin lightbox (grid views)
+ *   single.css        Posts and pages, comments, share bar, video player
+ *   admin.css         Settings screen (admin only)
+ *   editor-style.css  Block editor canvas
  */

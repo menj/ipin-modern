@@ -1,6 +1,36 @@
 # Upgrading iPin Modern
 
-Migration guides for each major version jump, plus the future roadmap.
+Migration guides for each major version jump, a troubleshooting list, and the roadmap.
+
+## Upgrading to 5.0.0 (from any 4.x)
+
+5.0 rebuilds the front end. Most sites update in place, but a few things were removed on purpose. Check this list first, and back up the site before you update.
+
+### Before you update
+
+1. **Sidebars are gone.** Widgets you placed in the Right Sidebar or Left Sidebar stop showing. WordPress keeps them under Appearance → Widgets as inactive, so you can copy anything you still need.
+2. **Two page templates are gone:** `page_left_sidebar.php` and `page_full_width.php`. Pages that used them fall back to the default page layout, which is now full width anyway. Nothing to do unless a child theme references them.
+3. **The Ads tab is gone.** Saved ad code stays in the database (`ipin_ad_*` options) but is never output. If you ran AdSense Auto Ads through Google Site Kit, that still works, because Site Kit injects its own script.
+4. **The Popular Posts widget is gone.** With no widget areas left, it had nowhere to go. The sort bar above the grid does the same ranking.
+5. **The text domain changed** from `ipin` to `ipin-modern`. If you made your own translation, rename the files (`ipin-fr_FR.mo` becomes `ipin-modern-fr_FR.mo`) or regenerate them from `languages/ipin-modern.pot`.
+6. **jQuery isn't loaded by the theme any more.** A child theme or custom script that relied on the theme pulling in jQuery must enqueue it itself (`wp_enqueue_script( 'jquery' )`). Code that called `$.fn.masonry`, `imagesLoaded` or `infinitescroll` needs updating; see "Child themes" below.
+
+### After you update
+
+1. Clear any page cache and CDN cache. Asset URLs carry the new version number, so browsers fetch fresh files, but cached HTML can still point at the old ones.
+2. Open Appearance → iPin Settings. Check the new Layout tab (homepage hero) and the new Social fields (sameAs list, Mastodon handle).
+3. If you use the Sideblog, copy `companion/ipin-sideblog/` to `wp-content/plugins/` and activate iPin Sideblog. Until you do, the theme registers the post type itself, exactly as before.
+4. Optional: regenerate thumbnails (for example `wp media regenerate --yes`) so older uploads get the new 800px `ipin-card` size. Cards work without it; they just use the nearest existing size.
+
+### Child themes
+
+- Grid markup is unchanged apart from these: the card's hover chips are `<span class="btn">` instead of links, video pins add `.thumb--video` and a `.thumb-play` badge, and the comments wrapper in `single.php` and `page.php` lost its duplicate `id="comments"` (the id now lives only on the section in `comments.php`).
+- The grid engine lives in `assets/js/ipin.grid.js`. After it appends a page of pins it fires `ipin:infiniteScrollLoaded` on `document`; listen for that instead of the old jQuery callbacks.
+- Colour tokens are now in OKLCH, and gradients, borders and shadows are derived from a few source colours. Overriding `--clr-accent-*`, `--clr-fill-*` or `--clr-vivid-*` is enough; you don't need to repeat the gradients. Use `--clr-fill-*` for solid buttons with white labels, since `--clr-accent-*` turns into a light text colour in dark mode.
+- `ipin_dynamic_css_and_scheme()` no longer prints a `<style>` block. Card width and corner radius arrive through `wp_add_inline_style()` on the `ipin-tokens` handle.
+- Lightbox data comes from `GET /wp-json/ipin/v1/pin/{id}`. The `ipin_lightbox_data` admin-ajax action is gone.
+
+---
 
 ## Upgrading to 4.1.2 (from any 4.1.x or 4.0.x)
 
@@ -149,68 +179,43 @@ added the tabbed admin settings page.
 
 ## Installing fresh (no prior version)
 
-See the Installation section in `_README.txt`. Summary:
+See the Installation section in `readme.txt`. Short version:
 
-1. Upload `ipin-modern/` to `/wp-content/themes/`
-2. Activate via Appearance → Themes
-3. Settings → Permalinks → Save Changes (flush rewrites)
-4. Appearance → iPin Settings → configure
+1. Upload `ipin-modern/` to `wp-content/themes/` (or upload the zip under Appearance → Themes → Add New).
+2. Activate it under Appearance → Themes.
+3. Configure it under Appearance → iPin Settings.
 
 ---
 
 ## Known issues
 
-### Ad slots not saving
-- This was a bug fixed in v4.0.1. If you are on v4.0.0, upgrade to
-  v4.0.1 — the AJAX save handler was missing all eight ad slot fields.
+### The grid shows as plain columns and never becomes a masonry layout
+- The CSS-columns layout is the no-JavaScript fallback. If you see it with JavaScript on, `ipin.grid.js` isn't running. Check the browser console for errors and the Network tab for `assets/js/ipin.grid.js`.
+- Optimisation plugins that combine or defer scripts can break the load order. `ipin.grid.js` depends on `ipin.custom.js`; exclude both from combining if in doubt.
 
-### AdSense code appears blank after saving
-- This was a bug fixed in v4.0.1. `wp_kses_post` was stripping
-  `<script>` tags from pasted ad code. Upgrade to v4.0.1.
+### Infinite scroll doesn't load more pins
+- The grid engine follows the `#navigation-next a` link. The default `index.php` prints it; a custom template has to as well.
+- It only runs when there's a second page. Check Appearance → iPin Settings → General → Posts per page against your post count.
 
-### Google Site Kit — site not verified
-- Confirm `wp_head()` is present in your `header.php`. It is in the
-  default theme but custom child themes may have removed it.
-- Site Kit verification injects a `<meta>` tag via `wp_head`. If
-  verification fails, check that no caching plugin is stripping meta
-  tags from the `<head>`.
+### A video pin won't play
+- The Video pin box in the editor says whether a link is playable. Use the direct file link, the one ending in .mp4 or .webm. A link to the page that shows the video won't play.
+- Sites that forbid framing (they send `X-Frame-Options: SAMEORIGIN`) still work with a file link, because the file plays in a native `<video>` element.
+- A file that plays in one browser but not another is usually a codec issue. H.264 in .mp4 plays nearly everywhere; .webm is a good second file.
 
-### Google Site Kit — Auto Ads not showing
-- Auto Ads requires the AdSense account to be approved and Auto Ads
-  enabled inside the AdSense dashboard, not just in Site Kit.
-- The AdSense script is injected via `wp_head()` — if a caching layer
-  is serving stale HTML without the script tag, purge the cache after
-  connecting Site Kit.
+### The lightbox says "This pin could not be loaded"
+- Password-protected posts are refused by design; open the post itself.
+- A security plugin may be blocking the REST API for visitors. Allow `GET /wp-json/ipin/v1/pin/*`.
 
-### Masonry layout not initialising
-- Confirm jQuery is loading. Go to a front-end page, open browser
-  DevTools Console, type `jQuery.fn.jquery` — should show a version.
-- Confirm the three JS libs are loading: check the Network tab for
-  `jquery.masonry.min.js`, `jquery.imagesloaded.min.js`,
-  `jquery.infinitescroll.min.js`.
-- Check for JS errors in the Console tab.
+### Google Site Kit: site not verified
+- Confirm `wp_head()` is present in your `header.php`. It is in the theme, but a custom child theme may have removed it.
+- Site Kit verification adds a `<meta>` tag through `wp_head`. If verification fails, check that no caching plugin is stripping meta tags from the `<head>`.
 
-### Grid items all stacking vertically
-- This means masonry is running before images have dimensions.
-  Check that `jquery.imagesloaded.min.js` is loading successfully.
-
-### Infinite scroll not triggering
-- Confirm your theme has a `#navigation` element with an
-  `#navigation-next a` link inside it. The default `index.php`
-  includes this; custom templates may not.
-- Infinite scroll only activates if there is a second page. If you
-  only have a handful of posts it will not initialise.
-
-### Dark mode flashing on load
-- This means the synchronous scheme-init script in `header.php` is
-  running after your stylesheets. Check that `wp_head()` is present
-  in your `header.php` and that nothing is suppressing priority 1 hooks.
+### Dark mode flashes on load
+- The pre-paint script runs on `wp_head` at priority 1. Check that `wp_head()` is in your `header.php` and that nothing unhooks `ipin_dynamic_css_and_scheme()`.
 
 ### Colour scheme not applying
-- Check that `data-scheme` is set on `<html>` before the first paint.
-  Open DevTools → Elements and look at the `<html>` tag.
-- Confirm `ipin_dynamic_css_and_scheme()` is hooked: it runs on
-  `wp_head` at priority 1 via `inc/enqueue.php`.
+- Check that `data-scheme` is set on `<html>` before the first paint (DevTools → Elements).
+- If you added your own scheme, it also needs an entry in `ipin_colour_schemes()`, or the settings page won't save it.
 
 ---
 
@@ -222,7 +227,45 @@ or verifying that an install is complete.
 
 ---
 
-### v4.0 — Current
+### v5.0 (current)
+
+```
+ipin-modern/
+├── style.css                    Theme header only (Version: 5.0.0)
+├── functions.php                Setup, image size, grid page size, module loader
+├── index.php                    Hero, sort bar, masonry grid (home, archives, search)
+├── single.php  page.php         Posts and pages, full width
+├── comments.php  searchform.php  404.php  header.php  footer.php
+├── favicon.svg  favicon.ico     Pin mark (used when no Site Icon is set)
+├── screenshot.png               1200 × 900
+├── readme.txt  CHANGELOG.md  UPGRADING.md
+│
+├── inc/
+│   ├── template-tags.php        Helpers, icons, comment callback, feed, REST lightbox data
+│   ├── enqueue.php              Assets, inline tokens, scheme init, theme-color
+│   ├── admin-options.php        Settings schema and the tabbed settings page
+│   ├── seo.php                  Meta description, JSON-LD, sameAs, Mastodon tags
+│   ├── video.php                Video pins: parser, player, editor box
+│   ├── nav-walker.php           Menu walker with disclosure buttons
+│   ├── popular-posts.php        Sort bar ordering and links
+│   ├── post-types.php           Loads the Sideblog post type if the plugin isn't active
+│   └── customizer.php           Customizer notice, Colors section handling
+│
+├── assets/
+│   ├── css/                     fonts, tokens, base, nav, masonry, lightbox, single, admin, editor-style
+│   ├── js/                      ipin.grid.js, ipin.custom.js, lightbox.js, ipin.admin.js
+│   ├── fonts/                   EB Garamond, Sabon Next LT, Special Elite (WOFF2)
+│   └── img/social/              x, facebook, instagram, pinterest (SVG)
+│
+├── companion/ipin-sideblog/     Standalone plugin for the ipin_article post type
+└── languages/ipin-modern.pot
+```
+
+No jQuery. No bundled third-party libraries. No sidebars or widget areas.
+
+---
+
+### v4.0
 
 ```
 ipin-modern/
@@ -387,67 +430,25 @@ All configuration via WP Customizer only.
 
 ## Future Roadmap
 
-The items below are planned for future releases. They are not committed
-to any specific version or timeline.
+These have no dates yet. 5.0 delivered the old 4.1 list (responsive images, lazy loading, container queries, reduced-motion support, IntersectionObserver scrolling) and the `.pot` file.
 
-### v4.1 — Polish & Performance
-- [ ] WebP-aware responsive image helpers (`srcset` + `sizes` auto-generation)
-- [ ] Lazy-load attribute on all grid card images
-- [ ] CSS container queries for card layout (remove JS resize handler)
-- [ ] `prefers-reduced-motion` animation disable on masonry transitions
-- [ ] Partial template extraction: `template-parts/card.php`,
-      `template-parts/sort-bar.php`
-- [ ] `loading="lazy"` on lightbox images
-- [ ] Improved infinite scroll: Intersection Observer API replacing
-      scroll event listener
+### Templates
+- [ ] Extract `template-parts/card.php` and `template-parts/sort-bar.php` from `index.php`
+- [ ] `archive-ipin_article.php` for the Sideblog archive
+- [ ] Author archive with a pin grid and simple stats
 
-### v4.2 — Sideblog & Archive Improvements
-- [ ] `archive-ipin_article.php` template for the sideblog archive
-- [ ] Sideblog widget displaying latest articles in the sidebar
-- [ ] Category and tag archive templates that use the masonry layout
-- [ ] Author archive template (`author.php`) with pin grid and stats
-- [ ] Search results template (`search.php`) styled to match grid
+### Settings
+- [ ] Live Customizer preview for colour scheme and card width
+- [ ] Export and import settings as JSON
 
-### v4.3 — Theme Customiser Integration
-- [ ] Live preview of colour scheme changes in the Customizer
-- [ ] Live preview of card width slider
-- [ ] Custom CSS field in the Customizer piped through the token system
-- [ ] Export/import settings as JSON from the admin page
+### iPin Social (optional plugin)
+The social features planned during 4.0 (likes, repins, follows, boards, profiles, notifications, front-end pin upload, a "Pin It" bookmarklet, OAuth login) belong in a separate plugin, so sites that don't want them carry none of the weight.
 
-### v5.0 — Social Network Edition (Optional Add-on)
-The social features below are planned as an **opt-in plugin** rather
-than being bundled in the theme. This keeps the base theme lean and
-ensures sites that do not need social functionality carry no overhead.
+### Block themes
+- [ ] Block patterns for the hero and the grid
+- [ ] A block-theme (FSE) edition
 
-**Planned plugin: iPin Social**
-- [ ] Likes system — custom DB table, AJAX toggle, cached counts
-- [ ] Repins — duplicate post under current user, board assignment
-- [ ] User follows — follower/following counts, follow button
-- [ ] User boards (ipin_board CPT) — create, edit, assign pins
-- [ ] User profile page (`page-profile.php`) — pins, boards, followers
-- [ ] In-app notifications — custom DB table, notification bell in nav
-- [ ] Email notifications — per-type toggles, WP Cron queue
-- [ ] Frontend pin upload — file upload, URL import, video pinning
-- [ ] "Pin It" bookmarklet — image picker overlay, pre-fill upload form
-- [ ] User badges — Newcomer → Pinner → Curator → Influencer → Legend
-- [ ] Top users leaderboard widget
-- [ ] Embed view — iFrame-friendly single pin card (`embed-pin.php`)
-- [ ] Facebook OAuth login
-- [ ] Twitter / X OAuth 2.0 PKCE login
-
-**Note:** All data models, DB schema, AJAX handlers, and PHP logic for
-the above features were prototyped during the v4.0 development cycle
-and are available for extraction into the plugin at any time.
-
-### v5.1 — Headless / Block Editor
-- [ ] Full Site Editing (FSE) template parts for block themes
-- [ ] Block patterns for the masonry grid layout
-- [ ] REST API endpoint for grid data (for headless / Next.js front-ends)
-- [ ] WooCommerce product grid support (pin cards for products)
-
-### Ongoing
-- [ ] Translation: `.pot` file generation via WP-CLI in CI
-- [ ] PHPCS WordPress Coding Standards compliance pass
-- [ ] Jest unit tests for the three custom JS libraries
-- [ ] Playwright end-to-end tests for lightbox, dark mode, infinite scroll
-- [ ] GitHub Actions CI: lint PHP, lint JS, run tests on PR
+### Tooling
+- [ ] PHPCS (WordPress Coding Standards) and JS linting in CI
+- [ ] Playwright tests for the grid, lightbox, dark mode and menus
+- [ ] Regenerate the `.pot` file in CI
