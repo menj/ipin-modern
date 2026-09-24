@@ -115,19 +115,19 @@
 		<a class="sort-bar__btn<?php echo $current_sort === '7days' ? ' active' : ''; ?>"
 		   href="<?php echo esc_url( ipin_popular_sort_url( '7days' ) ); ?>"
 		   aria-current="<?php echo $current_sort === '7days' ? 'page' : 'false'; ?>">
-			<i class="fa fa-fire-alt" aria-hidden="true"></i>
+			<?php echo ipin_icon( 'fire' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php esc_html_e( 'Last 7 days', 'ipin' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === '30days' ? ' active' : ''; ?>"
 		   href="<?php echo esc_url( ipin_popular_sort_url( '30days' ) ); ?>"
 		   aria-current="<?php echo $current_sort === '30days' ? 'page' : 'false'; ?>">
-			<i class="fa fa-chart-line" aria-hidden="true"></i>
+			<?php echo ipin_icon( 'chart-line' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php esc_html_e( 'This month', 'ipin' ); ?>
 		</a>
 		<a class="sort-bar__btn<?php echo $current_sort === 'all' ? ' active' : ''; ?>"
 		   href="<?php echo esc_url( ipin_popular_sort_url( 'all' ) ); ?>"
 		   aria-current="<?php echo $current_sort === 'all' ? 'page' : 'false'; ?>">
-			<i class="fa fa-crown" aria-hidden="true"></i>
+			<?php echo ipin_icon( 'crown' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php esc_html_e( 'All time', 'ipin' ); ?>
 		</a>
 	</nav>
@@ -203,12 +203,12 @@
 					     is invalid HTML and makes browsers restructure the card. -->
 					<div class="masonry-actionbar" aria-hidden="true">
 						<span class="btn btn-comment">
-							<i class="fa fa-comment" aria-hidden="true"></i>
+							<?php echo ipin_icon( 'comment' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 							<?php esc_html_e( 'Comment', 'ipin' ); ?>
 						</span>
 						<span class="btn btn-view">
 							<?php esc_html_e( 'View', 'ipin' ); ?>
-							<i class="fa fa-arrow-right" aria-hidden="true"></i>
+							<?php echo ipin_icon( 'arrow-right' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						</span>
 					</div>
 				</a><!-- /.thumb-img-wrap -->
@@ -217,7 +217,7 @@
 				<div class="thumb-body">
 
 					<h2 class="thumbtitle">
-						<a href="<?php the_permalink(); ?>"><?php the_title(); ?><?php
+						<a href="<?php the_permalink(); ?>" aria-keyshortcuts="Shift+Enter"><?php the_title(); ?><?php
 							if ( $is_video_pin ) {
 								echo ' <span class="screen-reader-text">' . esc_html__( '(video)', 'ipin' ) . '</span>';
 							}

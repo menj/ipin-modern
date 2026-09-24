@@ -140,6 +140,32 @@ function ipin_comment_previews( array $posts, int $per_post ): array {
 
 
 /* -------------------------------------------------------
+   UI ICONS
+   Minimal 2px line icons, inlined so they inherit colour and
+   size (1em) from the text around them. Replaces the Font
+   Awesome CDN stylesheet; brand glyphs live in
+   assets/img/social/ (see ipin_social_icon()).
+   ------------------------------------------------------- */
+function ipin_icon( string $name ): string {
+	static $paths = [
+		'fire'        => '<path d="M12 3c.6 3.1-2.2 4.6-2.2 7.3a2.2 2.2 0 0 0 4.4 0c0-.9-.4-1.9-.4-1.9 2.3 1.3 3.9 3.5 3.9 6a5.7 5.7 0 0 1-11.4 0C6.3 9.6 12 7.6 12 3Z"/>',
+		'chart-line'  => '<path d="M4 20h16"/><path d="m5 15 4.5-4.5 3.5 3.5L19 8"/><path d="M15 8h4v4"/>',
+		'crown'       => '<path d="M5 19h14"/><path d="M5 16 3.5 7l5 3.5L12 5l3.5 5.5 5-3.5L19 16Z"/>',
+		'comment'     => '<path d="M20.5 12a8.5 8.5 0 0 1-12.2 7.6L3.5 21l1.4-4.6A8.5 8.5 0 1 1 20.5 12Z"/>',
+		'arrow-right' => '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+		'link'        => '<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3A4.5 4.5 0 0 0 13 4.6l-1.2 1.2"/><path d="M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2"/>',
+		'chevron-up'  => '<path d="m6 15 6-6 6 6"/>',
+		'search'      => '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
+		'rss'         => '<path d="M5 4.5A14.5 14.5 0 0 1 19.5 19"/><path d="M5 10.5a8.5 8.5 0 0 1 8.5 8.5"/><circle cx="6" cy="18" r="1.5" fill="currentColor" stroke="none"/>',
+	];
+	if ( ! isset( $paths[ $name ] ) ) {
+		return '';
+	}
+	return '<svg class="ipin-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $paths[ $name ] . '</svg>';
+}
+
+
+/* -------------------------------------------------------
    RELATIVE HUMAN-READABLE TIMESTAMP
    ------------------------------------------------------- */
 function ipin_human_time_diff( int $from, int $to = 0 ): string {
@@ -152,25 +178,19 @@ function ipin_human_time_diff( int $from, int $to = 0 ): string {
 	if ( $diff <= 3600 ) {
 		$n = max( 1, (int) round( $diff / 60 ) );
 		/* translators: %d = number of minutes */
-		return $n === 1
-			? sprintf( __( '%d min ago', 'ipin' ), $n )
-			: sprintf( __( '%d mins ago', 'ipin' ), $n );
+		return sprintf( _n( '%d min ago', '%d mins ago', $n, 'ipin' ), $n );
 	}
 
 	if ( $diff <= 86400 ) {
 		$n = max( 1, (int) round( $diff / 3600 ) );
 		/* translators: %d = number of hours */
-		return $n === 1
-			? sprintf( __( '%d hour ago', 'ipin' ), $n )
-			: sprintf( __( '%d hours ago', 'ipin' ), $n );
+		return sprintf( _n( '%d hour ago', '%d hours ago', $n, 'ipin' ), $n );
 	}
 
 	if ( $diff <= 31536000 ) {
 		$n = max( 1, (int) round( $diff / 86400 ) );
 		/* translators: %d = number of days */
-		return $n === 1
-			? sprintf( __( '%d day ago', 'ipin' ), $n )
-			: sprintf( __( '%d days ago', 'ipin' ), $n );
+		return sprintf( _n( '%d day ago', '%d days ago', $n, 'ipin' ), $n );
 	}
 
 	return (string) get_the_date();
@@ -280,6 +300,61 @@ function ipin_feed_content( string $content ): string {
 }
 add_filter( 'the_excerpt_rss',  'ipin_feed_content' );
 add_filter( 'the_content_feed', 'ipin_feed_content' );
+
+
+/* -------------------------------------------------------
+   RSS FEED — ENCLOSURE
+   One <enclosure> per item so feed readers show the pin's
+   media: the video file for a video pin, otherwise the
+   featured image at 'large' size. The length is taken from
+   the exact file the URL points at (0 when it lives on
+   another host, as RSS allows for an unknown size).
+   ------------------------------------------------------- */
+function ipin_feed_enclosure(): void {
+	$post_id = (int) get_the_ID();
+
+	$video = ipin_post_video( $post_id );
+	if ( $video && 'file' === $video['type'] ) {
+		$path = ipin_local_upload_path( $video['src'] );
+		printf(
+			'<enclosure url="%s" length="%d" type="%s" />' . "\n",
+			esc_url( $video['src'] ),
+			$path ? (int) filesize( $path ) : 0,
+			esc_attr( $video['mime'] )
+		);
+		return;
+	}
+
+	$thumb = (int) get_post_thumbnail_id( $post_id );
+	if ( ! $thumb ) {
+		return;
+	}
+	$src = wp_get_attachment_image_src( $thumb, 'large' );
+	if ( ! $src ) {
+		return;
+	}
+	$path = ipin_local_upload_path( $src[0] );
+	printf(
+		'<enclosure url="%s" length="%d" type="%s" />' . "\n",
+		esc_url( $src[0] ),
+		$path ? (int) filesize( $path ) : 0,
+		esc_attr( (string) get_post_mime_type( $thumb ) )
+	);
+}
+add_action( 'rss2_item', 'ipin_feed_enclosure' );
+
+/** Filesystem path for a URL inside this site's uploads, or '' if it isn't one or doesn't exist. */
+function ipin_local_upload_path( string $url ): string {
+	$uploads = wp_get_upload_dir();
+	$base    = trailingslashit( $uploads['baseurl'] );
+	if ( ! str_starts_with( $url, $base ) ) {
+		return '';
+	}
+	$path = trailingslashit( $uploads['basedir'] ) . rawurldecode( substr( $url, strlen( $base ) ) );
+	$real = realpath( $path );
+	// Guard against ../ escaping the uploads directory.
+	return ( $real && str_starts_with( $real, realpath( $uploads['basedir'] ) ) && is_file( $real ) ) ? $real : '';
+}
 
 
 /* -------------------------------------------------------

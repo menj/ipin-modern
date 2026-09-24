@@ -209,6 +209,14 @@ img.alignleft  { float: left;  margin: 0.25rem 1.5rem 1rem 0; border-radius: var
   }
 }
 
+/* ── Inline UI icons (ipin_icon()) — sized like the text around them ── */
+.ipin-icon {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+  vertical-align: -0.125em;
+}
+
 /* ── Bundled social platform glyphs (assets/img/social) ──
    Inlined SVGs sized like the icon-font glyphs they replace;
    fill="currentColor" follows the scheme tokens and dark mode. */

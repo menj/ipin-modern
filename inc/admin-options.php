@@ -33,6 +33,7 @@ function ipin_settings_schema(): array {
 		'ipin_facebook_url'       => [ 'esc_url_raw',             ''      ],
 		'ipin_instagram_url'      => [ 'esc_url_raw',             ''      ],
 		'ipin_author_sameas'      => [ 'ipin_sanitize_url_list',  ''      ],
+		'ipin_fediverse_creator'  => [ 'ipin_sanitize_fediverse', ''      ],
 		'ipin_rss_visible'        => [ 'absint',                  1       ],
 		// Layout — homepage hero
 		'ipin_hero_enabled'       => [ 'absint',                  1       ],
@@ -357,6 +358,16 @@ function ipin_render_settings_page(): void {
 						placeholder="<?php echo esc_attr( $ph ); ?>">
 				</div>
 				<?php endforeach; ?>
+
+				<div class="ipin-field">
+					<label for="ipin_fediverse_creator"><?php esc_html_e( 'Mastodon / fediverse handle', 'ipin' ); ?></label>
+					<div>
+						<input type="text" id="ipin_fediverse_creator" name="ipin_fediverse_creator"
+							value="<?php echo esc_attr( ipin_get( 'ipin_fediverse_creator', '' ) ); ?>"
+							placeholder="@you@mastodon.social" autocomplete="off" spellcheck="false">
+						<p class="ipin-field-desc"><?php esc_html_e( 'Credits you on Mastodon link previews (fediverse:creator), adds a rel="me" link so Mastodon can verify this site on your profile, and joins your sameAs links. A profile URL works too.', 'ipin' ); ?></p>
+					</div>
+				</div>
 
 				<div class="ipin-field">
 					<label for="ipin_author_sameas"><?php esc_html_e( 'Also-me profile URLs (schema.org sameAs)', 'ipin' ); ?></label>

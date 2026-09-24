@@ -103,7 +103,7 @@
 			<button class="btn-share btn-share--copy"
 			        data-copy-url="<?php echo esc_attr( get_permalink() ); ?>"
 			        aria-label="<?php esc_attr_e( 'Copy link to clipboard', 'ipin' ); ?>">
-				<i class="fa fa-link" aria-hidden="true"></i>
+				<?php echo ipin_icon( 'link' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<span class="btn-share__label"><?php esc_html_e( 'Copy link', 'ipin' ); ?></span>
 			</button>
 		</div><!-- /.post-share -->

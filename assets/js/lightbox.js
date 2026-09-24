@@ -15,6 +15,8 @@
   var pinCache   = {};  // post ID → response; pins don't change while the page is open
   var requestSeq = 0;   // only the newest request may render
   var icons      = data.icons || {};
+  var t          = data.i18n || {};   // translated strings; English only as a last resort
+  function tr(key, fallback) { return t[key] || fallback; }
   var overlay    = null;
   var pinIds     = [];
   var currentIdx = -1;
@@ -60,19 +62,26 @@
       '    <div class="lightbox-meta" id="lightbox-meta"></div>' +
       '    <p class="lightbox-description" id="lightbox-desc"></p>' +
       '    <div class="lightbox-comments-preview" id="lightbox-comments" hidden>' +
-      '      <div class="lightbox-comments-preview__title">Comments</div>' +
+      '      <div class="lightbox-comments-preview__title"></div>' +
       '      <ul class="lightbox-comments-list" id="lightbox-comments-list"></ul>' +
-      '      <a class="lightbox-view-all" id="lightbox-view-all" href="#">View all</a>' +
+      '      <a class="lightbox-view-all" id="lightbox-view-all" href="#"></a>' +
       '    </div>' +
       '  </div>' +
       '</div>' +
       // Controls sit inside the overlay so the focus trap contains
       // them (WCAG 2.1.2 — focus must not escape an open modal).
-      '<button class="lightbox-close" aria-label="Close lightbox">' + SVG_CLOSE + '</button>' +
-      '<button class="lightbox-nav lightbox-nav--prev" id="lb-prev" aria-label="Previous pin">' + SVG_PREV + '</button>' +
-      '<button class="lightbox-nav lightbox-nav--next" id="lb-next" aria-label="Next pin">' + SVG_NEXT + '</button>';
+      '<button class="lightbox-close">' + SVG_CLOSE + '</button>' +
+      '<button class="lightbox-nav lightbox-nav--prev" id="lb-prev">' + SVG_PREV + '</button>' +
+      '<button class="lightbox-nav lightbox-nav--next" id="lb-next">' + SVG_NEXT + '</button>';
 
     document.body.appendChild(overlay);
+
+    // Translated text goes in through textContent/attributes, never HTML.
+    overlay.querySelector('.lightbox-comments-preview__title').textContent = tr('comments', 'Comments');
+    overlay.querySelector('#lightbox-view-all').textContent = tr('viewAll', 'View all');
+    overlay.querySelector('.lightbox-close').setAttribute('aria-label', tr('close', 'Close lightbox'));
+    overlay.querySelector('#lb-prev').setAttribute('aria-label', tr('prev', 'Previous pin'));
+    overlay.querySelector('#lb-next').setAttribute('aria-label', tr('next', 'Next pin'));
 
     ['lightbox-loading', 'lightbox-img', 'lightbox-video', 'lightbox-source', 'lightbox-source-text',
      'lightbox-social-actions', 'lightbox-title-link', 'lightbox-meta', 'lightbox-desc',
@@ -291,10 +300,10 @@
     hideLoading();
     el['lightbox-img'].hidden = true;
     el['lightbox-video'].hidden = true;
-    el['lightbox-title-link'].textContent = 'This pin could not be loaded.';
+    el['lightbox-title-link'].textContent = tr('pinError', 'This pin could not be loaded.');
     el['lightbox-title-link'].removeAttribute('href');
     el['lightbox-meta'].textContent = '';
-    el['lightbox-desc'].textContent = 'Please try again, or open the post directly.';
+    el['lightbox-desc'].textContent = tr('pinErrorHint', 'Please try again, or open the post directly.');
     el['lightbox-social-actions'].textContent = '';
     el['lightbox-comments'].hidden = true;
     el['lightbox-source'].hidden = true;
@@ -325,19 +334,19 @@
 
     sa.appendChild(shareLink(
       'btn-share-pinterest',
-      'Save to Pinterest (opens in new tab)',
+      tr('sharePinterest', 'Save to Pinterest (opens in new tab)'),
       'https://pinterest.com/pin/create/button/?url=' + encodeURIComponent(permalink) + '&description=' + encodeURIComponent(title),
       icons.pinterest || ''
     ));
     sa.appendChild(shareLink(
       'btn-share-twitter',
-      'Share on X / Twitter (opens in new tab)',
+      tr('shareX', 'Share on X (opens in new tab)'),
       'https://twitter.com/intent/tweet?url=' + encodeURIComponent(permalink) + '&text=' + encodeURIComponent(title),
       icons.x || ''
     ));
     sa.appendChild(shareLink(
       'btn-share-facebook',
-      'Share on Facebook (opens in new tab)',
+      tr('shareFacebook', 'Share on Facebook (opens in new tab)'),
       'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(permalink),
       icons.facebook || ''
     ));
@@ -346,7 +355,7 @@
     view.className = 'btn-social btn-view-post';
     view.href = permalink;
     view.innerHTML = SVG_VIEW;
-    view.appendChild(document.createTextNode(' View'));
+    view.appendChild(document.createTextNode(' ' + tr('view', 'View')));
     sa.appendChild(view);
   }
 

@@ -96,7 +96,7 @@
 					autocomplete="off"
 				>
 				<button type="submit">
-					<i class="fa fa-search" aria-hidden="true"></i>
+					<?php echo ipin_icon( 'search' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<span class="sr-only"><?php esc_html_e( 'Search', 'ipin' ); ?></span>
 				</button>
 			</form>
@@ -113,7 +113,7 @@
 				   role="listitem"
 				   target="_blank"
 				   rel="noopener">
-					<i class="fa fa-rss" aria-hidden="true"></i>
+					<?php echo ipin_icon( 'rss' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</a>
 				<?php endif; ?>
 
@@ -183,15 +183,14 @@ if ( is_search() || is_category() || is_tag() || is_archive() ) : ?>
 			esc_html__( 'Search results for "%s"', 'ipin' ),
 			'<em>' . esc_html( get_search_query() ) . '</em>'
 		); ?></h1>
-		<?php if ( category_description() ) echo '<p>' . wp_kses_post( category_description() ) . '</p>'; ?>
 	<?php elseif ( is_category() ) : ?>
 		<h1><?php single_cat_title(); ?></h1>
-		<?php if ( category_description() ) echo '<p>' . wp_kses_post( category_description() ) . '</p>'; ?>
+		<?php $ipin_desc = category_description(); if ( $ipin_desc && ! is_wp_error( $ipin_desc ) ) echo '<p>' . wp_kses_post( $ipin_desc ) . '</p>'; ?>
 	<?php elseif ( is_tag() ) : ?>
 		<h1><?php printf(
 			/* translators: %s = tag name */
 			esc_html__( 'Tag: %s', 'ipin' ),
-			'<em>' . single_tag_title( '', false ) . '</em>'
+			'<em>' . esc_html( single_tag_title( '', false ) ) . '</em>'
 		); ?></h1>
 		<?php if ( tag_description() ) echo '<p>' . wp_kses_post( tag_description() ) . '</p>'; ?>
 	<?php elseif ( is_author() ) : ?>

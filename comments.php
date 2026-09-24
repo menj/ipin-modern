@@ -11,7 +11,7 @@
 				/* translators: 1: number of comments, 2: post title */
 				esc_html( _n( 'One comment on "%2$s"', '%1$s comments on "%2$s"', $count, 'ipin' ) ),
 				number_format_i18n( $count ),
-				'<em>' . get_the_title() . '</em>'
+				'<em>' . esc_html( get_the_title() ) . '</em>'
 			);
 			?>
 		</h2>
@@ -33,8 +33,13 @@
 
 	<?php
 	comment_form( [
-		'title_reply'          => '<h2>' . esc_html__( 'Leave a Comment', 'ipin' ) . '</h2>',
-		'title_reply_to'       => '<h2>' . esc_html__( 'Reply to %s', 'ipin' ) . '</h2>',
+		// One correctly levelled heading: core wraps the title in these tags
+		// (its default is an <h3>, which the old nested <h2> sat inside).
+		'title_reply_before'   => '<h2 id="reply-title" class="comment-reply-title">',
+		'title_reply_after'    => '</h2>',
+		'title_reply'          => esc_html__( 'Leave a Comment', 'ipin' ),
+		/* translators: %s = name of the comment author being replied to */
+		'title_reply_to'       => esc_html__( 'Reply to %s', 'ipin' ),
 		'cancel_reply_link'    => esc_html__( 'Cancel reply', 'ipin' ),
 		'label_submit'         => esc_html__( 'Post Comment', 'ipin' ),
 		'comment_notes_before' => '',

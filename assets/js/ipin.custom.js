@@ -227,9 +227,9 @@
       if (!label.dataset.originalText) {
         label.dataset.originalText = label.textContent;
       }
-      label.textContent = 'Copied!';
+      label.textContent = ((window.ipinData || {}).i18n || {}).copied || 'Copied!';
       // Announce via the aria-live region (WCAG 4.1.3)
-      if (live) live.textContent = 'Link copied to clipboard.';
+      if (live) live.textContent = ((window.ipinData || {}).i18n || {}).linkCopied || 'Link copied to clipboard.';
     }
     if (copyTimer) clearTimeout(copyTimer);
     copyTimer = setTimeout(function () {

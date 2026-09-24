@@ -43,6 +43,48 @@ function ipin_sanitize_url_list( mixed $value ): string {
 
 
 /* -------------------------------------------------------
+   FEDIVERSE (MASTODON) HANDLE
+   Accepts "@you@example.social", "you@example.social" or a
+   profile URL "https://example.social/@you"; stores the
+   canonical "@you@example.social", or '' if unrecognisable.
+   ------------------------------------------------------- */
+function ipin_sanitize_fediverse( mixed $value ): string {
+	$value = trim( (string) $value );
+	if ( preg_match( '#^https?://([a-z0-9.-]+\.[a-z]{2,})/@([a-z0-9_]{1,64})/?$#i', $value, $m ) ) {
+		return '@' . $m[2] . '@' . strtolower( $m[1] );
+	}
+	if ( preg_match( '/^@?([a-z0-9_]{1,64})@([a-z0-9.-]+\.[a-z]{2,})$/i', $value, $m ) ) {
+		return '@' . $m[1] . '@' . strtolower( $m[2] );
+	}
+	return '';
+}
+
+/** Profile URL for the configured handle, e.g. https://example.social/@you, or ''. */
+function ipin_fediverse_profile_url(): string {
+	$handle = ipin_sanitize_fediverse( get_option( 'ipin_fediverse_creator', '' ) );
+	if ( '' === $handle ) {
+		return '';
+	}
+	[ , $user, $host ] = explode( '@', $handle );
+	return 'https://' . $host . '/@' . $user;
+}
+
+/**
+ * fediverse:creator credits the author on Mastodon link previews;
+ * rel="me" lets Mastodon verify this site on the profile.
+ */
+function ipin_fediverse_head(): void {
+	$handle = ipin_sanitize_fediverse( get_option( 'ipin_fediverse_creator', '' ) );
+	if ( '' === $handle ) {
+		return;
+	}
+	echo '<meta name="fediverse:creator" content="' . esc_attr( $handle ) . '">' . "\n";
+	echo '<link rel="me" href="' . esc_url( ipin_fediverse_profile_url() ) . '">' . "\n";
+}
+add_action( 'wp_head', 'ipin_fediverse_head', 2 );
+
+
+/* -------------------------------------------------------
    SAME-AS PROFILE URLS
    The configured nav social profiles plus the "also me"
    list from Settings → Social, deduplicated.
@@ -52,6 +94,7 @@ function ipin_same_as_urls(): array {
 		(string) get_option( 'ipin_twitter_url', '' ),
 		(string) get_option( 'ipin_facebook_url', '' ),
 		(string) get_option( 'ipin_instagram_url', '' ),
+		ipin_fediverse_profile_url(),
 	];
 	$extra = preg_split( '/[\r\n]+/', (string) get_option( 'ipin_author_sameas', '' ) ) ?: [];
 	$urls  = array_merge( $urls, $extra );
