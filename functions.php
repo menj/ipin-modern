@@ -31,7 +31,7 @@ require_once $ipin_inc . 'template-tags.php';   // helpers, comment callback, RS
 require_once $ipin_inc . 'nav-walker.php';       // Ipin_Nav_Walker + accessible nav filters
 
 // ── Design features ───────────────────────────────────
-require_once $ipin_inc . 'post-types.php';       // ipin_article CPT (sideblog)
+require_once $ipin_inc . 'post-types.php';       // Sideblog: ipin_article post type
 require_once $ipin_inc . 'popular-posts.php';    // sort bar: popular-by-comments ordering
 
 // ── Assets & UI ───────────────────────────────────────

@@ -40,11 +40,20 @@ Read [UPGRADING.md](UPGRADING.md) before updating a customised site.
 - Keyboard-operable dropdown menus: parent items get a disclosure button
   with `aria-expanded`; Escape closes the open submenu.
 - `ipin/v1/pin/{id}` REST route for lightbox data.
-- `companion/ipin-sideblog/`: the Sideblog post type as a standalone plugin.
+- The Sideblog is built into the theme and works on activation, with no plugin
+  to install. Articles (`ipin_article`) get an archive at `/articles/` with an
+  "Articles" heading, pages at `/article/{slug}/`, their own editor labels and
+  revisions. With no menu assigned, the top bar lists Articles once one is
+  published. Breadcrumb schema runs Home → Articles → article.
 - Cards are CSS size containers, so their type follows the card width setting.
 - Cards ease in on a CSS scroll-driven timeline (off under reduced motion).
 - Cross-document View Transitions: a card's image morphs into the post's
   featured image in browsers that support it.
+- A 404 page with some cheek: "4 0 4" with a loose, wobbling pin for the
+  zero, one of six headlines picked at random, and three ways out (back to
+  the board, a random pin, search). Add or replace the lines with the
+  `ipin_404_quips` filter. Its styles live in `404.css`, and the 404 view no
+  longer loads the grid and lightbox CSS or JavaScript.
 - `languages/ipin-modern.pot`.
 
 ### Changed
@@ -121,12 +130,23 @@ Read [UPGRADING.md](UPGRADING.md) before updating a customised site.
 - `--dur-fast` was used but never defined, so three button transitions never ran.
 - Lightbox data was HTML-escaped for code that writes plain text, so `&`
   showed as `&amp;`.
+- JSON-LD names and headlines carried HTML entities (`&#038;` for `&`). They
+  are plain text now, and `<`, `>` and `&` are written as `\u003C`-style
+  escapes, so no title can end the script element or open a comment in it.
+- Cards printed a stray "in", and single views an empty "Categories:", for
+  entries without categories.
+- The header's social links had `role="listitem"`, which replaced their link
+  role for screen readers, and the dark-mode button sat inside that list. They
+  are now a real list, with the button after it.
 
 ### Security
 - The lightbox endpoint returned data for password-protected and
   non-public posts. The REST route refuses both.
 - Video URLs were concatenated into iframe HTML. The lightbox now builds all
   markup with DOM properties, and URLs are scheme-checked on both ends.
+- The featured-pin panel showed a sticky post's title, image and link after
+  the post was made private, draft or password-protected. Only published
+  posts without a password qualify now.
 
 ### Performance
 - Grid comment previews come from one query per page instead of one per card

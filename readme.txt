@@ -19,7 +19,8 @@ What you get:
 * A homepage hero with your heading and a short lede, plus an optional panel with a featured pin, board stats and category links. Set it under Appearance → iPin Settings → Layout.
 * A masonry grid in plain JavaScript. It lays out as soon as the page loads, reflows when the window resizes, and loads the next batch as you scroll. With JavaScript off it falls back to CSS columns and ordinary pagination.
 * A full-screen lightbox. Click a pin to see the whole image, or play the video, with the description, share links and latest comments. Arrow keys move between pins and Escape closes it.
-* Video pins from a direct file link (.mp4, .webm) or a YouTube or Vimeo link.
+* Video pins from a direct file link (.mp4, .webm, .m4v, .mov or .ogv) or a YouTube or Vimeo link.
+* A Sideblog for longer pieces. Articles have their own admin menu, an archive at `/articles/` and a page each at `/article/your-title/`, and they work as soon as the theme is active.
 * 5 colour schemes (Vivid, Ocean, Ember, Forest and Mono), each with a dark mode. Every text and control colour is checked against WCAG 2.2 AA in both modes.
 * Self-hosted type: EB Garamond for headings, Sabon Next LT for reading, Special Elite for small labels.
 * A sort bar with Latest, Last 7 days, This month and All time, ranked by comment count.
@@ -35,23 +36,28 @@ The theme ships its own fonts and icons and loads nothing from a CDN. Avatars co
 1. In WordPress, go to Appearance → Themes → Add New → Upload Theme. Choose `ipin-modern-5.0.0.zip`, click Install Now, then Activate.
 2. Open Appearance → iPin Settings to pick a colour scheme, write the homepage hero and add your social profiles.
 3. Assign a menu to Top Navigation under Appearance → Menus.
-4. If you write Sideblog articles, copy `companion/ipin-sideblog/` from the theme folder into `wp-content/plugins/` and activate iPin Sideblog. Your articles then stay put if you ever switch themes.
+4. To write a longer piece, go to Sideblog → Add New Article. Once one is published, the theme adds an Articles link to the top bar for you, as long as no menu is assigned. With a menu, add it yourself: Appearance → Menus → Articles → View All → All Articles.
 
 To install over FTP, unzip the file, upload the `ipin-modern/` folder to `wp-content/themes/`, and activate it under Appearance → Themes.
 
 == Frequently Asked Questions ==
 
 = Do I need any plugins? =
-No. Everything ships with the theme. The iPin Sideblog plugin in `companion/` only matters if you publish Sideblog articles.
+No. Everything ships with the theme, the Sideblog included.
 
 = How do I make a video pin? =
-Edit the post and paste a link into the Video pin box in the sidebar: a direct file link that ends in .mp4 or .webm, or a YouTube or Vimeo link. The box tells you straight away whether the link will play. The featured image becomes the video's cover. Some sites refuse to be embedded in frames. Their videos still play here from the file link.
+Edit the post and paste a link into the Video pin box in the sidebar: a direct file link that ends in .mp4, .webm, .m4v, .mov or .ogv, or a YouTube or Vimeo link. The box tells you straight away whether the link will play. The featured image becomes the video's cover. Some sites refuse to be embedded in frames. Their videos still play here from the file link.
 
 = Can I open the lightbox from the keyboard? =
 Yes. Tab to a pin's title and press Shift+Enter. Plain Enter opens the post itself.
 
 = How do I add a colour scheme? =
 Add a `[data-scheme="yourscheme"]` block to `assets/css/tokens.css` with the source colours (the vivid, accent, fill, tint and surface tokens), and a `[data-scheme="yourscheme"][data-theme="dark"]` block for dark mode. Gradients, borders and shadows work themselves out from those. Then add the scheme to `ipin_colour_schemes()` in `inc/admin-options.php` and its browser-bar colours to `ipin_theme_colors()` in `inc/enqueue.php`.
+
+= Can I write my own 404 jokes? =
+Yes. The 404 page picks one of six headlines at random. Add yours, or replace them all, with the `ipin_404_quips` filter in a child theme or a small plugin:
+
+`add_filter( 'ipin_404_quips', fn( $quips ) => [ [ 'title' => 'Lost?', 'text' => 'Same.' ] ] );`
 
 = How does the sort bar work? =
 It re-orders the grid by comment count for the chosen period. It sits on the homepage, or on your Posts page if you use a static front page. WordPress already counts comments, so nothing new goes into the database.
@@ -73,10 +79,10 @@ Yes. Strings use the `ipin-modern` text domain, and `languages/ipin-modern.pot` 
 = 5.0.0 =
 The front end is rebuilt. Full details are in CHANGELOG.md.
 
-* Added: homepage hero and featured-pin panel, video pins, a full-screen lightbox, structured data with sameAs, a Mastodon handle, feed enclosures, self-hosted fonts, keyboard and touch dropdown menus.
+* Added: homepage hero and featured-pin panel, video pins, a built-in Sideblog, a full-screen lightbox, structured data with sameAs, a Mastodon handle, feed enclosures, self-hosted fonts, keyboard and touch dropdown menus.
 * Changed: jQuery and its three grid plugins are replaced by a small grid engine in plain JavaScript. Colour tokens are rebuilt in OKLCH, with every pairing checked to WCAG 2.2 AA. Lightbox data comes from a cacheable REST route. The text domain is now `ipin-modern`.
 * Removed: sidebars and their page templates, the Ads tab, the Popular Posts widget, and the Font Awesome and Google Fonts CDNs.
-* Fixed: a fatal error on the blog home, archives and search; dropdown menus; settings that saved but did nothing; dark-mode contrast on buttons; lightbox data leaking from password-protected posts; and the rest of the 5.0 code review.
+* Fixed: a fatal error on the blog home, archives and search; dropdown menus; settings that saved but did nothing; dark-mode contrast on buttons; lightbox data leaking from password-protected posts; private sticky posts showing in the featured panel; and the rest of the 5.0 code review.
 
 = 4.1.4 =
 * Fixed: Duplicate admin asset enqueue — ipin_admin_scripts() in admin-options.php was a stale copy of ipin_enqueue_admin_assets() in enqueue.php; both were hooked to admin_enqueue_scripts, double-registering ipin-admin-css and ipin-admin-js and calling wp_localize_script twice. Removed the stale copy from admin-options.php.

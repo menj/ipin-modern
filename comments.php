@@ -9,7 +9,7 @@
 			$count = get_comments_number();
 			printf(
 				/* translators: 1: number of comments, 2: post title */
-				esc_html( _n( 'One comment on "%2$s"', '%1$s comments on "%2$s"', $count, 'ipin-modern' ) ),
+				esc_html( _n( '%1$s comment on "%2$s"', '%1$s comments on "%2$s"', $count, 'ipin-modern' ) ),
 				number_format_i18n( $count ),
 				'<em>' . esc_html( get_the_title() ) . '</em>'
 			);

@@ -36,10 +36,13 @@ function ipin_enqueue_assets(): void {
 	wp_enqueue_style( 'ipin-nav',     "$uri/assets/css/nav.css",     [ 'ipin-base' ],         $v );
 
 	// Each view loads only the stylesheet it renders: posts/pages get
-	// single.css; the grid (home, archives, search, 404) gets masonry +
-	// lightbox. Footer, search form and scroll-to-top live in base.css.
+	// single.css; 404 gets 404.css; the grid (home, archives, search)
+	// gets masonry + lightbox. Footer, search form and scroll-to-top
+	// live in base.css.
 	if ( is_singular() ) {
 		wp_enqueue_style( 'ipin-single', "$uri/assets/css/single.css", [ 'ipin-base' ], $v );
+	} elseif ( is_404() ) {
+		wp_enqueue_style( 'ipin-404', "$uri/assets/css/404.css", [ 'ipin-base' ], $v );
 	} else {
 		wp_enqueue_style( 'ipin-masonry-css', "$uri/assets/css/masonry.css", [ 'ipin-base' ], $v );
 		wp_enqueue_style( 'ipin-lightbox',    "$uri/assets/css/lightbox.css", [ 'ipin-base' ], $v );
@@ -64,7 +67,7 @@ function ipin_enqueue_assets(): void {
 	// ── JS: grid engine + lightbox — archive pages only ─
 	// Vanilla masonry, infinite scroll, and lightbox; the
 	// bundled jQuery plugin stack is gone.
-	if ( ! is_singular() ) {
+	if ( ! is_singular() && ! is_404() ) {
 		wp_enqueue_script(
 			'ipin-grid',
 			"$uri/assets/js/ipin.grid.js",

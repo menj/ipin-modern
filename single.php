@@ -57,11 +57,22 @@
 			<div class="clearfix"></div>
 		</div>
 
+		<?php
+		// Sideblog articles carry no categories or tags; skip the footer then.
+		$cat_list = get_the_category_list( ', ' );
+		$tag_list = get_the_tag_list( '', ', ' );
+		if ( $cat_list || $tag_list ) : ?>
 		<footer class="post-meta-category-tag">
+			<?php if ( $cat_list ) : ?>
 			<strong><?php esc_html_e( 'Categories:', 'ipin-modern' ); ?></strong>
-			<?php the_category( ', ' ); ?>
-			<?php the_tags( ' &mdash; <strong>' . esc_html__( 'Tags:', 'ipin-modern' ) . '</strong> ', ', ' ); ?>
+			<?php echo $cat_list; // phpcs:ignore WordPress.Security.EscapeOutput -- core-built links ?>
+			<?php endif; ?>
+			<?php if ( $tag_list && ! is_wp_error( $tag_list ) ) : ?>
+			<?php echo $cat_list ? ' &mdash; ' : ''; ?><strong><?php esc_html_e( 'Tags:', 'ipin-modern' ); ?></strong>
+			<?php echo $tag_list; // phpcs:ignore WordPress.Security.EscapeOutput -- core-built links ?>
+			<?php endif; ?>
 		</footer>
+		<?php endif; ?>
 
 		<!-- ── Share buttons ───────────────────────── -->
 		<?php

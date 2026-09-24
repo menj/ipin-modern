@@ -178,8 +178,10 @@ add_action( 'wp_head', 'ipin_meta_description', 2 );
    STRUCTURED DATA (JSON-LD)
    WebSite on the home page; Article + BreadcrumbList on
    single posts, plus VideoObject when the pin is a video.
-   wp_json_encode() escapes forward slashes, so encoded
-   content can never break out of the <script> element.
+   Names are decoded to plain text, so the encoder also turns
+   < > & into \u003C-style escapes (JSON_HEX_TAG | JSON_HEX_AMP):
+   no title can close the <script> element or open an HTML
+   comment inside it.
    ------------------------------------------------------- */
 function ipin_structured_data(): void {
 	if ( ipin_seo_plugin_active() ) {
@@ -191,7 +193,7 @@ function ipin_structured_data(): void {
 	if ( is_front_page() || is_home() ) {
 		$website = [
 			'@type' => 'WebSite',
-			'name'  => get_bloginfo( 'name', 'display' ),
+			'name'  => ipin_plain( get_bloginfo( 'name', 'display' ) ),
 			'url'   => home_url( '/' ),
 		];
 		$same_as = ipin_same_as_urls();
@@ -215,7 +217,7 @@ function ipin_structured_data(): void {
 
 		$article = [
 			'@type'            => 'Article',
-			'headline'         => get_the_title( $post_id ),
+			'headline'         => ipin_plain( get_the_title( $post_id ) ),
 			'datePublished'    => get_the_date( 'c', $post_id ),
 			'dateModified'     => get_the_modified_date( 'c', $post_id ),
 			'mainEntityOfPage' => get_permalink( $post_id ),
@@ -237,23 +239,31 @@ function ipin_structured_data(): void {
 			[
 				'@type'    => 'ListItem',
 				'position' => 1,
-				'name'     => get_bloginfo( 'name', 'display' ),
+				'name'     => ipin_plain( get_bloginfo( 'name', 'display' ) ),
 				'item'     => home_url( '/' ),
 			],
 		];
 		$cats = get_the_category( $post_id );
-		if ( $cats ) {
+		if ( 'ipin_article' === get_post_type( $post_id ) ) {
+			// Sideblog articles have no categories; their parent is the archive.
 			$crumbs[] = [
 				'@type'    => 'ListItem',
 				'position' => 2,
-				'name'     => $cats[0]->name,
+				'name'     => get_post_type_object( 'ipin_article' )->labels->name,
+				'item'     => get_post_type_archive_link( 'ipin_article' ),
+			];
+		} elseif ( $cats ) {
+			$crumbs[] = [
+				'@type'    => 'ListItem',
+				'position' => 2,
+				'name'     => ipin_plain( $cats[0]->name ),
 				'item'     => get_category_link( $cats[0] ),
 			];
 		}
 		$crumbs[] = [
 			'@type'    => 'ListItem',
 			'position' => count( $crumbs ) + 1,
-			'name'     => get_the_title( $post_id ),
+			'name'     => ipin_plain( get_the_title( $post_id ) ),
 		];
 		$graph[] = [
 			'@type'           => 'BreadcrumbList',
@@ -265,7 +275,7 @@ function ipin_structured_data(): void {
 		if ( $source ) {
 			$video = [
 				'@type'      => 'VideoObject',
-				'name'       => get_the_title( $post_id ),
+				'name'       => ipin_plain( get_the_title( $post_id ) ),
 				'uploadDate' => get_the_date( 'c', $post_id ),
 			];
 			$video[ 'file' === $source['type'] ? 'contentUrl' : 'embedUrl' ] = esc_url_raw( $source['src'] );
@@ -285,7 +295,7 @@ function ipin_structured_data(): void {
 	}
 
 	echo '<script type="application/ld+json">'
-		. wp_json_encode( [ '@context' => 'https://schema.org', '@graph' => $graph ] )
+		. wp_json_encode( [ '@context' => 'https://schema.org', '@graph' => $graph ], JSON_HEX_TAG | JSON_HEX_AMP )
 		. '</script>' . "\n";
 }
 add_action( 'wp_head', 'ipin_structured_data', 3 );

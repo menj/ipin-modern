@@ -19,7 +19,7 @@ Migration guides for each major version jump, a troubleshooting list, and the ro
 
 1. Clear any page cache and CDN cache. Asset URLs carry the new version number, so browsers fetch fresh files, but cached HTML can still point at the old ones.
 2. Open Appearance → iPin Settings. Check the new Layout tab (homepage hero) and the new Social fields (sameAs list, Mastodon handle).
-3. If you use the Sideblog, copy `companion/ipin-sideblog/` to `wp-content/plugins/` and activate iPin Sideblog. Until you do, the theme registers the post type itself, exactly as before.
+3. The Sideblog needs nothing from you: the theme registers it, as it always has. If you installed the iPin Sideblog plugin from an earlier 5.0 build, deactivate and delete it. The theme notices the plugin and says so on the Plugins screen; your articles stay where they are.
 4. Optional: regenerate thumbnails (for example `wp media regenerate --yes`) so older uploads get the new 800px `ipin-card` size. Cards work without it; they just use the nearest existing size.
 
 ### Child themes
@@ -198,9 +198,15 @@ See the Installation section in `readme.txt`. Short version:
 - It only runs when there's a second page. Check Appearance → iPin Settings → General → Posts per page against your post count.
 
 ### A video pin won't play
-- The Video pin box in the editor says whether a link is playable. Use the direct file link, the one ending in .mp4 or .webm. A link to the page that shows the video won't play.
+- The Video pin box in the editor says whether a link is playable. Use the direct file link, the one ending in .mp4, .webm, .m4v, .mov or .ogv. A link to the page that shows the video won't play.
 - Sites that forbid framing (they send `X-Frame-Options: SAMEORIGIN`) still work with a file link, because the file plays in a native `<video>` element.
 - A file that plays in one browser but not another is usually a codec issue. H.264 in .mp4 plays nearly everywhere; .webm is a good second file.
+
+### `/articles/` or an article page shows "not found"
+- Go to Settings → Permalinks and click Save Changes. That rebuilds the rewrite rules. The theme does this when it is activated, but a caching or redirect plugin can hold on to old rules.
+
+### Articles are missing after switching themes
+- The Sideblog belongs to the theme, so another theme doesn't know about it. Nothing is deleted: switch back and the articles return, with their links.
 
 ### The lightbox says "This pin could not be loaded"
 - Password-protected posts are refused by design; open the post itself.
@@ -248,16 +254,15 @@ ipin-modern/
 │   ├── video.php                Video pins: parser, player, editor box
 │   ├── nav-walker.php           Menu walker with disclosure buttons
 │   ├── popular-posts.php        Sort bar ordering and links
-│   ├── post-types.php           Loads the Sideblog post type if the plugin isn't active
+│   ├── post-types.php           Sideblog post type (ipin_article)
 │   └── customizer.php           Customizer notice, Colors section handling
 │
 ├── assets/
-│   ├── css/                     fonts, tokens, base, nav, masonry, lightbox, single, admin, editor-style
+│   ├── css/                     fonts, tokens, base, nav, masonry, lightbox, single, 404, admin, editor-style
 │   ├── js/                      ipin.grid.js, ipin.custom.js, lightbox.js, ipin.admin.js
 │   ├── fonts/                   EB Garamond, Sabon Next LT, Special Elite (WOFF2)
 │   └── img/social/              x, facebook, instagram, pinterest (SVG)
 │
-├── companion/ipin-sideblog/     Standalone plugin for the ipin_article post type
 └── languages/ipin-modern.pot
 ```
 

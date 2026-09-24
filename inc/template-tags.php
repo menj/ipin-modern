@@ -452,3 +452,65 @@ add_action( 'rest_api_init', static function (): void {
 		],
 	] );
 } );
+
+
+/* -------------------------------------------------------
+   404 PAGE
+   A cheeky headline and line, picked at random on each load.
+   Add your own (or replace these) with the ipin_404_quips
+   filter; each entry is [ 'title' => …, 'text' => … ].
+   ------------------------------------------------------- */
+function ipin_404_quips(): array {
+	$quips = [
+		[
+			'title' => __( 'This pin fell off the board.', 'ipin-modern' ),
+			'text'  => __( 'We checked behind the sofa. Crumbs, one hair tie, no page. Try a search, or slip back to the board before anyone notices.', 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Well, this is awkward.', 'ipin-modern' ),
+			'text'  => __( 'You found the one spot on the board with nothing pinned to it. Honestly? Impressive.', 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Nothing to see here. Literally.', 'ipin-modern' ),
+			'text'  => __( "The page you wanted has left the building and didn't leave a forwarding address. Rude, we know.", 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Somebody un-pinned this.', 'ipin-modern' ),
+			'text'  => __( 'Either the link is wrong or the page took a gap year to find itself. Neither of us is getting it back today.', 'ipin-modern' ),
+		],
+		[
+			'title' => __( "Plot twist: there's no page.", 'ipin-modern' ),
+			'text'  => __( "You clicked with confidence, and we respect that. Sadly, the page didn't turn up to its own party.", 'ipin-modern' ),
+		],
+		[
+			'title' => __( 'Blank is the new black.', 'ipin-modern' ),
+			'text'  => __( 'Very minimalist of us. Still, you probably came here for something with pictures in it.', 'ipin-modern' ),
+		],
+	];
+	return (array) apply_filters( 'ipin_404_quips', $quips );
+}
+
+function ipin_404_quip(): array {
+	$quips = array_values( array_filter(
+		ipin_404_quips(),
+		static fn( $q ): bool => is_array( $q ) && '' !== trim( (string) ( $q['title'] ?? '' ) )
+	) );
+	if ( ! $quips ) {
+		return [ 'title' => __( 'Page not found', 'ipin-modern' ), 'text' => '' ];
+	}
+	$quip = $quips[ wp_rand( 0, count( $quips ) - 1 ) ];
+	return [ 'title' => (string) $quip['title'], 'text' => (string) ( $quip['text'] ?? '' ) ];
+}
+
+/**
+ * Permalink of a random pin from the 50 newest public ones, for the
+ * 404 page's "random pin" button. Empty string when there are none.
+ */
+function ipin_random_pin_url(): string {
+	$ids = get_posts( [
+		'numberposts'  => 50,
+		'fields'       => 'ids',
+		'has_password' => false,
+	] );
+	return $ids ? (string) get_permalink( $ids[ array_rand( $ids ) ] ) : '';
+}

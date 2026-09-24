@@ -3,13 +3,13 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: iPin Modern 5.0.0\n"
-"Report-Msgid-Bugs-To: https://github.com/menj/ipin-modern/issues\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/theme/ipin-modern\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-24T12:09:42+00:00\n"
+"POT-Creation-Date: 2026-09-24T13:07:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ipin-modern\n"
@@ -40,23 +40,31 @@ msgstr ""
 msgid "https://menj.org"
 msgstr ""
 
-#: 404.php:6
-msgid "Page not found"
+#: 404.php:17
+msgid "Error 404 · Page not found"
 msgstr ""
 
-#: 404.php:7
-msgid "Sorry, we couldn't find what you were looking for. Try searching instead."
+#: 404.php:25
+msgid "Back to the board"
+msgstr ""
+
+#: 404.php:29
+msgid "Show me a random pin"
+msgstr ""
+
+#: 404.php:35
+msgid "Or play detective:"
 msgstr ""
 
 #: comments.php:3
-#: inc/enqueue.php:87
+#: inc/enqueue.php:90
 msgid "Comments"
 msgstr ""
 
 #. translators: 1: number of comments, 2: post title
 #: comments.php:12
 #, php-format
-msgid "One comment on \"%2$s\""
+msgid "%1$s comment on \"%2$s\""
 msgid_plural "%1$s comments on \"%2$s\""
 msgstr[0] ""
 msgstr[1] ""
@@ -92,28 +100,11 @@ msgid "Post Comment"
 msgstr ""
 
 #: comments.php:49
-#: index.php:207
 msgid "Comment"
 msgstr ""
 
 #: comments.php:49
 msgid "required"
-msgstr ""
-
-#: companion/ipin-sideblog/ipin-sideblog.php:30
-msgid "Articles"
-msgstr ""
-
-#: companion/ipin-sideblog/ipin-sideblog.php:31
-msgid "Article"
-msgstr ""
-
-#: companion/ipin-sideblog/ipin-sideblog.php:32
-msgid "Add New Article"
-msgstr ""
-
-#: companion/ipin-sideblog/ipin-sideblog.php:33
-msgid "Sideblog"
 msgstr ""
 
 #: footer.php:30
@@ -151,65 +142,70 @@ msgstr ""
 msgid "Close navigation menu"
 msgstr ""
 
-#: header.php:86
+#: header.php:81
+#: inc/post-types.php:26
+msgid "Articles"
+msgstr ""
+
+#: header.php:92
 msgid "Site search"
 msgstr ""
 
-#: header.php:88
-#: header.php:100
+#: header.php:94
+#: header.php:106
 #: searchform.php:2
 #: searchform.php:10
 msgid "Search"
 msgstr ""
 
-#: header.php:94
+#: header.php:100
 #: searchform.php:7
 msgid "Search…"
 msgstr ""
 
-#: header.php:107
+#: header.php:117
 msgid "Social links"
 msgstr ""
 
-#: header.php:112
+#: header.php:123
 msgid "RSS feed (opens in new tab)"
 msgstr ""
 
-#: header.php:123
+#: header.php:135
 msgid "Follow us on X / Twitter (opens in new tab)"
 msgstr ""
 
-#: header.php:134
+#: header.php:147
 msgid "Follow us on Facebook (opens in new tab)"
 msgstr ""
 
-#: header.php:145
+#: header.php:159
 msgid "Follow us on Instagram (opens in new tab)"
 msgstr ""
 
-#: header.php:158
-#: header.php:160
+#: header.php:174
+#: header.php:176
 msgid "Switch to dark mode"
 msgstr ""
 
-#: header.php:161
+#: header.php:177
 msgid "Switch to light mode"
 msgstr ""
 
 #. translators: %s = search query
-#: header.php:183
+#: header.php:199
 #, php-format
 msgid "Search results for \"%s\""
 msgstr ""
 
 #. translators: %s = tag name
-#: header.php:192
+#: header.php:208
 #, php-format
 msgid "Tag: %s"
 msgstr ""
 
 #. translators: %s = author name
-#: header.php:199
+#: header.php:215
 #, php-format
 msgid "Posts by %s"
 msgstr ""
@@ -457,70 +453,70 @@ msgstr ""
 msgid "iPin Theme Settings"
 msgstr ""
 
-#: inc/enqueue.php:84
+#: inc/enqueue.php:87
 msgid "All items loaded"
 msgstr ""
 
-#: inc/enqueue.php:85
+#: inc/enqueue.php:88
 msgid "Loading more pins…"
 msgstr ""
 
-#: inc/enqueue.php:88
+#: inc/enqueue.php:91
 msgid "View all"
 msgstr ""
 
-#: inc/enqueue.php:89
-#: index.php:210
+#: inc/enqueue.php:92
+#: index.php:214
 msgid "View"
 msgstr ""
 
-#: inc/enqueue.php:90
+#: inc/enqueue.php:93
 msgid "Close lightbox"
 msgstr ""
 
-#: inc/enqueue.php:91
+#: inc/enqueue.php:94
 msgid "Previous pin"
 msgstr ""
 
-#: inc/enqueue.php:92
+#: inc/enqueue.php:95
 msgid "Next pin"
 msgstr ""
 
-#: inc/enqueue.php:93
+#: inc/enqueue.php:96
 msgid "This pin could not be loaded."
 msgstr ""
 
-#: inc/enqueue.php:94
+#: inc/enqueue.php:97
 msgid "Please try again, or open the post directly."
 msgstr ""
 
-#: inc/enqueue.php:95
-#: single.php:82
+#: inc/enqueue.php:98
+#: single.php:93
 msgid "Save to Pinterest (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:96
+#: inc/enqueue.php:99
 msgid "Share on X (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:97
-#: single.php:98
+#: inc/enqueue.php:100
+#: single.php:109
 msgid "Share on Facebook (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:98
+#: inc/enqueue.php:101
 msgid "Copied!"
 msgstr ""
 
-#: inc/enqueue.php:99
+#: inc/enqueue.php:102
 msgid "Link copied to clipboard."
 msgstr ""
 
-#: inc/enqueue.php:144
+#: inc/enqueue.php:147
 msgid "Saving…"
 msgstr ""
 
-#: inc/enqueue.php:145
+#: inc/enqueue.php:148
 msgid "Settings could not be saved. Check your connection and try again."
 msgstr ""
 
@@ -530,10 +526,64 @@ msgstr ""
 msgid "Show submenu for %s"
 msgstr ""
 
-#. translators: %s = folder path inside the theme
-#: inc/post-types.php:45
-#, php-format
-msgid "<strong>Keep your Sideblog articles safe:</strong> copy %s from the iPin Modern theme folder to <code>wp-content/plugins/</code> and activate <em>iPin Sideblog</em>. Your articles then stay available even if you switch themes."
+#: inc/post-types.php:27
+msgid "Article"
+msgstr ""
+
+#: inc/post-types.php:28
+msgid "Add New Article"
+msgstr ""
+
+#: inc/post-types.php:29
+msgid "Edit Article"
+msgstr ""
+
+#: inc/post-types.php:30
+msgid "New Article"
+msgstr ""
+
+#: inc/post-types.php:31
+msgid "View Article"
+msgstr ""
+
+#: inc/post-types.php:32
+msgid "View Articles"
+msgstr ""
+
+#: inc/post-types.php:33
+msgid "Search Articles"
+msgstr ""
+
+#: inc/post-types.php:34
+msgid "No articles found."
+msgstr ""
+
+#: inc/post-types.php:35
+msgid "No articles found in Trash."
+msgstr ""
+
+#: inc/post-types.php:36
+msgid "All Articles"
+msgstr ""
+
+#: inc/post-types.php:37
+msgid "Article Archives"
+msgstr ""
+
+#: inc/post-types.php:38
+msgid "Article published."
+msgstr ""
+
+#: inc/post-types.php:39
+msgid "Article updated."
+msgstr ""
+
+#: inc/post-types.php:40
+msgid "Sideblog"
+msgstr ""
+
+#: inc/post-types.php:90
+msgid "The Sideblog is now built into iPin Modern. You can deactivate and delete the <em>iPin Sideblog</em> plugin; your articles stay where they are."
 msgstr ""
 
 #. translators: %d = number of minutes
@@ -597,6 +647,58 @@ msgstr ""
 msgid "Pin not found."
 msgstr ""
 
+#: inc/template-tags.php:466
+msgid "This pin fell off the board."
+msgstr ""
+
+#: inc/template-tags.php:467
+msgid "We checked behind the sofa. Crumbs, one hair tie, no page. Try a search, or slip back to the board before anyone notices."
+msgstr ""
+
+#: inc/template-tags.php:470
+msgid "Well, this is awkward."
+msgstr ""
+
+#: inc/template-tags.php:471
+msgid "You found the one spot on the board with nothing pinned to it. Honestly? Impressive."
+msgstr ""
+
+#: inc/template-tags.php:474
+msgid "Nothing to see here. Literally."
+msgstr ""
+
+#: inc/template-tags.php:475
+msgid "The page you wanted has left the building and didn't leave a forwarding address. Rude, we know."
+msgstr ""
+
+#: inc/template-tags.php:478
+msgid "Somebody un-pinned this."
+msgstr ""
+
+#: inc/template-tags.php:479
+msgid "Either the link is wrong or the page took a gap year to find itself. Neither of us is getting it back today."
+msgstr ""
+
+#: inc/template-tags.php:482
+msgid "Plot twist: there's no page."
+msgstr ""
+
+#: inc/template-tags.php:483
+msgid "You clicked with confidence, and we respect that. Sadly, the page didn't turn up to its own party."
+msgstr ""
+
+#: inc/template-tags.php:486
+msgid "Blank is the new black."
+msgstr ""
+
+#: inc/template-tags.php:487
+msgid "Very minimalist of us. Still, you probably came here for something with pictures in it."
+msgstr ""
+
+#: inc/template-tags.php:499
+msgid "Page not found"
+msgstr ""
+
 #: inc/video.php:55
 msgid "Video file"
 msgstr ""
@@ -610,7 +712,7 @@ msgid "Video URL"
 msgstr ""
 
 #: inc/video.php:164
-msgid "A direct video file link (.mp4, .webm), or a YouTube or Vimeo link. The featured image becomes the poster. Leave blank for a photo pin."
+msgid "A direct video file link (.mp4, .webm, .m4v, .mov, .ogv), or a YouTube or Vimeo link. The featured image becomes the poster. Leave blank for a photo pin."
 msgstr ""
 
 #. translators: %s = source kind, e.g. "Video file" or "YouTube"
@@ -620,96 +722,96 @@ msgid "Playable: %s"
 msgstr ""
 
 #: inc/video.php:175
-msgid "Not playable. Paste the direct file link (ending in .mp4 or .webm), not the page that shows the video."
+msgid "Not playable. Paste the direct file link (ending in .mp4, .webm, .m4v, .mov or .ogv), not the page that shows the video."
 msgstr ""
 
-#: index.php:65
+#: index.php:72
 msgid "Featured"
 msgstr ""
 
 #. translators: %d = number of comments
-#: index.php:69
+#: index.php:76
 #, php-format
 msgid "%d comment"
 msgid_plural "%d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: index.php:77
+#: index.php:84
 msgid "This board"
 msgstr ""
 
-#: index.php:78
+#: index.php:85
 msgid "pins"
 msgstr ""
 
 #. translators: 1: category count, 2: comment count
-#: index.php:82
+#: index.php:89
 #, php-format
 msgid "%1$s categories · %2$s comments"
 msgstr ""
 
-#: index.php:90
+#: index.php:97
 msgid "Browse"
 msgstr ""
 
-#: index.php:109
+#: index.php:116
 msgid "Sort posts"
 msgstr ""
 
-#: index.php:113
+#: index.php:120
 msgid "Latest"
 msgstr ""
 
-#: index.php:119
+#: index.php:126
 msgid "Last 7 days"
 msgstr ""
 
-#: index.php:125
+#: index.php:132
 msgid "This month"
 msgstr ""
 
-#: index.php:131
+#: index.php:138
 msgid "All time"
 msgstr ""
 
-#: index.php:222
+#: index.php:226
 msgid "(video)"
 msgstr ""
 
-#: index.php:240
+#: index.php:246
 msgid "in"
 msgstr ""
 
 #. translators: %d = number of comments on the pin
-#: index.php:269
+#: index.php:276
 #, php-format
 msgid "View all %d comment"
 msgid_plural "View all %d comments"
 msgstr[0] ""
 msgstr[1] ""
 
-#: index.php:283
+#: index.php:290
 msgid "Posts pagination"
 msgstr ""
 
-#: index.php:286
+#: index.php:293
 msgid "Older posts"
 msgstr ""
 
-#: index.php:289
+#: index.php:296
 msgid "Newer posts"
 msgstr ""
 
-#: index.php:296
+#: index.php:303
 msgid "No content found"
 msgstr ""
 
-#: index.php:298
+#: index.php:305
 msgid "Nothing pinned here yet"
 msgstr ""
 
-#: index.php:299
+#: index.php:306
 msgid "Perhaps searching will help."
 msgstr ""
 
@@ -743,34 +845,34 @@ msgstr ""
 msgid "Post pages"
 msgstr ""
 
-#: single.php:61
+#: single.php:67
 msgid "Categories:"
 msgstr ""
 
-#: single.php:63
+#: single.php:71
 msgid "Tags:"
 msgstr ""
 
-#: single.php:76
+#: single.php:87
 msgid "Share this post"
 msgstr ""
 
-#: single.php:77
+#: single.php:88
 msgid "Share:"
 msgstr ""
 
-#: single.php:90
+#: single.php:101
 msgid "Share on X / Twitter (opens in new tab)"
 msgstr ""
 
-#: single.php:105
+#: single.php:116
 msgid "Copy link to clipboard"
 msgstr ""
 
-#: single.php:107
+#: single.php:118
 msgid "Copy link"
 msgstr ""
 
-#: single.php:111
+#: single.php:122
 msgid "Post navigation"
 msgstr ""

@@ -161,7 +161,7 @@ function ipin_video_render_meta_box( WP_Post $post ): void {
 			placeholder="https://menj.bio/…/clip.mp4">
 	</p>
 	<p class="description">
-		<?php esc_html_e( 'A direct video file link (.mp4, .webm), or a YouTube or Vimeo link. The featured image becomes the poster. Leave blank for a photo pin.', 'ipin-modern' ); ?>
+		<?php esc_html_e( 'A direct video file link (.mp4, .webm, .m4v, .mov, .ogv), or a YouTube or Vimeo link. The featured image becomes the poster. Leave blank for a photo pin.', 'ipin-modern' ); ?>
 	</p>
 	<?php if ( $url ) : ?>
 	<p>
@@ -172,7 +172,7 @@ function ipin_video_render_meta_box( WP_Post $post ): void {
 				$source['label']
 			) ); ?></strong>
 		<?php else : ?>
-			<strong style="color:#b32d2e">&#9888; <?php esc_html_e( 'Not playable. Paste the direct file link (ending in .mp4 or .webm), not the page that shows the video.', 'ipin-modern' ); ?></strong>
+			<strong style="color:#b32d2e">&#9888; <?php esc_html_e( 'Not playable. Paste the direct file link (ending in .mp4, .webm, .m4v, .mov or .ogv), not the page that shows the video.', 'ipin-modern' ); ?></strong>
 		<?php endif; ?>
 	</p>
 	<?php endif;

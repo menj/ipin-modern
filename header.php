@@ -75,6 +75,12 @@
 			<?php else : ?>
 				<ul class="nav-list" role="list">
 					<?php wp_list_pages( [ 'title_li' => '', 'depth' => 1, 'sort_column' => 'menu_order' ] ); ?>
+					<?php if ( ipin_has_articles() ) :
+						$ipin_in_sideblog = is_post_type_archive( 'ipin_article' ) || is_singular( 'ipin_article' ); ?>
+					<li class="page_item<?php echo $ipin_in_sideblog ? ' current_page_item' : ''; ?>">
+						<a href="<?php echo esc_url( get_post_type_archive_link( 'ipin_article' ) ); ?>"<?php echo $ipin_in_sideblog ? ' aria-current="page"' : ''; ?>><?php esc_html_e( 'Articles', 'ipin-modern' ); ?></a>
+					</li>
+					<?php endif; ?>
 				</ul>
 			<?php endif; ?>
 
@@ -101,54 +107,64 @@
 				</button>
 			</form>
 
-			<!-- Social links (WCAG 2.4.6: each has a descriptive label) -->
-			<div class="topmenu-social-wrap"
-			     role="list"
-			     aria-label="<?php esc_attr_e( 'Social links', 'ipin-modern' ); ?>">
+			<div class="topmenu-social-wrap">
+
+				<!-- Social links (WCAG 2.4.6: each has a descriptive label).
+				     role="list" keeps list semantics in Safari, which drops
+				     them from lists styled with list-style: none. -->
+				<ul class="topmenu-social-list"
+				    role="list"
+				    aria-label="<?php esc_attr_e( 'Social links', 'ipin-modern' ); ?>">
 
 				<?php if ( (int) ipin_option( 'ipin_rss_visible', 1 ) ) : ?>
-				<a href="<?php bloginfo( 'rss2_url' ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'RSS feed (opens in new tab)', 'ipin-modern' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener">
-					<?php echo ipin_icon( 'rss' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-				</a>
+				<li>
+					<a href="<?php bloginfo( 'rss2_url' ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'RSS feed (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener">
+						<?php echo ipin_icon( 'rss' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					</a>
+				</li>
 				<?php endif; ?>
 
 				<?php $twitter = ipin_option( 'ipin_twitter_url' ); if ( $twitter ) : ?>
-				<a href="<?php echo esc_url( $twitter ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'Follow us on X / Twitter (opens in new tab)', 'ipin-modern' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener noreferrer">
-					<?php echo ipin_social_icon( 'x' ); ?>
-				</a>
+				<li>
+					<a href="<?php echo esc_url( $twitter ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'Follow us on X / Twitter (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener noreferrer">
+						<?php echo ipin_social_icon( 'x' ); ?>
+					</a>
+				</li>
 				<?php endif; ?>
 
 				<?php $facebook = ipin_option( 'ipin_facebook_url' ); if ( $facebook ) : ?>
-				<a href="<?php echo esc_url( $facebook ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'Follow us on Facebook (opens in new tab)', 'ipin-modern' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener noreferrer">
-					<?php echo ipin_social_icon( 'facebook' ); ?>
-				</a>
+				<li>
+					<a href="<?php echo esc_url( $facebook ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'Follow us on Facebook (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener noreferrer">
+						<?php echo ipin_social_icon( 'facebook' ); ?>
+					</a>
+				</li>
 				<?php endif; ?>
 
 				<?php $instagram = ipin_option( 'ipin_instagram_url' ); if ( $instagram ) : ?>
-				<a href="<?php echo esc_url( $instagram ); ?>"
-				   class="topmenu-social"
-				   aria-label="<?php esc_attr_e( 'Follow us on Instagram (opens in new tab)', 'ipin-modern' ); ?>"
-				   role="listitem"
-				   target="_blank"
-				   rel="noopener noreferrer">
-					<?php echo ipin_social_icon( 'instagram' ); ?>
-				</a>
+				<li>
+					<a href="<?php echo esc_url( $instagram ); ?>"
+					   class="topmenu-social"
+					   aria-label="<?php esc_attr_e( 'Follow us on Instagram (opens in new tab)', 'ipin-modern' ); ?>"
+					   target="_blank"
+					   rel="noopener noreferrer">
+						<?php echo ipin_social_icon( 'instagram' ); ?>
+					</a>
+				</li>
 				<?php endif; ?>
+
+				</ul>
 
 				<!-- Dark-mode toggle: sun/moon pill switch with sliding
 				     gradient thumb (WCAG 4.1.2: aria-pressed + aria-label
@@ -199,6 +215,8 @@ if ( is_search() || is_category() || is_tag() || is_archive() ) : ?>
 			esc_html__( 'Posts by %s', 'ipin-modern' ),
 			'<em>' . esc_html( get_the_author() ) . '</em>'
 		); ?></h1>
+	<?php elseif ( is_post_type_archive() ) : ?>
+		<h1><?php post_type_archive_title(); ?></h1>
 	<?php else : ?>
 		<h1><?php the_archive_title(); ?></h1>
 	<?php endif; ?>

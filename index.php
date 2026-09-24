@@ -20,17 +20,24 @@
 			'<span class="home-hero__accent">$1</span>',
 			esc_html( $hero_title )
 		);
-		// Bento panel: first sticky post, else the newest pin with a thumbnail.
+		// Bento panel: first sticky post with a thumbnail, else the newest pin
+		// with one. Both go through get_posts() so only published posts without
+		// a password qualify; sticky_posts keeps IDs of posts later made
+		// private, draft or protected, and those must not surface here.
 		$bento_post = null;
 		if ( (int) ipin_option( 'ipin_hero_bento', 1 ) ) {
+			$bento_args = [
+				'numberposts'  => 1,
+				'post_status'  => 'publish',
+				'has_password' => false,
+				'meta_key'     => '_thumbnail_id',
+			];
 			$sticky = array_filter( array_map( 'intval', (array) get_option( 'sticky_posts' ) ) );
-			if ( $sticky ) {
-				$bento_post = get_post( $sticky[0] );
+			$found  = $sticky ? get_posts( $bento_args + [ 'post__in' => $sticky, 'orderby' => 'post__in' ] ) : [];
+			if ( ! $found ) {
+				$found = get_posts( $bento_args );
 			}
-			if ( ! $bento_post || ! has_post_thumbnail( $bento_post ) ) {
-				$latest     = get_posts( [ 'numberposts' => 1, 'meta_key' => '_thumbnail_id' ] );
-				$bento_post = $latest ? $latest[0] : null;
-			}
+			$bento_post = $found[0] ?? null;
 		}
 		if ( $hero_title ) :
 	?>
@@ -234,8 +241,11 @@
 						<?php endif; ?>
 						<div>
 							<span class="masonry-meta-author"><?php the_author(); ?></span>
+							<?php $card_cats = get_the_category_list( ', ' ); // empty for Sideblog articles
+							if ( $card_cats ) : ?>
 							<?php esc_html_e( 'in', 'ipin-modern' ); ?>
-							<span class="masonry-meta-content"><?php the_category( ', ' ); ?></span>
+							<span class="masonry-meta-content"><?php echo $card_cats; // phpcs:ignore WordPress.Security.EscapeOutput -- core-built links ?></span>
+							<?php endif; ?>
 						</div>
 					</div>
 
