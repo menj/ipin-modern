@@ -33,7 +33,6 @@ require_once $ipin_inc . 'nav-walker.php';       // Ipin_Nav_Walker + accessible
 // ── Design features ───────────────────────────────────
 require_once $ipin_inc . 'post-types.php';       // ipin_article CPT (sideblog)
 require_once $ipin_inc . 'popular-posts.php';    // popular posts by comment count + widget
-require_once $ipin_inc . 'ads.php';              // ad slot definitions & render helpers
 
 // ── Assets & UI ───────────────────────────────────────
 require_once $ipin_inc . 'enqueue.php';          // all wp_enqueue_* calls

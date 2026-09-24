@@ -174,18 +174,6 @@
 }
 
 
-/* ── Info box ─────────────────────────────────────────────── */
-.plugin-settings-root .ipin-info-box {
-  background: rgba(0,0,0,.03);
-  border-left: 3px solid var(--plugin-accent);
-  border-radius: 0 var(--ipin-r-sm) var(--ipin-r-sm) 0;
-  padding: 12px 14px;
-  font-size: .82rem;
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-
 /* ── Field row ────────────────────────────────────────────── */
 .plugin-settings-root .ipin-field {
   display: grid;
@@ -308,23 +296,6 @@
   outline-offset: 3px;
 }
 
-/* Small switch for slot headers */
-.plugin-settings-root .ipin-switch--sm {
-  width: 34px;
-  height: 18px;
-}
-
-.plugin-settings-root .ipin-switch--sm .ipin-switch__thumb {
-  width: 12px;
-  height: 12px;
-  top: 3px;
-  left: 3px;
-}
-
-.plugin-settings-root .ipin-switch--sm input:checked ~ .ipin-switch__thumb {
-  transform: translateX(16px);
-}
-
 .plugin-settings-root .ipin-toggle-body { line-height: 1; }
 
 .plugin-settings-root .ipin-toggle-label {
@@ -421,77 +392,6 @@
   font-weight: 700;
   color: var(--plugin-accent);
 }
-
-
-/* ── Ad slot cards ────────────────────────────────────────── */
-.plugin-settings-root .ipin-ad-slot-card {
-  border: 1px solid var(--plugin-border);
-  border-radius: var(--ipin-r);
-  padding: 14px 16px;
-  margin-bottom: 10px;
-  background: rgba(0,0,0,.015);
-  transition: opacity var(--ipin-dur);
-}
-
-.plugin-settings-root .ipin-ad-slot-card--paused { opacity: .45; }
-
-.plugin-settings-root .ipin-ad-slot-card__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.plugin-settings-root .ipin-ad-slot-card__label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: .85rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.plugin-settings-root .ipin-ad-slot-card textarea {
-  width: 100%;
-  font-family: monospace;
-  font-size: .8rem;
-  padding: 8px 10px;
-  border: 1px solid var(--plugin-border);
-  border-radius: var(--ipin-r-sm);
-  background: var(--plugin-surface);
-  color: inherit;
-  resize: vertical;
-}
-
-.plugin-settings-root .ipin-ad-slot-card textarea:focus {
-  outline: none;
-  border-color: var(--plugin-accent);
-  box-shadow: 0 0 0 3px var(--plugin-focus);
-}
-
-/* Dims entire slot section when global switch is off */
-.plugin-settings-root #ipin-ad-slots-wrap.ipin-slots-globally-off {
-  opacity: .35;
-  pointer-events: none;
-  user-select: none;
-}
-
-
-/* ── Badge ────────────────────────────────────────────────── */
-.plugin-settings-root .ipin-badge {
-  display: inline-block;
-  padding: 2px 9px;
-  border-radius: 20px;
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .05em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.plugin-settings-root .ipin-badge--on  { background: #d4edda; color: #155724; }
-.plugin-settings-root .ipin-badge--off { background: rgba(0,0,0,.07); color: var(--ipin-muted); }
 
 
 /* ── Save bar ─────────────────────────────────────────────── */

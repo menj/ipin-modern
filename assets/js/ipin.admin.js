@@ -83,48 +83,6 @@
   }
 
 
-  /* ── Global manual-ads switch ───────────────────────────────
-     Dims and disables the slot area when the master switch is off.
-  ─────────────────────────────────────────────────────────── */
-  var globalSwitch = root.querySelector('#ipin_manual_ads_enabled');
-  var slotsWrap    = root.querySelector('#ipin-ad-slots-wrap');
-
-  function syncGlobalAds() {
-    if (!slotsWrap) return;
-    slotsWrap.classList.toggle('ipin-slots-globally-off', !globalSwitch.checked);
-  }
-
-  if (globalSwitch) {
-    globalSwitch.addEventListener('change', syncGlobalAds);
-    syncGlobalAds(); // apply on load
-  }
-
-
-  /* ── Per-slot toggle — live badge + card dim ────────────────
-     Event-delegated to #ipin-ad-slots-wrap.
-  ─────────────────────────────────────────────────────────── */
-  if (slotsWrap) {
-    slotsWrap.addEventListener('change', function (e) {
-      var cb = e.target;
-      if (!cb || cb.type !== 'checkbox' || !cb.name.endsWith('_enabled')) return;
-
-      var card  = cb.closest('.ipin-ad-slot-card');
-      var badge = card && card.querySelector('.ipin-badge');
-      if (!card || !badge) return;
-
-      if (cb.checked) {
-        card.classList.remove('ipin-ad-slot-card--paused');
-        badge.className   = 'ipin-badge ipin-badge--on';
-        badge.textContent = 'Active';
-      } else {
-        card.classList.add('ipin-ad-slot-card--paused');
-        badge.className   = 'ipin-badge ipin-badge--off';
-        badge.textContent = 'Paused';
-      }
-    });
-  }
-
-
   /* ── AJAX save ──────────────────────────────────────────────
      Submits all form fields via fetch(). Shows saved notice
      briefly on success, restores button on error.

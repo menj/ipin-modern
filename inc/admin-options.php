@@ -83,16 +83,6 @@ function ipin_ajax_save_options(): void {
 		update_option( $key, $val );
 	}
 
-	// Ad slots — code preserved with ipin_sanitize_ad_code(), plus
-	// global switch and per-slot enabled toggles saved as absint.
-	update_option( 'ipin_manual_ads_enabled', absint( $_POST['ipin_manual_ads_enabled'] ?? 0 ) );
-	foreach ( array_keys( ipin_ad_slots() ) as $slot ) {
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- checked above
-		$ad_code = isset( $_POST[ $slot ] ) ? ipin_sanitize_ad_code( $_POST[ $slot ] ) : '';
-		update_option( $slot, $ad_code );
-		update_option( $slot . '_enabled', absint( $_POST[ $slot . '_enabled' ] ?? 0 ) );
-	}
-
 	wp_send_json_success( [ 'message' => __( 'Settings saved.', 'ipin' ) ] );
 }
 add_action( 'wp_ajax_ipin_save_options', 'ipin_ajax_save_options' );
@@ -132,7 +122,6 @@ function ipin_render_settings_page(): void {
 		'general'    => [ 'icon' => '&#x2699;&#xfe0f;', 'label' => __( 'General',    'ipin' ) ],
 		'appearance' => [ 'icon' => '&#x1f3a8;',        'label' => __( 'Appearance', 'ipin' ) ],
 		'social'     => [ 'icon' => '&#x1f517;',        'label' => __( 'Social',     'ipin' ) ],
-		'ads'        => [ 'icon' => '&#x1f4b0;',        'label' => __( 'Ads',        'ipin' ) ],
 		'layout'     => [ 'icon' => '&#x1f4d0;',        'label' => __( 'Layout',     'ipin' ) ],
 	];
 
@@ -388,71 +377,6 @@ function ipin_render_settings_page(): void {
 
 			<?php ipin_render_save_bar(); ?>
 		</div><!-- /#ipin-tab-social -->
-
-
-		<!-- ====================================================
-		     TAB: ADS
-		     ==================================================== -->
-		<div id="ipin-tab-ads" class="ipin-tab-panel" role="tabpanel" aria-labelledby="ipin-tab-btn-ads">
-
-			<div class="ipin-card">
-				<p class="ipin-card__title"><?php esc_html_e( 'Ad Mode', 'ipin' ); ?></p>
-
-				<div class="ipin-info-box">
-					<strong><?php esc_html_e( 'Auto Ads (Google Site Kit):', 'ipin' ); ?></strong>
-					<?php esc_html_e( 'Disable manual slots and let Site Kit handle all placement. The AdSense script is injected via wp_head automatically.', 'ipin' ); ?>
-					<br><br>
-					<strong><?php esc_html_e( 'Manual units:', 'ipin' ); ?></strong>
-					<?php esc_html_e( 'Enable manual slots, paste your AdSense code into each position, and use the per-slot toggle to activate or pause individually. Code is always preserved when a slot is paused.', 'ipin' ); ?>
-				</div>
-
-				<div class="ipin-toggle-row">
-					<div class="ipin-toggle-cell">
-						<label class="ipin-switch" for="ipin_manual_ads_enabled"
-							aria-label="<?php esc_html_e( 'Enable manual ad slots', 'ipin' ); ?>">
-							<input type="checkbox" id="ipin_manual_ads_enabled" name="ipin_manual_ads_enabled" value="1"
-								<?php checked( 1, (int) get_option( 'ipin_manual_ads_enabled', 1 ) ); ?>>
-							<span class="ipin-switch__track"></span>
-							<span class="ipin-switch__thumb"></span>
-						</label>
-					</div>
-					<div class="ipin-toggle-body">
-						<span class="ipin-toggle-label"><?php esc_html_e( 'Enable manual ad slots', 'ipin' ); ?></span>
-						<p class="ipin-toggle-desc"><?php esc_html_e( 'Turn off to hand all placement to Google Site Kit Auto Ads. Your slot code is kept.', 'ipin' ); ?></p>
-					</div>
-				</div>
-			</div>
-
-			<div id="ipin-ad-slots-wrap">
-				<?php foreach ( ipin_ad_slots() as $slot => $label ) :
-					$on = (bool) get_option( $slot . '_enabled', 1 );
-				?>
-				<div class="ipin-ad-slot-card<?php echo $on ? '' : ' ipin-ad-slot-card--paused'; ?>">
-					<div class="ipin-ad-slot-card__header">
-						<div class="ipin-ad-slot-card__label">
-							<label class="ipin-switch ipin-switch--sm" for="<?php echo esc_attr( $slot ); ?>_enabled"
-								aria-label="<?php echo esc_attr( $label ); ?>">
-								<input type="checkbox" id="<?php echo esc_attr( $slot ); ?>_enabled"
-									name="<?php echo esc_attr( $slot ); ?>_enabled" value="1"
-									<?php checked( 1, $on ); ?>>
-								<span class="ipin-switch__track"></span>
-								<span class="ipin-switch__thumb"></span>
-							</label>
-							<span class="ipin-ad-slot-card__name"><?php echo esc_html( $label ); ?></span>
-						</div>
-						<span class="ipin-badge <?php echo $on ? 'ipin-badge--on' : 'ipin-badge--off'; ?>">
-							<?php echo $on ? esc_html__( 'Active', 'ipin' ) : esc_html__( 'Paused', 'ipin' ); ?>
-						</span>
-					</div>
-					<label for="<?php echo esc_attr( $slot ); ?>" class="screen-reader-text"><?php echo esc_html( $label ); ?></label>
-					<textarea id="<?php echo esc_attr( $slot ); ?>" name="<?php echo esc_attr( $slot ); ?>" rows="4"
-						placeholder="<?php esc_attr_e( 'Paste ad code here...', 'ipin' ); ?>"><?php echo esc_textarea( (string) get_option( $slot, '' ) ); ?></textarea>
-				</div>
-				<?php endforeach; ?>
-			</div><!-- /#ipin-ad-slots-wrap -->
-
-			<?php ipin_render_save_bar(); ?>
-		</div><!-- /#ipin-tab-ads -->
 
 
 		<!-- ====================================================
