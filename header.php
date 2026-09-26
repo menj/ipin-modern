@@ -128,39 +128,56 @@
 				</li>
 				<?php endif; ?>
 
-				<?php $twitter = ipin_option( 'ipin_twitter_url' ); if ( $twitter ) : ?>
+				<?php
+				// Every profile set in Settings → Social, in ipin_social_profiles()
+				// order. The first ipin_social_inline show in the bar; the rest
+				// fold into a "More profiles" disclosure (a native <details>, so it
+				// opens without JavaScript; theme.js closes it on Escape or an
+				// outside click).
+				$ipin_links = [];
+				foreach ( ipin_social_profiles() as $ipin_key => [ $ipin_icon, $ipin_name ] ) {
+					$ipin_url = (string) ipin_option( $ipin_key );
+					if ( '' !== $ipin_url ) {
+						$ipin_links[] = [ $ipin_url, $ipin_icon, $ipin_name ];
+					}
+				}
+				$ipin_inline = (int) ipin_option( 'ipin_social_inline', 5 );
+				// Folding a single icon away would save nothing.
+				if ( count( $ipin_links ) <= $ipin_inline + 1 ) {
+					$ipin_inline = count( $ipin_links );
+				}
+				foreach ( array_slice( $ipin_links, 0, $ipin_inline ) as [ $ipin_url, $ipin_icon, $ipin_name ] ) : ?>
 				<li>
-					<a href="<?php echo esc_url( $twitter ); ?>"
+					<a href="<?php echo esc_url( $ipin_url ); ?>"
 					   class="topmenu-social"
-					   aria-label="<?php esc_attr_e( 'Follow us on X / Twitter (opens in new tab)', 'ipin-modern' ); ?>"
+					   aria-label="<?php echo esc_attr( sprintf( /* translators: %s = platform name */ __( '%s (opens in new tab)', 'ipin-modern' ), $ipin_name ) ); ?>"
 					   target="_blank"
-					   rel="noopener noreferrer">
-						<?php echo ipin_social_icon( 'x' ); ?>
+					   rel="me noopener noreferrer">
+						<?php echo ipin_social_icon( $ipin_icon ); // phpcs:ignore WordPress.Security.EscapeOutput -- bundled SVG file ?>
 					</a>
 				</li>
-				<?php endif; ?>
+				<?php endforeach; ?>
 
-				<?php $facebook = ipin_option( 'ipin_facebook_url' ); if ( $facebook ) : ?>
-				<li>
-					<a href="<?php echo esc_url( $facebook ); ?>"
-					   class="topmenu-social"
-					   aria-label="<?php esc_attr_e( 'Follow us on Facebook (opens in new tab)', 'ipin-modern' ); ?>"
-					   target="_blank"
-					   rel="noopener noreferrer">
-						<?php echo ipin_social_icon( 'facebook' ); ?>
-					</a>
-				</li>
-				<?php endif; ?>
-
-				<?php $instagram = ipin_option( 'ipin_instagram_url' ); if ( $instagram ) : ?>
-				<li>
-					<a href="<?php echo esc_url( $instagram ); ?>"
-					   class="topmenu-social"
-					   aria-label="<?php esc_attr_e( 'Follow us on Instagram (opens in new tab)', 'ipin-modern' ); ?>"
-					   target="_blank"
-					   rel="noopener noreferrer">
-						<?php echo ipin_social_icon( 'instagram' ); ?>
-					</a>
+				<?php $ipin_more = array_slice( $ipin_links, $ipin_inline );
+				if ( $ipin_more ) : ?>
+				<li class="topmenu-social-more">
+					<details>
+						<summary class="topmenu-social"
+						         aria-label="<?php echo esc_attr( sprintf( /* translators: %d = number of further profiles */ _n( '%d more profile', '%d more profiles', count( $ipin_more ), 'ipin-modern' ), count( $ipin_more ) ) ); ?>">
+							<svg class="ipin-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+						</summary>
+						<ul class="topmenu-social-more__panel" role="list">
+							<?php foreach ( $ipin_more as [ $ipin_url, $ipin_icon, $ipin_name ] ) : ?>
+							<li>
+								<a href="<?php echo esc_url( $ipin_url ); ?>" target="_blank" rel="me noopener noreferrer">
+									<?php echo ipin_social_icon( $ipin_icon ); // phpcs:ignore WordPress.Security.EscapeOutput -- bundled SVG file ?>
+									<span><?php echo esc_html( $ipin_name ); ?></span>
+									<span class="sr-only"><?php esc_html_e( '(opens in new tab)', 'ipin-modern' ); ?></span>
+								</a>
+							</li>
+							<?php endforeach; ?>
+						</ul>
+					</details>
 				</li>
 				<?php endif; ?>
 
@@ -199,6 +216,12 @@ if ( is_search() || is_category() || is_tag() || is_archive() ) : ?>
 			esc_html__( 'Search results for "%s"', 'ipin-modern' ),
 			'<em>' . esc_html( get_search_query() ) . '</em>'
 		); ?></h1>
+		<?php $ipin_found = (int) $GLOBALS['wp_query']->found_posts; ?>
+		<p><?php printf(
+			/* translators: %s = number of results */
+			esc_html( _n( '%s pin found', '%s pins found', $ipin_found, 'ipin-modern' ) ),
+			esc_html( number_format_i18n( $ipin_found ) )
+		); ?></p>
 	<?php elseif ( is_category() ) : ?>
 		<h1><?php single_cat_title(); ?></h1>
 		<?php $ipin_desc = category_description(); if ( $ipin_desc && ! is_wp_error( $ipin_desc ) ) echo '<p>' . wp_kses_post( $ipin_desc ) . '</p>'; ?>

@@ -38,9 +38,15 @@ require_once $ipin_inc . 'enqueue.php';                // assets, scheme init, t
 require_once $ipin_inc . 'post-types.php';             // Sideblog: ipin_article post type
 require_once $ipin_inc . 'popular-posts.php';          // sort bar ordering (?popular=)
 require_once $ipin_inc . 'video.php';                  // video pins: source parser, player, editor box
+require_once $ipin_inc . 'pin-source.php';             // "Pin source" editor box (_ipin_source_url)
+require_once $ipin_inc . 'hidden-tags.php';            // hidden tags: kept out of loops, feeds, sitemap, tag lists
+require_once $ipin_inc . 'markdown.php';               // Markdown for posts, articles and comments
 
 // ── Output for machines ───────────────────────────────
 require_once $ipin_inc . 'seo.php';                    // meta description + JSON-LD structured data
+require_once $ipin_inc . 'opengraph.php';              // Open Graph + Twitter Card tags
+require_once $ipin_inc . 'pinterest.php';              // Pinterest Tag, Rich Pin meta, lightbox Save switch
+require_once $ipin_inc . 'performance.php';            // LCP preload, resource hints, head clean-up
 require_once $ipin_inc . 'feed.php';                   // RSS: pin images and enclosures
 require_once $ipin_inc . 'rest-api.php';               // lightbox data: GET /wp-json/ipin/v1/pin/{id}
 

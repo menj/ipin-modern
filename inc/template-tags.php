@@ -65,6 +65,62 @@ function ipin_social_icon( string $platform ): string {
 }
 
 
+
+/* -------------------------------------------------------
+   SHARE HASHTAGS
+   Hashtags built from a post's tags, for share links:
+     'twitter' — comma-separated ASCII tags for X's &hashtags=
+     'inline'  — " #TagOne #TagTwo" appended to Mastodon and
+                 Threads text (Unicode letters kept)
+   Multi-word tags become CamelCase. At most five. Hidden tags
+   never appear: get_the_tags() is filtered by hidden-tags.php,
+   and they are skipped here as well for REST and admin calls.
+   Restored in 5.1 from 4.5.
+   ------------------------------------------------------- */
+function ipin_share_hashtags( int $post_id = 0 ): array {
+	$post_id = $post_id ?: (int) get_the_ID();
+	$raw     = get_the_tags( $post_id );
+	if ( ! $raw || is_wp_error( $raw ) ) {
+		return [ 'twitter' => '', 'inline' => '' ];
+	}
+
+	$hidden       = function_exists( 'ipin_get_hidden_tag_ids' ) ? ipin_get_hidden_tag_ids() : [];
+	$twitter_tags = [];
+	$inline_tags  = [];
+
+	foreach ( $raw as $tag ) {
+		if ( in_array( (int) $tag->term_id, $hidden, true ) ) {
+			continue;
+		}
+		if ( count( $inline_tags ) >= 5 ) {
+			break;
+		}
+
+		$parts = [];
+		foreach ( preg_split( '/[\s\-_]+/u', $tag->name ) ?: [] as $w ) {
+			if ( '' !== $w ) {
+				$parts[] = mb_strtoupper( mb_substr( $w, 0, 1 ) ) . mb_substr( $w, 1 );
+			}
+		}
+		$inline = (string) preg_replace( '/[^\p{L}\p{N}_]/u', '', implode( '', $parts ) );
+		if ( '' === $inline ) {
+			continue;
+		}
+		$inline_tags[] = '#' . $inline;
+
+		$ascii = (string) preg_replace( '/[^A-Za-z0-9_]/', '', $inline );
+		if ( '' !== $ascii ) {
+			$twitter_tags[] = $ascii;
+		}
+	}
+
+	return [
+		'twitter' => implode( ',', $twitter_tags ),
+		'inline'  => $inline_tags ? ' ' . implode( ' ', $inline_tags ) : '',
+	];
+}
+
+
 /* -------------------------------------------------------
    CARD IMAGE
    The attachment a grid card shows: the featured image, else
@@ -171,6 +227,8 @@ function ipin_icon( string $name ): string {
 		'chevron-up'  => '<path d="m6 15 6-6 6 6"/>',
 		'search'      => '<circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/>',
 		'rss'         => '<path d="M5 4.5A14.5 14.5 0 0 1 19.5 19"/><path d="M5 10.5a8.5 8.5 0 0 1 8.5 8.5"/><circle cx="6" cy="18" r="1.5" fill="currentColor" stroke="none"/>',
+		'share'       => '<circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.4"/><path d="m8.2 13.2 7.6 4.4"/>',
+		'mail'        => '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/>',
 	];
 	if ( ! isset( $paths[ $name ] ) ) {
 		return '';

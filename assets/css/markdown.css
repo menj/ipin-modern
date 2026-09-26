@@ -1,0 +1,291 @@
+/**
+ * iPin Modern — markdown.css
+ *
+ * Styles for .post-content areas where Markdown is enabled. Loaded after
+ * single.css, and only on singular pages with "Write in Markdown" switched
+ * on (inc/markdown.php). All rules are scoped to .post-wrapper .post-content
+ * so nothing reaches widgets, the nav or the lightbox.
+ *
+ * Ported in 5.1 from 4.4.58's markdown.css. That file named colour tokens
+ * that never existed (--accent, --muted, --surface-1 and others), so most of
+ * its colours fell back to defaults; here every colour comes from 5.x's
+ * tokens.css, which also carries dark mode, so the separate dark-mode
+ * overrides are gone. Pairings below are checked to WCAG 2.2 AA across all
+ * ten schemes in light and dark mode (worst case in each comment).
+ *
+ * Complements single.css: its link, blockquote and image rules still apply,
+ * and this file refines them for the elements Markdown authors use.
+ */
+
+
+/* ─── Headings ───────────────────────────────────────────────────────── */
+/* h1 is the post title; "#" headings inside a post render smaller than it. */
+
+.post-wrapper .post-content h2,
+.post-wrapper .post-content h3,
+.post-wrapper .post-content h4,
+.post-wrapper .post-content h5,
+.post-wrapper .post-content h6 {
+  font-family: var(--font-display);
+  line-height: 1.25;
+  margin: 2em 0 .5em;
+  scroll-margin-top: calc(var(--nav-height) + 16px); /* clear the fixed bar on #anchor jumps */
+}
+
+.post-wrapper .post-content h2 { font-size: 1.55rem; }
+.post-wrapper .post-content h3 { font-size: 1.3rem; }
+.post-wrapper .post-content h4 { font-size: 1.12rem; }
+.post-wrapper .post-content h5 { font-size: 1rem;  font-weight: 700; }
+.post-wrapper .post-content h6 { font-size: .9rem; font-weight: 700; color: var(--txt-muted); }
+
+/* Headings carry ids (Ipin_Markdown); a faint # on hover shows they can be linked */
+.post-wrapper .post-content :is(h2, h3, h4, h5, h6)[id]:hover::after {
+  content: ' #';
+  color: var(--clr-accent-1);
+  font-size: .75em;
+  font-weight: 400;
+  opacity: .6;
+}
+
+
+/* ─── Paragraphs ─────────────────────────────────────────────────────── */
+
+.post-wrapper .post-content p {
+  margin: 0 0 1.15em;
+  line-height: 1.75;
+}
+
+.post-wrapper .post-content p + p {
+  margin-top: -.25em; /* tighten consecutive paragraphs */
+}
+
+
+/* ─── Emphasis ───────────────────────────────────────────────────────── */
+
+.post-wrapper .post-content strong { font-weight: 700; color: inherit; }
+.post-wrapper .post-content em     { font-style: italic; }
+
+.post-wrapper .post-content del {
+  text-decoration: line-through;
+  opacity: .65; /* primary text at 65%: ≥ 5.72:1 */
+}
+
+
+/* ─── Links (colour and underline colour from single.css) ─────────────── */
+
+.post-wrapper .post-content a {
+  color: var(--clr-accent-1);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.post-wrapper .post-content a:hover {
+  text-decoration: none;
+}
+
+
+/* ─── Inline code ────────────────────────────────────────────────────── */
+
+.post-wrapper .post-content :not(pre) > code {
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+  font-size: .875em;
+  padding: .15em .35em;
+  border-radius: var(--radius-xs);
+  background: var(--bg-input);
+  color: var(--clr-accent-1); /* on input: ≥ 5.10:1 */
+  word-break: break-all;
+}
+
+
+/* ─── Code blocks ────────────────────────────────────────────────────── */
+/* A dark panel in both modes, as in 4.4.58: #CDD6F4 on #1E1E2E, 11.34:1. */
+
+.post-wrapper .post-content pre {
+  margin: 0 0 1.5em;
+  padding: 1.2em 1.4em;
+  overflow-x: auto;
+  border: 1px solid rgba(255, 255, 255, .06);
+  border-radius: var(--radius-md);
+  background: #1e1e2e;
+  color: #cdd6f4;
+  font-size: .875rem;
+  line-height: 1.6;
+  -webkit-overflow-scrolling: touch;
+}
+
+.post-wrapper .post-content pre code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  word-break: normal;
+  white-space: pre;
+}
+
+/* Language badge: Ipin_Markdown puts the fence's language on data-lang.
+   (4.4.58 read data-lang from a <pre> that never had it, so the badge
+   never showed.) #A6ADC8 on #1E1E2E: 7.37:1. */
+.post-wrapper .post-content pre[data-lang]::before {
+  content: attr(data-lang);
+  display: block;
+  margin-bottom: .6em;
+  color: #a6adc8;
+  font-size: .7rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+
+/* ─── Blockquotes ────────────────────────────────────────────────────── */
+
+.post-wrapper .post-content blockquote {
+  margin: 0 0 1.5em;
+  padding: .9em 1.2em .9em 1.4em;
+  border-left: 4px solid var(--clr-accent-1);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  background: color-mix(in oklch, var(--clr-tint) 6%, transparent);
+  color: var(--txt-muted); /* on the tinted panel: ≥ 4.53:1 */
+  font-style: italic;
+}
+
+.post-wrapper .post-content blockquote p:last-child { margin-bottom: 0; }
+
+.post-wrapper .post-content blockquote blockquote {
+  margin-top: .75em;
+  border-left-color: color-mix(in oklch, var(--clr-accent-1) 40%, transparent);
+}
+
+
+/* ─── Horizontal rule ────────────────────────────────────────────────── */
+
+.post-wrapper .post-content hr {
+  margin: 2.5em 0;
+  border: none;
+  border-top: 2px solid var(--border);
+}
+
+
+/* ─── Lists ──────────────────────────────────────────────────────────── */
+
+.post-wrapper .post-content ul,
+.post-wrapper .post-content ol {
+  margin: 0 0 1.25em 1.4em;
+  padding: 0;
+  line-height: 1.7;
+}
+
+.post-wrapper .post-content li            { margin-bottom: .3em; }
+.post-wrapper .post-content li:last-child { margin-bottom: 0; }
+/* Child combinators: a bulleted list inside a numbered item keeps its
+   bullets (4.4.58's descendant selectors numbered it). */
+.post-wrapper .post-content ul > li       { list-style-type: disc; }
+.post-wrapper .post-content ol > li       { list-style-type: decimal; }
+
+.post-wrapper .post-content li > ul,
+.post-wrapper .post-content li > ol {
+  margin-top: .3em;
+  margin-bottom: 0;
+}
+
+
+/* ─── Task lists ─────────────────────────────────────────────────────── */
+/* wp_kses_post() removes checkbox inputs, so the box is drawn from the
+   class Ipin_Markdown sets: li.task-item, li.task-item--done. */
+
+.post-wrapper .post-content li.task-item {
+  position: relative;
+  list-style: none;
+}
+
+.post-wrapper .post-content li.task-item::before {
+  content: "";
+  position: absolute;
+  left: -1.5em;
+  top: .4em;
+  width: .9em;
+  height: .9em;
+  border: 1.5px solid var(--clr-accent-1);
+  border-radius: var(--radius-xs);
+}
+
+.post-wrapper .post-content li.task-item--done {
+  opacity: .65; /* primary text at 65%: ≥ 5.72:1 */
+  text-decoration: line-through;
+}
+
+.post-wrapper .post-content li.task-item--done::before {
+  background: var(--clr-accent-1);
+  box-shadow: inset 0 0 0 2px var(--bg-card);
+}
+
+
+/* ─── Tables ─────────────────────────────────────────────────────────── */
+
+.post-wrapper .post-content .ipin-table-wrap {
+  overflow-x: auto;
+  margin: 0 0 1.5em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  -webkit-overflow-scrolling: touch;
+}
+
+.post-wrapper .post-content table {
+  width: 100%;
+  min-width: 400px; /* scroll rather than squash */
+  border-collapse: collapse;
+  font-size: .9rem;
+}
+
+.post-wrapper .post-content th,
+.post-wrapper .post-content td {
+  padding: .6em .9em;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+/* Column alignment from the Markdown separator row (:--, :-:, --:) */
+.post-wrapper .post-content [align="center"] { text-align: center; }
+.post-wrapper .post-content [align="right"]  { text-align: right; }
+
+.post-wrapper .post-content th {
+  background: var(--bg-input);
+  color: var(--txt-muted); /* on input: ≥ 4.51:1 */
+  font-size: .82rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.post-wrapper .post-content tbody tr:last-child td { border-bottom: none; }
+
+.post-wrapper .post-content tbody tr:hover td {
+  background: color-mix(in oklch, var(--clr-tint) 6%, transparent);
+}
+
+
+/* ─── Images ─────────────────────────────────────────────────────────── */
+
+.post-wrapper .post-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1em auto;
+  border-radius: var(--radius-sm);
+}
+
+/* Images inside a paragraph sit in the line */
+.post-wrapper .post-content p img {
+  display: inline;
+  margin: 0;
+  vertical-align: middle;
+}
+
+
+/* ─── Small screens ──────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .post-wrapper .post-content h2  { font-size: 1.3rem; }
+  .post-wrapper .post-content h3  { font-size: 1.15rem; }
+  .post-wrapper .post-content pre { padding: .9em 1em; font-size: .8rem; }
+}

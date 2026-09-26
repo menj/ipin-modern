@@ -4,6 +4,155 @@ All notable changes to **iPin Modern** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [5.1.0] - 2026-09-26 - The 4.5 features, restored
+
+The 5.0 rebuild started from 4.1.4, so the work of the 4.1.5 to 4.5.0 line,
+which never reached the repository, was missing from it. This release ports
+that work onto the 5.0 code. Much of the 4.x work was front-end repair on
+code that 5.0 replaced; that part is already covered and is not repeated
+here. Everything below is a feature that 4.5 had and 5.0 lacked, rebuilt to
+5.0's conventions (Settings API schema, bundled SVG icons, OKLCH tokens, no
+jQuery). Settings saved under 4.5 use the same option names and carry over.
+The 4.5.0 archive itself cannot activate: its `functions.php` begins with a
+byte-order mark, which PHP rejects before `declare( strict_types = 1 )`.
+Read [UPGRADING.md](UPGRADING.md) if you are coming from 4.5.
+
+### Added
+- Hidden tags (`inc/hidden-tags.php`) and a Visibility tab to pick them, with
+  a filter box. Posts carrying a hidden tag leave the grid, archives, search,
+  feeds, the core sitemap and the previous/next links on single posts; the
+  tags leave tag lists, tag clouds, `article:tag` and share hashtags. Each
+  post still opens at its own address, and the tag's own archive still lists
+  them with `noindex`. Custom queries can opt in through the
+  `ipin_query_args` filter.
+- Markdown (`inc/markdown.php`): a "Write in Markdown" switch per post and
+  article, cached HTML per post, and `assets/css/markdown.css`. Optional
+  Markdown in comments (Settings → Layout) for bold, italic, strikethrough,
+  code and links, with single newlines kept.
+- `markdown.css` is 4.4.58's Markdown stylesheet, ported: heading scale with
+  a hover `#` on linkable headings, paragraph rhythm, inline code chips, dark
+  code panels with a language badge, tinted blockquotes (nested ones
+  lighter), rules, list spacing, task lists, bordered tables with uppercase
+  headers, row hover and scrolling, and image placement. Every colour now
+  comes from `tokens.css`: 4.4.58's file named tokens that never existed
+  (`--accent`, `--muted`, `--surface-1` and five more), so most of its
+  colours never applied. Pairings are checked to AA in all ten schemes, both
+  modes. One colour changed: the language badge is #A6ADC8 (7.37:1), since
+  4.4.58's 40% white measured 3.75:1. Task-list boxes are drawn in CSS,
+  because WordPress strips the checkbox inputs 4.4.58 relied on.
+- The parser is cebe/markdown 1.2 (MIT, GitHub flavour), vendored in
+  `inc/vendor/cebe-markdown/` and loaded only when a page renders Markdown.
+  `Ipin_Markdown` (`inc/class-ipin-markdown.php`) extends it with heading
+  ids, task lists, scrolling table wrappers and a sanitised code-language
+  class, and drops links and images whose scheme WordPress does not allow.
+  It replaces 4.x's 350-line built-in parser and the optional Parsedown
+  drop-in. Output still passes through `wp_kses_post()`. HTML cached by the
+  old parser is re-rendered once, on each post's next view.
+- Five more colour schemes, Rose Gold, Aurora, Dusk, Copper and Arctic, with
+  dark modes. Their decorative colours and surfaces are 4.5's; accents and
+  fills are re-solved in OKLCH to the same WCAG 2.2 AA targets as the other
+  five, with the ratios in `tokens.css`.
+- Auto-rotate (Settings → Appearance): each visitor gets a random scheme,
+  kept in the browser for 1 hour to 1 week. The browser-bar colour follows it.
+- Card settings: gap (4 to 48 px), a fixed image height (0 keeps each
+  image's proportions), shadow depth (none, subtle, pronounced) and hover zoom.
+- 46 social and identity profiles, up from 3: every icon in the Minimalist
+  Social Icons Pack 2.8 (45) plus Open Library's 4.x drawing. The Social tab
+  groups them in six cards (social networks; messaging and community; video,
+  music and creative; writing and publishing; identifiers and libraries;
+  work, code and games), each field with its icon. WorldCat uses OCLC's mark
+  and GamingTribe the GTribe mark. All profiles join the `sameAs` links in
+  structured data, and each link carries `rel="me"`.
+- The top bar shows the first few profiles (Settings → Social → "Icons
+  before More", default 5) and folds the rest into a "More profiles" menu: a
+  native `<details>`, so it opens without JavaScript, with Escape and
+  click-outside to close. On phones it opens in place inside the menu panel.
+- The pack's LinkedIn and Scribd icons come from Font Awesome Free (CC BY
+  4.0); their SVG files keep Font Awesome's licence comment, and the readme
+  carries the credit.
+- Share bar: WhatsApp, Telegram, Threads, Mastodon, Email, and a "Share via…"
+  button for the device's share sheet (shown only where the Web Share API
+  exists). X gets the post's tags as `&hashtags=`; Threads and Mastodon get
+  them inline as `#CamelCase`. The lightbox adds Mastodon and hashtags, sends
+  the image to Pinterest, and its Pinterest button can be switched off.
+- Settings → Search, a new tab for structured data and sameAs:
+  - A switch for all JSON-LD output.
+  - Site identity: the site represents a person (a chosen user, by default
+    the first administrator) or an organization (a name, with the Custom
+    Logo or Site Icon as logo). It is one node, `#identity`, that carries
+    the sameAs links; the WebSite and every Article name it as publisher,
+    and when the site is a person, that person's posts name it as author.
+  - sameAs: the Social tab's profiles and Mastodon handle (switchable), a
+    list of further URLs, and the person's Website field. Only http(s)
+    URLs are kept. A preview lists exactly what is output.
+  - A notice when an SEO plugin is active and the theme is standing down.
+- Visible breadcrumbs above post and article titles (Home, category or
+  Articles, title), from the same list as the BreadcrumbList markup.
+- `inc/opengraph.php`: Open Graph and Twitter Card tags on singular views and
+  the home page. The description comes from the same helper as the
+  description meta tag. Stands down with the rest of `seo.php` when an SEO
+  plugin is active.
+- `inc/pinterest.php`: Rich Pin meta and `pinterest:media` on singular views,
+  and the Pinterest Tag when a Tag ID is set under Settings → Layout. The Tag
+  is the one script the theme loads from another server, and only on request.
+- `inc/performance.php`: preconnect hints for Gravatar and Pinterest, an LCP
+  preload with `srcset` for the featured image, no lazy-loading on that image,
+  head clean-up (emoji, generator, RSD, WLW, shortlink, REST and oEmbed
+  discovery links), Heartbeat off on the front end, and no self-pingbacks.
+- `inc/pin-source.php`: the "Pin source" editor box for `_ipin_source_url`.
+  The lightbox already showed the link; nothing could set it.
+- The `[ipin_sideblog]` shortcode (`count`, `title`) and the "Sideblog: Latest
+  Articles" block pattern.
+- A switch for previous/next links on single posts (Settings → Layout).
+- The number of results under the search heading.
+
+### Changed
+- Structured data follows Google Search Central's rules for the features it
+  supports. sameAs moved from WebSite to the site identity (Organization or
+  Person), where Google's Organization and Profile page guidelines put it. Authors other than the site's own person get a plain Person
+  with only their own Website as sameAs; 5.0 gave every author the site's
+  profiles. ProfilePage now carries the author page URL and profile image.
+  VideoObject is emitted only when the pin has a featured image, since
+  Google requires `thumbnailUrl`.
+- Sorted grid views (`?popular=`) are `noindex, follow`: they repeat the
+  grid in another order, the kind of search-result-like duplicate Google's
+  starter guide asks to keep out of the index.
+- 4.5 served articles at `/blog/{slug}/` and `/blog/`. Those addresses now
+  redirect (301) to `/article/{slug}/` and `/articles/`. Only requests that
+  would otherwise 404 are redirected, so a page or category at `/blog/` wins.
+- Grid comment previews and lightbox comments show Markdown as plain text
+  when comment Markdown is on.
+- The header builds its social links from one list, `ipin_social_profiles()`.
+- `ipin_theme_colors()` reads from the new `ipin_theme_color_map()`.
+- Range sliders on the settings page share one handler.
+
+### Not carried over from 4.5
+- The ad slot manager and the sidebars, both removed on purpose in 5.0.
+- 4.5's `schema.php` and `seo-meta.php`: `seo.php` covers the same ground.
+- 4.5's article templates: `single.php` and `index.php` render articles.
+- `ipin_card_show_avatar`, which duplicated `ipin_show_avatars_grid`.
+- Moving jQuery to the footer (5.0 loads no jQuery) and the AVIF/WebP upload
+  transforms (they change the image files WordPress stores).
+
+### Fixed
+- Comment Markdown links came out empty whenever core's `make_clickable`
+  ran first, which it did (4.5 bug). The filter now runs before it.
+- Markdown links with a blocked scheme (`javascript:` and the like) now stay
+  as typed text; they used to become an empty link.
+- Comment Markdown output is limited to the comment tag allow-list, and its
+  links get `rel="nofollow ugc"`.
+- The share hashtag helper read `ipin_hidden_tags`, an option that never
+  existed; it now reads the hidden-tag list itself (4.5 bug).
+- 4.5's Pinterest meta printed `og:image:type` as `image/jpeg` for every image.
+- 4.5.0 enqueued `markdown.css` but had lost the file (4.4.58 had it).
+- 4.4.58's code-language badge never showed: it read `data-lang` from a
+  `<pre>` that never carried one. `Ipin_Markdown` now sets it.
+- 4.4.58 numbered bulleted lists nested inside numbered ones.
+- The Sideblog shortcode linked to `/articles/` while the archive lived at
+  `/blog/` (4.5 bug); it now uses the archive link.
+- Single posts: the share bar ran to the card's edge, and previous/next links
+  showed list bullets.
+
 ## [5.0.0] - 2026-09-24 - Front-end rebuild
 
 The front end is rebuilt around the 5.0 design: a statement hero, video pins,

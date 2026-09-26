@@ -253,6 +253,57 @@
   box-shadow: var(--focus-ring);
 }
 
+/* ── "More profiles" disclosure (header.php) ──
+   A native <details>: opens without JavaScript; theme.js closes it on
+   Escape or a click elsewhere. */
+.topmenu-social-more { position: relative; }
+.topmenu-social-more summary {
+  list-style: none;
+  cursor: pointer;
+}
+.topmenu-social-more summary::-webkit-details-marker { display: none; }
+.topmenu-social-more details[open] > summary {
+  background: var(--bg-input);
+  color: var(--clr-accent-1);
+}
+
+.topmenu-social-more__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(170px, 1fr));
+  gap: 2px;
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0;
+  padding: 8px;
+  list-style: none;
+  background: var(--bg-nav);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.topmenu-social-more__panel a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  color: var(--txt-primary);
+  font-size: .9rem;
+  text-decoration: none;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.topmenu-social-more__panel a .ipin-social-svg { flex-shrink: 0; color: var(--txt-secondary); }
+.topmenu-social-more__panel a:hover { background: var(--bg-input); color: var(--clr-accent-1); }
+.topmenu-social-more__panel a:hover .ipin-social-svg { color: inherit; }
+.topmenu-social-more__panel a:focus-visible { outline: none; box-shadow: var(--focus-ring); }
+
 /* ── Dark-mode toggle ── */
 #dark-mode-toggle {
   position: relative;
@@ -381,4 +432,15 @@
   .nav-search input[type="search"] { width: 100%; flex: 1; }
   .topmenu-social-wrap,
   .topmenu-social-list { justify-content: flex-start; }
+  .topmenu-social-wrap { flex-wrap: wrap; }
+  .topmenu-social-list { flex: 1 1 100%; flex-wrap: wrap; }
+  /* In the mobile panel the list opens in place, full width */
+  .topmenu-social-more { position: static; }
+  .topmenu-social-list:has(details[open]) .topmenu-social-more { flex-basis: 100%; }
+  .topmenu-social-more__panel {
+    position: static;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    margin-top: 8px;
+    box-shadow: none;
+  }
 }

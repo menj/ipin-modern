@@ -2,21 +2,22 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: iPin Modern 5.0.0\n"
+"Project-Id-Version: iPin Modern 5.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/ipin-modern\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-24T13:24:29+00:00\n"
+"POT-Creation-Date: 2026-09-25T18:36:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ipin-modern\n"
 
 #. Theme Name of the theme
 #: style.css
-#: inc/admin-options.php:157
+#: inc/admin-options.php:314
+#: inc/post-types.php:199
 msgid "iPin Modern"
 msgstr ""
 
@@ -27,7 +28,7 @@ msgstr ""
 
 #. Description of the theme
 #: style.css
-msgid "A Pinterest-style masonry theme for images and video. Statement hero with a featured-pin panel, self-hosted Garamond and Sabon typography, five colour schemes with dark mode (all WCAG 2.2 AA), a full-screen lightbox, video pins, and a tabbed settings page. No jQuery, and the theme itself requests nothing from other servers. Rebuilt from Genkisan's original iPin."
+msgid "A Pinterest-style masonry theme for images and video. Statement hero with a featured-pin panel, self-hosted Garamond and Sabon typography, ten colour schemes with dark mode (all WCAG 2.2 AA), a full-screen lightbox, video pins, hidden tags, Markdown authoring, and a tabbed settings page. No jQuery, and the theme requests nothing from other servers unless you add a Pinterest Tag ID. Rebuilt from Genkisan's original iPin."
 msgstr ""
 
 #. Author of the theme
@@ -57,7 +58,7 @@ msgid "Or play detective:"
 msgstr ""
 
 #: comments.php:3
-#: inc/enqueue.php:94
+#: inc/enqueue.php:114
 msgid "Comments"
 msgstr ""
 
@@ -115,7 +116,7 @@ msgstr ""
 msgid "Top"
 msgstr ""
 
-#: functions.php:86
+#: functions.php:92
 msgid "Top Navigation"
 msgstr ""
 
@@ -143,7 +144,7 @@ msgid "Close navigation menu"
 msgstr ""
 
 #: header.php:81
-#: inc/post-types.php:26
+#: inc/post-types.php:33
 msgid "Articles"
 msgstr ""
 
@@ -153,6 +154,7 @@ msgstr ""
 
 #: header.php:94
 #: header.php:106
+#: inc/admin-options.php:301
 #: searchform.php:2
 #: searchform.php:10
 msgid "Search"
@@ -171,273 +173,590 @@ msgstr ""
 msgid "RSS feed (opens in new tab)"
 msgstr ""
 
-#: header.php:135
-msgid "Follow us on X / Twitter (opens in new tab)"
+#. translators: %s = platform name
+#: header.php:153
+#, php-format
+msgid "%s (opens in new tab)"
 msgstr ""
 
-#: header.php:147
-msgid "Follow us on Facebook (opens in new tab)"
+#. translators: %d = number of further profiles
+#: header.php:166
+#, php-format
+msgid "%d more profile"
+msgid_plural "%d more profiles"
+msgstr[0] ""
+msgstr[1] ""
+
+#: header.php:175
+msgid "(opens in new tab)"
 msgstr ""
 
-#: header.php:159
-msgid "Follow us on Instagram (opens in new tab)"
-msgstr ""
-
-#: header.php:174
-#: header.php:176
+#: header.php:191
+#: header.php:193
 msgid "Switch to dark mode"
 msgstr ""
 
-#: header.php:177
+#: header.php:194
 msgid "Switch to light mode"
 msgstr ""
 
 #. translators: %s = search query
-#: header.php:199
+#: header.php:216
 #, php-format
 msgid "Search results for \"%s\""
 msgstr ""
 
+#. translators: %s = number of results
+#: header.php:222
+#, php-format
+msgid "%s pin found"
+msgid_plural "%s pins found"
+msgstr[0] ""
+msgstr[1] ""
+
 #. translators: %s = tag name
-#: header.php:208
+#: header.php:231
 #, php-format
 msgid "Tag: %s"
 msgstr ""
 
 #. translators: %s = author name
-#: header.php:215
+#: header.php:238
 #, php-format
 msgid "Posts by %s"
 msgstr ""
 
-#: inc/admin-options.php:49
+#: inc/admin-options.php:135
+msgid "Social Networks"
+msgstr ""
+
+#: inc/admin-options.php:136
+msgid "Messaging & Community"
+msgstr ""
+
+#: inc/admin-options.php:137
+msgid "Video, Music & Creative"
+msgstr ""
+
+#: inc/admin-options.php:138
+msgid "Writing & Publishing"
+msgstr ""
+
+#: inc/admin-options.php:139
+msgid "Identifiers & Libraries"
+msgstr ""
+
+#: inc/admin-options.php:140
+msgid "Work, Code & Games"
+msgstr ""
+
+#: inc/admin-options.php:152
 msgid "Vivid"
 msgstr ""
 
-#: inc/admin-options.php:50
+#: inc/admin-options.php:153
 msgid "Ocean"
 msgstr ""
 
-#: inc/admin-options.php:51
+#: inc/admin-options.php:154
 msgid "Ember"
 msgstr ""
 
-#: inc/admin-options.php:52
+#: inc/admin-options.php:155
 msgid "Forest"
 msgstr ""
 
-#: inc/admin-options.php:53
+#: inc/admin-options.php:156
 msgid "Mono"
 msgstr ""
 
-#: inc/admin-options.php:95
-msgid "You do not have permission to change these settings."
-msgstr ""
-
-#: inc/admin-options.php:106
-msgid "Settings saved."
-msgstr ""
-
-#: inc/admin-options.php:116
-#: inc/admin-options.php:117
-msgid "iPin Settings"
-msgstr ""
-
-#: inc/admin-options.php:142
-msgid "General"
-msgstr ""
-
-#: inc/admin-options.php:143
-msgid "Appearance"
-msgstr ""
-
-#: inc/admin-options.php:144
-msgid "Social"
-msgstr ""
-
-#: inc/admin-options.php:145
-msgid "Layout"
-msgstr ""
-
 #: inc/admin-options.php:158
-msgid "Pinterest-style masonry theme settings"
+msgid "Rose Gold"
 msgstr ""
 
-#: inc/admin-options.php:194
-msgid "Homepage Grid"
+#: inc/admin-options.php:159
+msgid "Aurora"
 msgstr ""
 
-#: inc/admin-options.php:195
-msgid "Control how posts appear on your grid homepage."
+#: inc/admin-options.php:160
+msgid "Dusk"
 msgstr ""
 
-#: inc/admin-options.php:198
-msgid "Comments per card"
+#: inc/admin-options.php:161
+msgid "Copper"
 msgstr ""
 
-#: inc/admin-options.php:202
-msgid "Number of recent comments per card. Set to 0 to hide."
+#: inc/admin-options.php:162
+msgid "Arctic"
+msgstr ""
+
+#: inc/admin-options.php:191
+msgid "None"
+msgstr ""
+
+#: inc/admin-options.php:192
+msgid "Subtle (default)"
+msgstr ""
+
+#: inc/admin-options.php:193
+msgid "Pronounced"
+msgstr ""
+
+#: inc/admin-options.php:205
+msgid "1 hour"
+msgstr ""
+
+#: inc/admin-options.php:206
+msgid "6 hours"
 msgstr ""
 
 #: inc/admin-options.php:207
-msgid "Posts per page"
+msgid "12 hours"
+msgstr ""
+
+#: inc/admin-options.php:208
+msgid "24 hours (recommended)"
+msgstr ""
+
+#: inc/admin-options.php:209
+msgid "2 days"
+msgstr ""
+
+#: inc/admin-options.php:210
+msgid "3 days"
 msgstr ""
 
 #: inc/admin-options.php:211
-msgid "Pins per batch on the homepage, archives and search; infinite scroll loads the next batch. Overrides \"Blog pages show at most\" in Settings > Reading."
+msgid "1 week"
 msgstr ""
 
-#: inc/admin-options.php:217
-msgid "Display"
-msgstr ""
-
-#: inc/admin-options.php:222
-#: inc/admin-options.php:231
-msgid "Show author avatars on grid cards"
-msgstr ""
-
-#: inc/admin-options.php:232
-msgid "Requires \"Show Avatars\" enabled in Settings > Discussion."
-msgstr ""
-
-#: inc/admin-options.php:238
-msgid "Footer"
-msgstr ""
-
-#: inc/admin-options.php:241
-msgid "Footer text"
-msgstr ""
-
-#: inc/admin-options.php:245
-msgid "Optional custom footer text..."
-msgstr ""
-
-#: inc/admin-options.php:246
-msgid "Leave blank to use the default site name + tagline."
+#: inc/admin-options.php:250
+msgid "You do not have permission to change these settings."
 msgstr ""
 
 #: inc/admin-options.php:261
-msgid "Colour Scheme"
+msgid "Settings saved."
 msgstr ""
 
-#: inc/admin-options.php:262
-msgid "Pick a palette. All accents and interactive colours update automatically. Dark mode is available on all schemes."
+#: inc/admin-options.php:271
+#: inc/admin-options.php:272
+msgid "iPin Settings"
 msgstr ""
 
-#: inc/admin-options.php:280
-msgid "Dark Mode"
+#: inc/admin-options.php:297
+msgid "General"
 msgstr ""
 
-#: inc/admin-options.php:285
-#: inc/admin-options.php:294
-msgid "Default to dark mode"
+#: inc/admin-options.php:298
+msgid "Appearance"
 msgstr ""
 
-#: inc/admin-options.php:295
-msgid "Serves dark mode by default. Visitor can still toggle. When off, follows OS preference."
+#: inc/admin-options.php:299
+msgid "Social"
 msgstr ""
 
-#: inc/admin-options.php:301
-msgid "Cards"
+#: inc/admin-options.php:300
+msgid "Layout"
 msgstr ""
 
-#: inc/admin-options.php:304
-msgid "Card width"
+#: inc/admin-options.php:302
+msgid "Visibility"
 msgstr ""
 
-#: inc/admin-options.php:312
-msgid "Width of each pin card. 180-240 px recommended."
+#: inc/admin-options.php:315
+msgid "Pinterest-style masonry theme settings"
 msgstr ""
 
-#: inc/admin-options.php:319
-#: inc/admin-options.php:328
-msgid "Rounded card corners"
+#: inc/admin-options.php:351
+msgid "Homepage Grid"
 msgstr ""
 
-#: inc/admin-options.php:329
-msgid "Disable for a sharper, more editorial look."
+#: inc/admin-options.php:352
+msgid "Control how posts appear on your grid homepage."
 msgstr ""
 
-#: inc/admin-options.php:344
-msgid "Social Profiles"
+#: inc/admin-options.php:355
+msgid "Comments per card"
 msgstr ""
 
-#: inc/admin-options.php:345
-msgid "Icons appear in the top navigation bar. Leave blank to hide that icon."
+#: inc/admin-options.php:359
+msgid "Number of recent comments per card. Set to 0 to hide."
 msgstr ""
 
-#: inc/admin-options.php:363
-msgid "Mastodon / fediverse handle"
+#: inc/admin-options.php:364
+msgid "Posts per page"
 msgstr ""
 
 #: inc/admin-options.php:368
-msgid "Credits you on Mastodon link previews (fediverse:creator), adds a rel=\"me\" link so Mastodon can verify this site on your profile, and joins your sameAs links. A profile URL works too."
+msgid "Pins per batch on the homepage, archives and search; infinite scroll loads the next batch. Overrides \"Blog pages show at most\" in Settings > Reading."
 msgstr ""
 
-#: inc/admin-options.php:373
-msgid "Also-me profile URLs (schema.org sameAs)"
+#: inc/admin-options.php:374
+msgid "Display"
 msgstr ""
 
-#: inc/admin-options.php:377
-msgid "One URL per line. Added to the author Person schema (together with the profiles above) so search engines link this site to your other properties."
-msgstr ""
-
-#: inc/admin-options.php:383
-msgid "RSS"
-msgstr ""
-
+#: inc/admin-options.php:379
 #: inc/admin-options.php:388
-#: inc/admin-options.php:397
-msgid "Show RSS icon in navigation"
+msgid "Show author avatars on grid cards"
 msgstr ""
 
-#: inc/admin-options.php:412
-msgid "Homepage Hero"
+#: inc/admin-options.php:389
+msgid "Requires \"Show Avatars\" enabled in Settings > Discussion."
 msgstr ""
 
-#: inc/admin-options.php:413
-msgid "Statement heading and lede paragraph shown above the grid on the first page of the homepage."
+#: inc/admin-options.php:395
+msgid "Footer"
+msgstr ""
+
+#: inc/admin-options.php:398
+msgid "Footer text"
+msgstr ""
+
+#: inc/admin-options.php:402
+msgid "Optional custom footer text..."
+msgstr ""
+
+#: inc/admin-options.php:403
+msgid "Leave blank to use the default site name + tagline."
 msgstr ""
 
 #: inc/admin-options.php:418
-#: inc/admin-options.php:427
+msgid "Colour Scheme"
+msgstr ""
+
+#: inc/admin-options.php:419
+msgid "Pick a palette. All accents and interactive colours update automatically. Dark mode is available on all schemes."
+msgstr ""
+
+#: inc/admin-options.php:437
+msgid "Auto-Rotate Scheme"
+msgstr ""
+
+#: inc/admin-options.php:438
+msgid "Show each visitor a different colour scheme. The pick is kept in their browser and changes on a timer, so there is no server load and no cookie."
+msgstr ""
+
+#: inc/admin-options.php:442
+msgid "Enable auto-rotate"
+msgstr ""
+
+#: inc/admin-options.php:443
+msgid "The Colour Scheme above stays the fallback for visitors without JavaScript or browser storage."
+msgstr ""
+
+#: inc/admin-options.php:447
+msgid "Rotate every"
+msgstr ""
+
+#: inc/admin-options.php:455
+msgid "How long a scheme lasts before the next visit picks a new one."
+msgstr ""
+
+#: inc/admin-options.php:461
+msgid "Dark Mode"
+msgstr ""
+
+#: inc/admin-options.php:466
+#: inc/admin-options.php:475
+msgid "Default to dark mode"
+msgstr ""
+
+#: inc/admin-options.php:476
+msgid "Serves dark mode by default. Visitor can still toggle. When off, follows OS preference."
+msgstr ""
+
+#: inc/admin-options.php:482
+msgid "Cards"
+msgstr ""
+
+#: inc/admin-options.php:485
+msgid "Card width"
+msgstr ""
+
+#: inc/admin-options.php:493
+msgid "Width of each pin card. 180-240 px recommended."
+msgstr ""
+
+#: inc/admin-options.php:498
+msgid "Card gap"
+msgstr ""
+
+#: inc/admin-options.php:506
+msgid "Space between cards. Phones use 10 px regardless."
+msgstr ""
+
+#: inc/admin-options.php:511
+msgid "Image height"
+msgstr ""
+
+#: inc/admin-options.php:517
+#: inc/admin-options.php:519
+msgid "Natural"
+msgstr ""
+
+#: inc/admin-options.php:521
+msgid "Crop every card image to one height for an even grid. 0 keeps each image at its own proportions, the masonry look."
+msgstr ""
+
+#: inc/admin-options.php:526
+msgid "Card shadow"
+msgstr ""
+
+#: inc/admin-options.php:540
+#: inc/admin-options.php:549
+msgid "Rounded card corners"
+msgstr ""
+
+#: inc/admin-options.php:550
+msgid "Disable for a sharper, more editorial look."
+msgstr ""
+
+#: inc/admin-options.php:556
+msgid "Zoom image on hover"
+msgstr ""
+
+#: inc/admin-options.php:557
+msgid "The card image scales up slightly on hover and keyboard focus."
+msgstr ""
+
+#: inc/admin-options.php:571
+msgid "Top Bar"
+msgstr ""
+
+#: inc/admin-options.php:572
+msgid "Every profile with an address below gets an icon in the top bar, in the order listed on this page. After the first few, the rest open from a \"More profiles\" button so the bar stays tidy. Leave an address blank to hide that icon."
+msgstr ""
+
+#: inc/admin-options.php:575
+msgid "Icons before \"More\""
+msgstr ""
+
+#: inc/admin-options.php:580
+msgid "How many icons show directly in the bar. 0 puts every profile in the menu."
+msgstr ""
+
+#: inc/admin-options.php:606
+msgid "Mastodon"
+msgstr ""
+
+#: inc/admin-options.php:607
+msgid "The profiles above also feed the site's sameAs links; see the Search tab."
+msgstr ""
+
+#: inc/admin-options.php:610
+msgid "Mastodon / fediverse handle"
+msgstr ""
+
+#: inc/admin-options.php:615
+msgid "Credits you on Mastodon link previews (fediverse:creator), adds a rel=\"me\" link so Mastodon can verify this site on your profile, and joins your sameAs links. A profile URL works too."
+msgstr ""
+
+#: inc/admin-options.php:622
+msgid "RSS"
+msgstr ""
+
+#: inc/admin-options.php:627
+#: inc/admin-options.php:636
+msgid "Show RSS icon in navigation"
+msgstr ""
+
+#: inc/admin-options.php:651
+msgid "Homepage Hero"
+msgstr ""
+
+#: inc/admin-options.php:652
+msgid "Statement heading and lede paragraph shown above the grid on the first page of the homepage."
+msgstr ""
+
+#: inc/admin-options.php:657
+#: inc/admin-options.php:666
 msgid "Show homepage hero"
 msgstr ""
 
-#: inc/admin-options.php:434
-#: inc/admin-options.php:443
+#: inc/admin-options.php:673
+#: inc/admin-options.php:682
 msgid "Show featured-pin bento panel"
 msgstr ""
 
-#: inc/admin-options.php:444
+#: inc/admin-options.php:683
 msgid "Featured pin (first sticky post, or the newest pin) plus board stats beside the hero text."
 msgstr ""
 
-#: inc/admin-options.php:449
+#: inc/admin-options.php:688
 msgid "Hero heading"
 msgstr ""
 
-#: inc/admin-options.php:454
+#: inc/admin-options.php:693
 msgid "Leave blank to use the site title. Wrap one word in *asterisks* to give it the gradient accent."
 msgstr ""
 
-#: inc/admin-options.php:459
+#: inc/admin-options.php:698
 msgid "Lede paragraph"
 msgstr ""
 
-#: inc/admin-options.php:463
+#: inc/admin-options.php:702
 msgid "Leave blank to use the site tagline. Basic HTML (links, emphasis) is allowed."
 msgstr ""
 
-#: inc/admin-options.php:475
+#: inc/admin-options.php:708
+msgid "Posts & Comments"
+msgstr ""
+
+#: inc/admin-options.php:712
+msgid "Show previous / next links on single posts"
+msgstr ""
+
+#: inc/admin-options.php:713
+msgid "Posts with a hidden tag are skipped."
+msgstr ""
+
+#: inc/admin-options.php:718
+msgid "Markdown in comments"
+msgstr ""
+
+#: inc/admin-options.php:719
+msgid "Commenters can use **bold**, *italic*, ~~strikethrough~~, `code` and [links](https://example.com). Block elements and images are not rendered. Markdown for posts is switched on per post, in the editor sidebar."
+msgstr ""
+
+#: inc/admin-options.php:724
+msgid "Pinterest"
+msgstr ""
+
+#: inc/admin-options.php:725
+msgid "Single posts always carry Rich Pin meta. The Tag ID adds Pinterest conversion tracking; find it in your Pinterest Ads account under Conversions. It is the one thing this theme can load from another server, and only when you set it."
+msgstr ""
+
+#: inc/admin-options.php:728
+msgid "Pinterest Tag ID"
+msgstr ""
+
+#: inc/admin-options.php:733
+msgid "Leave blank for no tracking."
+msgstr ""
+
+#: inc/admin-options.php:739
+msgid "Show the Pinterest Save button in the lightbox"
+msgstr ""
+
+#. translators: %s = SEO plugin name
+#: inc/admin-options.php:757
+#, php-format
+msgid "%s is active, so the theme leaves description tags, Open Graph tags and structured data to it. The settings below apply again if it is switched off."
+msgstr ""
+
+#: inc/admin-options.php:764
+msgid "Structured Data"
+msgstr ""
+
+#: inc/admin-options.php:765
+msgid "JSON-LD in each page's head, following Google Search Central's guidelines: WebSite on the home page, Article and BreadcrumbList on posts and articles, VideoObject on video pins with a featured image, and ProfilePage on author pages. Check a page with Google's Rich Results Test after changing anything here."
+msgstr ""
+
+#: inc/admin-options.php:769
+msgid "Output structured data"
+msgstr ""
+
+#: inc/admin-options.php:770
+msgid "Switch off to print no JSON-LD at all. Description and Open Graph tags are unaffected."
+msgstr ""
+
+#: inc/admin-options.php:775
+msgid "Site Identity"
+msgstr ""
+
+#: inc/admin-options.php:776
+msgid "Who the site belongs to. Search engines use this, with the sameAs links below, to connect the site to one knowledge-panel entity. Every page points to it as publisher."
+msgstr ""
+
+#: inc/admin-options.php:779
+msgid "This site represents"
+msgstr ""
+
+#: inc/admin-options.php:792
+msgid "Person"
+msgstr ""
+
+#: inc/admin-options.php:795
+msgid "First administrator (default)"
+msgstr ""
+
+#: inc/admin-options.php:801
+msgid "Used when the site represents a person. Their display name, biographical info, profile picture and Website field (Users → Profile) fill in the Person entity, and their posts credit that entity as author."
+msgstr ""
+
+#: inc/admin-options.php:806
+msgid "Organization name"
+msgstr ""
+
+#: inc/admin-options.php:811
+msgid "Used when the site represents an organization. Leave blank for the site title. The logo is the Custom Logo, or else the Site Icon (Appearance → Customize → Site Identity)."
+msgstr ""
+
+#: inc/admin-options.php:817
+msgid "sameAs Links"
+msgstr ""
+
+#: inc/admin-options.php:818
+msgid "Other pages that belong to the same person or organization: profiles, other sites, authority records. They go on the site identity only; other authors get just their own Website field."
+msgstr ""
+
+#: inc/admin-options.php:822
+msgid "Include the profiles from the Social tab"
+msgstr ""
+
+#: inc/admin-options.php:823
+msgid "Every profile address filled in there, plus the Mastodon handle."
+msgstr ""
+
+#: inc/admin-options.php:827
+msgid "More sameAs URLs"
+msgstr ""
+
+#: inc/admin-options.php:831
+msgid "One URL per line, for pages with no top-bar icon: other sites you run, a Wikidata item, a library authority record."
+msgstr ""
+
+#: inc/admin-options.php:837
+msgid "Output now"
+msgstr ""
+
+#: inc/admin-options.php:846
+msgid "No sameAs links yet."
+msgstr ""
+
+#: inc/admin-options.php:848
+msgid "As saved; save to refresh. When the site is a person, their Website field is added first."
+msgstr ""
+
+#: inc/admin-options.php:863
+msgid "Hidden Tags"
+msgstr ""
+
+#: inc/admin-options.php:864
+msgid "Posts carrying any tag ticked here drop out of the grid, archives, search, feeds, the sitemap and previous/next links, and the tag itself disappears from tag lists and clouds. Each post stays reachable at its own address, and the tag's own archive still lists them (marked noindex)."
+msgstr ""
+
+#: inc/admin-options.php:871
+msgid "This site has no tags yet."
+msgstr ""
+
+#: inc/admin-options.php:874
+msgid "Filter tags"
+msgstr ""
+
+#: inc/admin-options.php:876
+msgid "Filter tags…"
+msgstr ""
+
+#: inc/admin-options.php:902
 msgid "Developed by"
 msgstr ""
 
-#: inc/admin-options.php:490
+#: inc/admin-options.php:917
 msgid "Save Settings"
 msgstr ""
 
-#: inc/admin-options.php:491
+#: inc/admin-options.php:918
 msgid "Settings saved!"
 msgstr ""
 
@@ -459,139 +778,255 @@ msgstr ""
 msgid "iPin Theme Settings"
 msgstr ""
 
-#: inc/enqueue.php:91
+#: inc/enqueue.php:111
 msgid "All items loaded"
 msgstr ""
 
-#: inc/enqueue.php:92
+#: inc/enqueue.php:112
 msgid "Loading more pins…"
 msgstr ""
 
-#: inc/enqueue.php:95
+#: inc/enqueue.php:115
 msgid "View all"
 msgstr ""
 
-#: inc/enqueue.php:96
+#: inc/enqueue.php:116
 #: template-parts/card.php:77
 msgid "View"
 msgstr ""
 
-#: inc/enqueue.php:97
+#: inc/enqueue.php:117
 msgid "Close lightbox"
 msgstr ""
 
-#: inc/enqueue.php:98
+#: inc/enqueue.php:118
 msgid "Previous pin"
 msgstr ""
 
-#: inc/enqueue.php:99
+#: inc/enqueue.php:119
 msgid "Next pin"
 msgstr ""
 
-#: inc/enqueue.php:100
+#: inc/enqueue.php:120
 msgid "This pin could not be loaded."
 msgstr ""
 
-#: inc/enqueue.php:101
+#: inc/enqueue.php:121
 msgid "Please try again, or open the post directly."
 msgstr ""
 
-#: inc/enqueue.php:102
-#: template-parts/share-bar.php:23
+#: inc/enqueue.php:122
+#: template-parts/share-bar.php:93
 msgid "Save to Pinterest (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:103
+#: inc/enqueue.php:123
 msgid "Share on X (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:104
-#: template-parts/share-bar.php:39
+#: inc/enqueue.php:124
+#: template-parts/share-bar.php:61
 msgid "Share on Facebook (opens in new tab)"
 msgstr ""
 
-#: inc/enqueue.php:105
+#: inc/enqueue.php:125
+#: template-parts/share-bar.php:85
+msgid "Share on Mastodon (opens in new tab)"
+msgstr ""
+
+#: inc/enqueue.php:126
 msgid "Copied!"
 msgstr ""
 
-#: inc/enqueue.php:106
+#: inc/enqueue.php:127
 msgid "Link copied to clipboard."
 msgstr ""
 
-#: inc/enqueue.php:151
+#: inc/enqueue.php:174
 msgid "Saving…"
 msgstr ""
 
-#: inc/enqueue.php:152
+#: inc/enqueue.php:175
 msgid "Settings could not be saved. Check your connection and try again."
 msgstr ""
 
-#: inc/post-types.php:27
-msgid "Article"
+#: inc/markdown.php:379
+msgid "Markdown mode is enabled for this post. Use the Classic Editor to write Markdown — the block editor stores block grammar, which is incompatible with Markdown source."
 msgstr ""
 
-#: inc/post-types.php:28
-msgid "Add New Article"
+#: inc/markdown.php:397
+msgid "Markdown"
 msgstr ""
 
-#: inc/post-types.php:29
-msgid "Edit Article"
+#: inc/markdown.php:431
+msgid "Write in Markdown"
 msgstr ""
 
-#: inc/post-types.php:30
-msgid "New Article"
+#. translators: %s: parser name
+#: inc/markdown.php:437
+#, php-format
+msgid "Parser: %s"
 msgstr ""
 
-#: inc/post-types.php:31
-msgid "View Article"
+#: inc/markdown.php:444
+msgid "Heading 1"
 msgstr ""
 
-#: inc/post-types.php:32
-msgid "View Articles"
+#: inc/markdown.php:445
+msgid "Heading 2"
 msgstr ""
 
-#: inc/post-types.php:33
-msgid "Search Articles"
+#: inc/markdown.php:446
+msgid "Bold"
+msgstr ""
+
+#: inc/markdown.php:447
+msgid "Italic"
+msgstr ""
+
+#: inc/markdown.php:448
+msgid "Strikethrough"
+msgstr ""
+
+#: inc/markdown.php:449
+msgid "Inline code"
+msgstr ""
+
+#: inc/markdown.php:450
+msgid "Code block"
+msgstr ""
+
+#: inc/markdown.php:451
+msgid "Blockquote"
+msgstr ""
+
+#: inc/markdown.php:452
+msgid "List item"
+msgstr ""
+
+#: inc/markdown.php:453
+msgid "Task item"
+msgstr ""
+
+#: inc/markdown.php:454
+msgid "Link"
+msgstr ""
+
+#: inc/markdown.php:455
+msgid "Image"
+msgstr ""
+
+#: inc/markdown.php:456
+msgid "Horizontal rule"
+msgstr ""
+
+#: inc/pin-source.php:21
+msgid "Pin source"
+msgstr ""
+
+#: inc/pin-source.php:34
+msgid "Source URL"
+msgstr ""
+
+#: inc/pin-source.php:39
+msgid "Where this pin came from. Shown as a \"View source\" link in the lightbox. Leave blank for none."
 msgstr ""
 
 #: inc/post-types.php:34
-msgid "No articles found."
+msgid "Article"
 msgstr ""
 
 #: inc/post-types.php:35
-msgid "No articles found in Trash."
+msgid "Add New Article"
 msgstr ""
 
 #: inc/post-types.php:36
-msgid "All Articles"
+msgid "Edit Article"
 msgstr ""
 
 #: inc/post-types.php:37
-msgid "Article Archives"
+msgid "New Article"
 msgstr ""
 
 #: inc/post-types.php:38
-msgid "Article published."
+msgid "View Article"
 msgstr ""
 
 #: inc/post-types.php:39
-msgid "Article updated."
+msgid "View Articles"
 msgstr ""
 
 #: inc/post-types.php:40
+msgid "Search Articles"
+msgstr ""
+
+#: inc/post-types.php:41
+msgid "No articles found."
+msgstr ""
+
+#: inc/post-types.php:42
+msgid "No articles found in Trash."
+msgstr ""
+
+#: inc/post-types.php:43
+msgid "All Articles"
+msgstr ""
+
+#: inc/post-types.php:44
+msgid "Article Archives"
+msgstr ""
+
+#: inc/post-types.php:45
+msgid "Article published."
+msgstr ""
+
+#: inc/post-types.php:46
+msgid "Article updated."
+msgstr ""
+
+#: inc/post-types.php:47
 msgid "Sideblog"
 msgstr ""
 
-#: inc/post-types.php:90
+#: inc/post-types.php:97
 msgid "The Sideblog is now built into iPin Modern. You can deactivate and delete the <em>iPin Sideblog</em> plugin; your articles stay where they are."
 msgstr ""
 
-#: inc/rest-api.php:76
+#: inc/post-types.php:182
+#: inc/post-types.php:240
+msgid "All articles"
+msgstr ""
+
+#: inc/post-types.php:204
+msgid "Sideblog: Latest Articles"
+msgstr ""
+
+#: inc/post-types.php:205
+msgid "The five newest Sideblog articles with image, title and date."
+msgstr ""
+
+#: inc/post-types.php:211
+msgid "From the Sideblog"
+msgstr ""
+
+#: inc/post-types.php:234
+msgid "No articles yet."
+msgstr ""
+
+#: inc/rest-api.php:77
 msgid "Pin not found."
 msgstr ""
 
+#: inc/seo.php:113
+msgid "A person"
+msgstr ""
+
+#: inc/seo.php:114
+msgid "An organization"
+msgstr ""
+
 #. translators: %d = number of minutes
-#: inc/template-tags.php:195
+#: inc/template-tags.php:253
 #, php-format
 msgid "%d min ago"
 msgid_plural "%d mins ago"
@@ -599,7 +1034,7 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d = number of hours
-#: inc/template-tags.php:201
+#: inc/template-tags.php:259
 #, php-format
 msgid "%d hour ago"
 msgid_plural "%d hours ago"
@@ -607,95 +1042,96 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d = number of days
-#: inc/template-tags.php:207
+#: inc/template-tags.php:265
 #, php-format
 msgid "%d day ago"
 msgid_plural "%d days ago"
 msgstr[0] ""
 msgstr[1] ""
 
-#: inc/template-tags.php:231
+#: inc/template-tags.php:289
 msgid "Reply"
 msgstr ""
 
-#: inc/template-tags.php:245
+#: inc/template-tags.php:303
 msgid "Author"
 msgstr ""
 
-#: inc/template-tags.php:249
+#: inc/template-tags.php:307
 msgid "Permalink"
 msgstr ""
 
-#: inc/template-tags.php:250
-#: single.php:31
+#: inc/template-tags.php:308
+#: single.php:32
 msgid "Edit"
 msgstr ""
 
-#: inc/template-tags.php:253
+#: inc/template-tags.php:311
 msgid "Your comment is awaiting moderation."
 msgstr ""
 
-#: inc/template-tags.php:275
+#: inc/template-tags.php:333
 msgid "Name"
 msgstr ""
 
-#: inc/template-tags.php:281
+#: inc/template-tags.php:339
+#: template-parts/share-bar.php:102
 msgid "Email"
 msgstr ""
 
-#: inc/template-tags.php:287
+#: inc/template-tags.php:345
 msgid "Website"
 msgstr ""
 
-#: inc/template-tags.php:323
+#: inc/template-tags.php:381
 msgid "This pin fell off the board."
 msgstr ""
 
-#: inc/template-tags.php:324
+#: inc/template-tags.php:382
 msgid "We checked behind the sofa. Crumbs, one hair tie, no page. Try a search, or slip back to the board before anyone notices."
 msgstr ""
 
-#: inc/template-tags.php:327
+#: inc/template-tags.php:385
 msgid "Well, this is awkward."
 msgstr ""
 
-#: inc/template-tags.php:328
+#: inc/template-tags.php:386
 msgid "You found the one spot on the board with nothing pinned to it. Honestly? Impressive."
 msgstr ""
 
-#: inc/template-tags.php:331
+#: inc/template-tags.php:389
 msgid "Nothing to see here. Literally."
 msgstr ""
 
-#: inc/template-tags.php:332
+#: inc/template-tags.php:390
 msgid "The page you wanted has left the building and didn't leave a forwarding address. Rude, we know."
 msgstr ""
 
-#: inc/template-tags.php:335
+#: inc/template-tags.php:393
 msgid "Somebody un-pinned this."
 msgstr ""
 
-#: inc/template-tags.php:336
+#: inc/template-tags.php:394
 msgid "Either the link is wrong or the page took a gap year to find itself. Neither of us is getting it back today."
 msgstr ""
 
-#: inc/template-tags.php:339
+#: inc/template-tags.php:397
 msgid "Plot twist: there's no page."
 msgstr ""
 
-#: inc/template-tags.php:340
+#: inc/template-tags.php:398
 msgid "You clicked with confidence, and we respect that. Sadly, the page didn't turn up to its own party."
 msgstr ""
 
-#: inc/template-tags.php:343
+#: inc/template-tags.php:401
 msgid "Blank is the new black."
 msgstr ""
 
-#: inc/template-tags.php:344
+#: inc/template-tags.php:402
 msgid "Very minimalist of us. Still, you probably came here for something with pictures in it."
 msgstr ""
 
-#: inc/template-tags.php:356
+#: inc/template-tags.php:414
 msgid "Page not found"
 msgstr ""
 
@@ -754,7 +1190,7 @@ msgid "Page sections"
 msgstr ""
 
 #: page.php:18
-#: single.php:53
+#: single.php:54
 msgid "Pages:"
 msgstr ""
 
@@ -762,33 +1198,37 @@ msgstr ""
 msgid "Edit this page"
 msgstr ""
 
-#: single.php:25
+#: single.php:26
 msgid "0 Comments"
 msgstr ""
 
-#: single.php:26
+#: single.php:27
 msgid "1 Comment"
 msgstr ""
 
 #. translators: %s = comment count
-#: single.php:28
+#: single.php:29
 msgid "% Comments"
 msgstr ""
 
-#: single.php:53
+#: single.php:54
 msgid "Post pages"
 msgstr ""
 
-#: single.php:67
+#: single.php:68
 msgid "Categories:"
 msgstr ""
 
-#: single.php:71
+#: single.php:72
 msgid "Tags:"
 msgstr ""
 
-#: single.php:79
+#: single.php:82
 msgid "Post navigation"
+msgstr ""
+
+#: template-parts/breadcrumbs.php:15
+msgid "Breadcrumb"
 msgstr ""
 
 #: template-parts/card.php:89
@@ -837,23 +1277,47 @@ msgstr ""
 msgid "Browse"
 msgstr ""
 
-#: template-parts/share-bar.php:17
+#: template-parts/share-bar.php:31
 msgid "Share this post"
 msgstr ""
 
-#: template-parts/share-bar.php:18
+#: template-parts/share-bar.php:32
 msgid "Share:"
 msgstr ""
 
-#: template-parts/share-bar.php:31
+#: template-parts/share-bar.php:37
+msgid "Share using your device"
+msgstr ""
+
+#: template-parts/share-bar.php:39
+msgid "Share via…"
+msgstr ""
+
+#: template-parts/share-bar.php:45
+msgid "Share on WhatsApp (opens in new tab)"
+msgstr ""
+
+#: template-parts/share-bar.php:53
+msgid "Share on Telegram (opens in new tab)"
+msgstr ""
+
+#: template-parts/share-bar.php:69
 msgid "Share on X / Twitter (opens in new tab)"
 msgstr ""
 
-#: template-parts/share-bar.php:46
+#: template-parts/share-bar.php:77
+msgid "Share on Threads (opens in new tab)"
+msgstr ""
+
+#: template-parts/share-bar.php:100
+msgid "Share by email"
+msgstr ""
+
+#: template-parts/share-bar.php:107
 msgid "Copy link to clipboard"
 msgstr ""
 
-#: template-parts/share-bar.php:48
+#: template-parts/share-bar.php:109
 msgid "Copy link"
 msgstr ""
 

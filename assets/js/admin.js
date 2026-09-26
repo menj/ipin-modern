@@ -56,16 +56,37 @@
   } catch (e) {}
 
 
-  /* ── Range slider — live value display ──────────────────────
-     Reads input[type=range]#ipin_card_width, updates sibling
-     #ipin_card_width_val span in real time.
+  /* ── Range sliders — live value display ─────────────────────
+     Each input[type=range] updates the #<id>_val span beside it.
+     data-zero-label names the 0 value (Image height: "Natural").
   ─────────────────────────────────────────────────────────── */
-  var slider    = root.querySelector('#ipin_card_width');
-  var sliderOut = root.querySelector('#ipin_card_width_val');
-
-  if (slider && sliderOut) {
+  root.querySelectorAll('input[type="range"]').forEach(function (slider) {
+    var out = root.querySelector('#' + slider.id + '_val');
+    if (!out) return;
     slider.addEventListener('input', function () {
-      sliderOut.textContent = slider.value + 'px';
+      out.textContent = (slider.value === '0' && slider.dataset.zeroLabel)
+        ? slider.dataset.zeroLabel
+        : slider.value + 'px';
+    });
+  });
+
+
+  /* ── Hidden-tag filter ──────────────────────────────────────
+     Narrows the Visibility tab's tag list as you type. Ticked
+     boxes stay in the form whether shown or not.
+  ─────────────────────────────────────────────────────────── */
+  var tagFilter = root.querySelector('#ipin-tag-filter');
+  if (tagFilter) {
+    var tagItems = Array.from(root.querySelectorAll('#ipin-tag-list li'));
+    tagFilter.addEventListener('input', function () {
+      var q = tagFilter.value.trim().toLowerCase();
+      tagItems.forEach(function (li) {
+        li.hidden = q !== '' && li.dataset.name.indexOf(q) === -1;
+      });
+    });
+    // Enter in the filter must not submit the settings form.
+    tagFilter.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') e.preventDefault();
     });
   }
 

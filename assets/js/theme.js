@@ -267,3 +267,49 @@
     }
   });
 })();
+
+
+/* ==========================================================
+   NATIVE SHARE — the device's own share sheet
+   The share bar's "Share via…" button ships hidden and is shown
+   only where the Web Share API exists. Restored in 5.1 from 4.5.
+========================================================== */
+(function () {
+  'use strict';
+  if (!navigator.share) return;
+
+  document.querySelectorAll('.btn-share--native').forEach(function (btn) {
+    btn.hidden = false;
+  });
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('.btn-share--native');
+    if (!btn) return;
+    navigator.share({
+      title: btn.dataset.shareTitle || document.title,
+      url:   btn.dataset.shareUrl || window.location.href
+    }).catch(function () { /* dismissed by the visitor */ });
+  });
+})();
+
+
+/* ==========================================================
+   "MORE PROFILES" DISCLOSURE (header social links)
+   A native <details> opens and closes itself; this adds
+   Escape and click-outside to close it.
+========================================================== */
+(function () {
+  'use strict';
+  var more = document.querySelector('.topmenu-social-more details');
+  if (!more) return;
+
+  document.addEventListener('click', function (e) {
+    if (more.open && !more.contains(e.target)) more.open = false;
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && more.open) {
+      more.open = false;
+      more.querySelector('summary').focus();
+    }
+  });
+})();

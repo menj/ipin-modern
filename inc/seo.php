@@ -12,6 +12,12 @@
  *
  * Every output here stands down when a dedicated SEO plugin is
  * active, so the theme never duplicates its tags.
+ *
+ * Structured data follows Google Search Central's guidelines for the
+ * features it supports: Article, Breadcrumb, Organization, Profile page
+ * and Video. The site's identity (a Person or an Organization, chosen in
+ * Appearance → iPin Settings → Search) carries the sameAs links; the
+ * WebSite, every Article and the author's ProfilePage point to it by @id.
  */
 
 declare( strict_types = 1 );
@@ -23,10 +29,18 @@ if ( ! defined( 'ABSPATH' ) ) exit;
    SEO PLUGIN DETECTION
    ------------------------------------------------------- */
 function ipin_seo_plugin_active(): bool {
-	return defined( 'WPSEO_VERSION' )      // Yoast SEO
-		|| defined( 'RANK_MATH_VERSION' )  // Rank Math
-		|| defined( 'AIOSEO_VERSION' )     // All in One SEO
-		|| defined( 'SEOPRESS_VERSION' );  // SEOPress
+	return '' !== ipin_seo_plugin_name();
+}
+
+/** Name of the active SEO plugin the theme defers to, or ''. */
+function ipin_seo_plugin_name(): string {
+	return match ( true ) {
+		defined( 'WPSEO_VERSION' )     => 'Yoast SEO',
+		defined( 'RANK_MATH_VERSION' ) => 'Rank Math',
+		defined( 'AIOSEO_VERSION' )    => 'All in One SEO',
+		defined( 'SEOPRESS_VERSION' )  => 'SEOPress',
+		default                        => '',
+	};
 }
 
 
@@ -85,53 +99,184 @@ add_action( 'wp_head', 'ipin_fediverse_head', 2 );
 
 
 /* -------------------------------------------------------
+   STRUCTURED-DATA SETTINGS (Settings → Search)
+   ------------------------------------------------------- */
+
+/** JSON-LD on, and no SEO plugin printing its own. */
+function ipin_schema_enabled(): bool {
+	return (bool) (int) get_option( 'ipin_schema_enabled', 1 ) && ! ipin_seo_plugin_active();
+}
+
+/** Identity types the site can declare, slug => label. */
+function ipin_schema_entities(): array {
+	return [
+		'person'       => __( 'A person', 'ipin-modern' ),
+		'organization' => __( 'An organization', 'ipin-modern' ),
+	];
+}
+
+function ipin_sanitize_schema_entity( mixed $value ): string {
+	$value = sanitize_key( (string) $value );
+	return array_key_exists( $value, ipin_schema_entities() ) ? $value : 'person';
+}
+
+/** The user the site represents when it is a person: the chosen one, else the first administrator. */
+function ipin_schema_person_id(): int {
+	$id = (int) get_option( 'ipin_schema_person', 0 );
+	if ( $id && get_userdata( $id ) ) {
+		return $id;
+	}
+	$admins = get_users( [ 'role' => 'administrator', 'number' => 1, 'orderby' => 'ID', 'fields' => 'ID' ] );
+	return (int) ( $admins[0] ?? 0 );
+}
+
+
+/* -------------------------------------------------------
    SAME-AS PROFILE URLS
-   The configured nav social profiles plus the "also me"
-   list from Settings → Social, deduplicated.
+   The site identity's other homes on the web: every profile
+   filled in under Settings → Social (unless switched off),
+   the Mastodon handle, and the extra list under Settings →
+   Search. Deduplicated, http(s) only.
    ------------------------------------------------------- */
 function ipin_same_as_urls(): array {
-	$urls = [
-		(string) get_option( 'ipin_twitter_url', '' ),
-		(string) get_option( 'ipin_facebook_url', '' ),
-		(string) get_option( 'ipin_instagram_url', '' ),
-		ipin_fediverse_profile_url(),
-	];
+	$urls = [];
+	if ( (int) get_option( 'ipin_sameas_profiles', 1 ) ) {
+		foreach ( array_keys( ipin_social_profiles() ) as $key ) {
+			$urls[] = (string) get_option( $key, '' );
+		}
+		$urls[] = ipin_fediverse_profile_url();
+	}
 	$extra = preg_split( '/[\r\n]+/', (string) get_option( 'ipin_author_sameas', '' ) ) ?: [];
 	$urls  = array_merge( $urls, $extra );
-	$urls  = array_filter( array_map( 'esc_url_raw', array_map( 'trim', $urls ) ) );
-	return array_values( array_unique( $urls ) );
+	$urls  = array_map( static fn( string $u ): string => esc_url_raw( trim( $u ), [ 'http', 'https' ] ), $urls );
+	return array_values( array_unique( array_filter( $urls ) ) );
+}
+
+
+/* -------------------------------------------------------
+   SITE IDENTITY NODE
+   Person or Organization, @id home_url('/#identity').
+   Organization follows Google's Organization guidelines
+   (name, url, logo, sameAs); Person carries name, url,
+   image, description and sameAs, as Google's Profile page
+   guidelines recommend.
+   ------------------------------------------------------- */
+function ipin_identity_id(): string {
+	return home_url( '/#identity' );
+}
+
+function ipin_identity_node(): array {
+	$same_as = ipin_same_as_urls();
+
+	if ( 'organization' === ipin_sanitize_schema_entity( get_option( 'ipin_schema_entity', 'person' ) ) ) {
+		$name = trim( (string) get_option( 'ipin_schema_org_name', '' ) );
+		$org  = [
+			'@type' => 'Organization',
+			'@id'   => ipin_identity_id(),
+			'name'  => '' !== $name ? $name : ipin_plain( get_bloginfo( 'name', 'display' ) ),
+			'url'   => home_url( '/' ),
+		];
+		// Logo: the Custom Logo, else the Site Icon (both at least 112px, as Google asks).
+		$logo_id = (int) get_theme_mod( 'custom_logo' );
+		$logo    = $logo_id ? wp_get_attachment_image_url( $logo_id, 'full' ) : '';
+		if ( ! $logo && has_site_icon() ) {
+			$logo = get_site_icon_url( 512 );
+		}
+		if ( $logo ) {
+			$org['logo'] = esc_url_raw( $logo );
+		}
+		$tagline = ipin_plain( get_bloginfo( 'description', 'display' ) );
+		if ( '' !== $tagline ) {
+			$org['description'] = $tagline;
+		}
+		if ( $same_as ) {
+			$org['sameAs'] = $same_as;
+		}
+		return $org;
+	}
+
+	$user_id = ipin_schema_person_id();
+	$person  = [
+		'@type' => 'Person',
+		'@id'   => ipin_identity_id(),
+		'name'  => $user_id ? ipin_plain( (string) get_the_author_meta( 'display_name', $user_id ) ) : ipin_plain( get_bloginfo( 'name', 'display' ) ),
+		'url'   => $user_id ? get_author_posts_url( $user_id ) : home_url( '/' ),
+	];
+	if ( $user_id ) {
+		$own = esc_url_raw( (string) get_the_author_meta( 'user_url', $user_id ), [ 'http', 'https' ] );
+		if ( $own ) {
+			array_unshift( $same_as, $own );
+		}
+		if ( get_option( 'show_avatars' ) ) {
+			$person['image'] = esc_url_raw( (string) get_avatar_url( $user_id, [ 'size' => 256 ] ) );
+		}
+		$bio = trim( wp_strip_all_tags( (string) get_the_author_meta( 'description', $user_id ), true ) );
+		if ( $bio ) {
+			$person['description'] = $bio;
+		}
+	}
+	if ( $same_as ) {
+		$person['sameAs'] = array_values( array_unique( $same_as ) );
+	}
+	return $person;
 }
 
 
 /* -------------------------------------------------------
    AUTHOR PERSON NODE
-   Referenced from Article.author and the author archive's
-   ProfilePage; carries the sameAs links that tie this site
-   to the author's other properties.
+   The site's own person (when the site is a person) is the
+   identity node itself, sameAs and all. Any other author
+   gets a plain Person with only their own website as
+   sameAs: the site's profiles are not theirs.
    ------------------------------------------------------- */
 function ipin_person_node( int $author_id ): array {
+	if ( 'person' === ipin_sanitize_schema_entity( get_option( 'ipin_schema_entity', 'person' ) )
+		&& $author_id === ipin_schema_person_id() ) {
+		return ipin_identity_node();
+	}
+
 	$person = [
 		'@type' => 'Person',
 		'@id'   => get_author_posts_url( $author_id ) . '#person',
-		'name'  => get_the_author_meta( 'display_name', $author_id ),
+		'name'  => ipin_plain( (string) get_the_author_meta( 'display_name', $author_id ) ),
 		'url'   => get_author_posts_url( $author_id ),
 	];
-
-	$site_url = (string) get_the_author_meta( 'user_url', $author_id );
-	$same_as  = ipin_same_as_urls();
-	if ( $site_url ) {
-		array_unshift( $same_as, esc_url_raw( $site_url ) );
+	$own = esc_url_raw( (string) get_the_author_meta( 'user_url', $author_id ), [ 'http', 'https' ] );
+	if ( $own ) {
+		$person['sameAs'] = [ $own ];
 	}
-	if ( $same_as ) {
-		$person['sameAs'] = array_values( array_unique( $same_as ) );
-	}
-
 	$bio = trim( wp_strip_all_tags( (string) get_the_author_meta( 'description', $author_id ), true ) );
 	if ( $bio ) {
 		$person['description'] = $bio;
 	}
-
 	return $person;
+}
+
+
+/* -------------------------------------------------------
+   BREADCRUMB TRAIL
+   One list for both the visible breadcrumb on single views
+   (template-parts/breadcrumbs.php) and BreadcrumbList, so
+   the markup always describes what the reader sees.
+   Each item: [ name, url ] (url '' for the current page).
+   ------------------------------------------------------- */
+function ipin_breadcrumb_items( int $post_id ): array {
+	$items = [ [ ipin_plain( get_bloginfo( 'name', 'display' ) ), home_url( '/' ) ] ];
+
+	if ( 'ipin_article' === get_post_type( $post_id ) ) {
+		$pto = get_post_type_object( 'ipin_article' );
+		if ( $pto ) {
+			$items[] = [ ipin_plain( (string) $pto->labels->name ), (string) get_post_type_archive_link( 'ipin_article' ) ];
+		}
+	} elseif ( 'post' === get_post_type( $post_id ) ) {
+		$cats = get_the_category( $post_id );
+		if ( $cats ) {
+			$items[] = [ ipin_plain( $cats[0]->name ), (string) get_category_link( $cats[0] ) ];
+		}
+	}
+
+	$items[] = [ ipin_plain( get_the_title( $post_id ) ), '' ];
+	return $items;
 }
 
 
@@ -146,6 +291,22 @@ function ipin_meta_description(): void {
 		return;
 	}
 
+	$desc = ipin_meta_description_text();
+	if ( '' === $desc ) {
+		return;
+	}
+
+	echo '<meta name="description" content="' . esc_attr( $desc ) . '">' . "\n";
+}
+add_action( 'wp_head', 'ipin_meta_description', 2 );
+
+
+/**
+ * The description text itself, also used for og:description
+ * and twitter:description (inc/opengraph.php). '' when the
+ * page has none.
+ */
+function ipin_meta_description_text(): string {
 	$desc = '';
 
 	if ( is_singular() ) {
@@ -159,9 +320,6 @@ function ipin_meta_description(): void {
 	}
 
 	$desc = trim( wp_strip_all_tags( (string) $desc, true ) );
-	if ( '' === $desc ) {
-		return;
-	}
 
 	if ( mb_strlen( $desc ) > 160 ) {
 		$cut  = mb_substr( $desc, 0, 160 );
@@ -169,9 +327,8 @@ function ipin_meta_description(): void {
 		$desc = ( $last ? mb_substr( $cut, 0, $last ) : $cut ) . '…';
 	}
 
-	echo '<meta name="description" content="' . esc_attr( $desc ) . '">' . "\n";
+	return $desc;
 }
-add_action( 'wp_head', 'ipin_meta_description', 2 );
 
 
 /* -------------------------------------------------------
@@ -184,36 +341,47 @@ add_action( 'wp_head', 'ipin_meta_description', 2 );
    comment inside it.
    ------------------------------------------------------- */
 function ipin_structured_data(): void {
-	if ( ipin_seo_plugin_active() ) {
+	if ( ! ipin_schema_enabled() ) {
 		return;
 	}
 
-	$graph = [];
+	$graph    = [];
+	$identity = ipin_identity_node();
+	$ref      = [ '@id' => ipin_identity_id() ];
+	$need_id  = false;   // add the identity node when something points at it
 
 	if ( is_front_page() || is_home() ) {
-		$website = [
-			'@type' => 'WebSite',
-			'name'  => ipin_plain( get_bloginfo( 'name', 'display' ) ),
-			'url'   => home_url( '/' ),
+		$graph[] = [
+			'@type'     => 'WebSite',
+			'@id'       => home_url( '/#website' ),
+			'name'      => ipin_plain( get_bloginfo( 'name', 'display' ) ),
+			'url'       => home_url( '/' ),
+			'publisher' => $ref,
 		];
-		$same_as = ipin_same_as_urls();
-		if ( $same_as ) {
-			$website['sameAs'] = $same_as;
-		}
-		$graph[] = $website;
+		$need_id = true;
 	}
 
 	if ( is_author() ) {
 		$author_id = (int) get_queried_object_id();
-		$graph[]   = [
+		$person    = ipin_person_node( $author_id );
+		if ( ! isset( $person['image'] ) && get_option( 'show_avatars' ) ) {
+			$person['image'] = esc_url_raw( (string) get_avatar_url( $author_id, [ 'size' => 256 ] ) );
+		}
+		$graph[] = [
 			'@type'      => 'ProfilePage',
-			'mainEntity' => ipin_person_node( $author_id ),
+			'url'        => get_author_posts_url( $author_id ),
+			'mainEntity' => $person,
 		];
+		if ( ( $person['@id'] ?? '' ) === ipin_identity_id() ) {
+			$need_id = false;   // already in the graph as mainEntity
+			$identity = null;
+		}
 	}
 
 	if ( is_singular( [ 'post', 'ipin_article' ] ) ) {
 		$post_id   = get_queried_object_id();
 		$author_id = (int) get_post_field( 'post_author', $post_id );
+		$author    = ipin_person_node( $author_id );
 
 		$article = [
 			'@type'            => 'Article',
@@ -221,9 +389,11 @@ function ipin_structured_data(): void {
 			'datePublished'    => get_the_date( 'c', $post_id ),
 			'dateModified'     => get_the_modified_date( 'c', $post_id ),
 			'mainEntityOfPage' => get_permalink( $post_id ),
-			'author'           => [ '@id' => get_author_posts_url( $author_id ) . '#person' ],
+			'author'           => [ '@id' => $author['@id'] ],
+			'publisher'        => $ref,
 		];
-		$graph[] = ipin_person_node( $author_id );
+		$graph[] = $author;
+		$need_id = $author['@id'] !== ipin_identity_id();
 
 		if ( has_post_thumbnail( $post_id ) ) {
 			$img = wp_get_attachment_image_src( get_post_thumbnail_id( $post_id ), 'full' );
@@ -234,54 +404,31 @@ function ipin_structured_data(): void {
 
 		$graph[] = $article;
 
-		// Breadcrumb: Home → primary category → this post.
-		$crumbs = [
-			[
-				'@type'    => 'ListItem',
-				'position' => 1,
-				'name'     => ipin_plain( get_bloginfo( 'name', 'display' ) ),
-				'item'     => home_url( '/' ),
-			],
-		];
-		$cats = get_the_category( $post_id );
-		if ( 'ipin_article' === get_post_type( $post_id ) ) {
-			// Sideblog articles have no categories; their parent is the archive.
-			$crumbs[] = [
-				'@type'    => 'ListItem',
-				'position' => 2,
-				'name'     => get_post_type_object( 'ipin_article' )->labels->name,
-				'item'     => get_post_type_archive_link( 'ipin_article' ),
-			];
-		} elseif ( $cats ) {
-			$crumbs[] = [
-				'@type'    => 'ListItem',
-				'position' => 2,
-				'name'     => ipin_plain( $cats[0]->name ),
-				'item'     => get_category_link( $cats[0] ),
-			];
+		// BreadcrumbList: the same trail the page shows above its title.
+		$crumbs = [];
+		foreach ( ipin_breadcrumb_items( $post_id ) as $i => [ $name, $url ] ) {
+			$crumb = [ '@type' => 'ListItem', 'position' => $i + 1, 'name' => $name ];
+			if ( '' !== $url ) {
+				$crumb['item'] = $url;
+			}
+			$crumbs[] = $crumb;
 		}
-		$crumbs[] = [
-			'@type'    => 'ListItem',
-			'position' => count( $crumbs ) + 1,
-			'name'     => ipin_plain( get_the_title( $post_id ) ),
-		];
 		$graph[] = [
 			'@type'           => 'BreadcrumbList',
 			'itemListElement' => $crumbs,
 		];
 
-		// Video pin → VideoObject (contentUrl for files, embedUrl for players).
+		// Video pin → VideoObject. Google requires name, thumbnailUrl and
+		// uploadDate, so a video pin without a featured image gets none.
 		$source = ipin_post_video( $post_id );
-		if ( $source ) {
+		if ( $source && ! empty( $article['image'] ) ) {
 			$video = [
-				'@type'      => 'VideoObject',
-				'name'       => ipin_plain( get_the_title( $post_id ) ),
-				'uploadDate' => get_the_date( 'c', $post_id ),
+				'@type'        => 'VideoObject',
+				'name'         => ipin_plain( get_the_title( $post_id ) ),
+				'uploadDate'   => get_the_date( 'c', $post_id ),
+				'thumbnailUrl' => $article['image'],
 			];
 			$video[ 'file' === $source['type'] ? 'contentUrl' : 'embedUrl' ] = esc_url_raw( $source['src'] );
-			if ( ! empty( $article['image'] ) ) {
-				$video['thumbnailUrl'] = $article['image'];
-			}
 			$desc = trim( wp_strip_all_tags( get_the_excerpt( $post_id ), true ) );
 			if ( $desc ) {
 				$video['description'] = $desc;
@@ -290,12 +437,34 @@ function ipin_structured_data(): void {
 		}
 	}
 
+	if ( $need_id && $identity ) {
+		array_unshift( $graph, $identity );
+	}
+
 	if ( ! $graph ) {
 		return;
 	}
 
 	echo '<script type="application/ld+json">'
-		. wp_json_encode( [ '@context' => 'https://schema.org', '@graph' => $graph ], JSON_HEX_TAG | JSON_HEX_AMP )
+		. wp_json_encode( [ '@context' => 'https://schema.org', '@graph' => $graph ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_UNESCAPED_SLASHES )
 		. '</script>' . "\n";
 }
 add_action( 'wp_head', 'ipin_structured_data', 3 );
+
+
+/* -------------------------------------------------------
+   ROBOTS — re-sorted copies of the grid
+   The sort bar's ?popular= views list the same pins as the
+   grid in another order. Google's starter guide asks that
+   search-result-like duplicate pages stay out of the index,
+   so they are noindex, follow (their pins stay reachable).
+   WordPress already does the same for search results.
+   ------------------------------------------------------- */
+add_filter( 'wp_robots', static function ( array $robots ): array {
+	if ( ! ipin_seo_plugin_active() && ( is_home() || is_front_page() ) && '' !== sanitize_key( (string) ( $_GET['popular'] ?? '' ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only
+		$robots['noindex'] = true;
+		$robots['follow']  = true;
+		unset( $robots['index'] );
+	}
+	return $robots;
+} );

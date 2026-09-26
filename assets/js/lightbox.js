@@ -332,16 +332,25 @@
     if (!permalink) return;
     var title = d.title || '';
 
-    sa.appendChild(shareLink(
-      'btn-share-pinterest',
-      tr('sharePinterest', 'Save to Pinterest (opens in new tab)'),
-      'https://pinterest.com/pin/create/button/?url=' + encodeURIComponent(permalink) + '&description=' + encodeURIComponent(title),
-      icons.pinterest || ''
-    ));
+    var tags  = d.hashtags || {};
+    var img   = safeHttpUrl(d.img_url);
+
+    // Pinterest Save — Settings → Layout → Pinterest can switch it off.
+    if (data.pinterestSave) {
+      sa.appendChild(shareLink(
+        'btn-share-pinterest',
+        tr('sharePinterest', 'Save to Pinterest (opens in new tab)'),
+        'https://pinterest.com/pin/create/button/?url=' + encodeURIComponent(permalink)
+          + (img ? '&media=' + encodeURIComponent(img) : '')
+          + '&description=' + encodeURIComponent(title),
+        icons.pinterest || ''
+      ));
+    }
     sa.appendChild(shareLink(
       'btn-share-twitter',
       tr('shareX', 'Share on X (opens in new tab)'),
-      'https://twitter.com/intent/tweet?url=' + encodeURIComponent(permalink) + '&text=' + encodeURIComponent(title),
+      'https://twitter.com/intent/tweet?url=' + encodeURIComponent(permalink) + '&text=' + encodeURIComponent(title)
+        + (tags.twitter ? '&hashtags=' + encodeURIComponent(tags.twitter) : ''),
       icons.x || ''
     ));
     sa.appendChild(shareLink(
@@ -349,6 +358,12 @@
       tr('shareFacebook', 'Share on Facebook (opens in new tab)'),
       'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(permalink),
       icons.facebook || ''
+    ));
+    sa.appendChild(shareLink(
+      'btn-share-mastodon',
+      tr('shareMastodon', 'Share on Mastodon (opens in new tab)'),
+      'https://mastodon.social/share?text=' + encodeURIComponent(title + ' ' + permalink + (tags.inline || '')),
+      icons.mastodon || ''
     ));
 
     var view = document.createElement('a');

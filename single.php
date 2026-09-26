@@ -8,6 +8,7 @@
 	<article id="post-<?php the_ID(); ?>" <?php post_class( 'post-wrapper' ); ?>>
 
 		<header class="h1-wrapper">
+			<?php if ( is_singular( [ 'post', 'ipin_article' ] ) ) get_template_part( 'template-parts/breadcrumbs' ); ?>
 			<h1><?php the_title(); ?></h1>
 		</header>
 
@@ -76,12 +77,15 @@
 
 		<?php get_template_part( 'template-parts/share-bar' ); ?>
 
+		<?php // Settings → Layout; posts with a hidden tag are skipped (inc/hidden-tags.php).
+		if ( (int) ipin_option( 'ipin_show_post_nav', 1 ) ) : ?>
 		<nav id="navigation" class="post-nav" aria-label="<?php esc_attr_e( 'Post navigation', 'ipin-modern' ); ?>">
 			<ul class="pager" role="list">
 				<li class="previous"><?php previous_post_link( '%link', '<span aria-hidden="true">&laquo;</span> %title' ); ?></li>
 				<li class="next"><?php next_post_link( '%link', '%title <span aria-hidden="true">&raquo;</span>' ); ?></li>
 			</ul>
 		</nav>
+		<?php endif; ?>
 
 		<div class="post-comments">
 			<?php comments_template(); ?>

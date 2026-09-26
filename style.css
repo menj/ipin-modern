@@ -3,8 +3,8 @@ Theme Name: iPin Modern
 Theme URI: https://github.com/menj/ipin-modern
 Author: MENJ
 Author URI: https://menj.org
-Description: A Pinterest-style masonry theme for images and video. Statement hero with a featured-pin panel, self-hosted Garamond and Sabon typography, five colour schemes with dark mode (all WCAG 2.2 AA), a full-screen lightbox, video pins, and a tabbed settings page. No jQuery, and the theme itself requests nothing from other servers. Rebuilt from Genkisan's original iPin.
-Version: 5.0.0
+Description: A Pinterest-style masonry theme for images and video. Statement hero with a featured-pin panel, self-hosted Garamond and Sabon typography, ten colour schemes with dark mode (all WCAG 2.2 AA), a full-screen lightbox, video pins, hidden tags, Markdown authoring, and a tabbed settings page. No jQuery, and the theme requests nothing from other servers unless you add a Pinterest Tag ID. Rebuilt from Genkisan's original iPin.
+Version: 5.1.0
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
@@ -25,13 +25,16 @@ Text Domain: ipin-modern
  *   grid.css          Grid, hero and bento, cards, sort bar (grid views)
  *   lightbox.css      Pin lightbox (grid views)
  *   single.css        Posts and pages, comments, share bar, video player
+ *   markdown.css      Markdown typography: headings, code, quotes,
+ *                     lists, task lists, tables (Markdown posts only)
  *   404.css           Not-found page (404 views only)
  *   admin.css         Settings screen (admin only)
  *   editor-style.css  Block editor canvas
  *
  * Scripts, in assets/js/:
  *
- *   theme.js          Dark mode, menus, scroll-to-top, copy link (every view)
+ *   theme.js          Dark mode, menus, scroll-to-top, copy link, native share
+ *                     (every view)
  *   grid.js           Masonry layout and infinite scroll (grid views)
  *   lightbox.js       Pin lightbox (grid views)
  *   admin.js          Settings screen (admin only)

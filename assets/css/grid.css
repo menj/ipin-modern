@@ -71,7 +71,7 @@
   margin-left:  calc(var(--card-gap) / 2);
   margin-right: calc(var(--card-gap) / 2);
   margin-bottom: var(--card-gap);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--card-shadow, var(--shadow-sm));   /* Settings → Appearance → Card shadow */
   transition: transform var(--dur) var(--ease), box-shadow var(--dur), border-color var(--dur);
   will-change: transform;
 }

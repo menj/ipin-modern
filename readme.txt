@@ -4,11 +4,11 @@ Tags: masonry, grid-layout, photography, portfolio, dark-mode
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 5.0.0
+Stable tag: 5.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-A Pinterest-style masonry theme for images and video. Five colour schemes with dark mode, WCAG 2.2 AA, no jQuery, and no requests to other servers.
+A Pinterest-style masonry theme for images and video. Ten colour schemes with dark mode, WCAG 2.2 AA, no jQuery, and no requests to other servers unless you add a Pinterest Tag.
 
 == Description ==
 
@@ -21,7 +21,12 @@ What you get:
 * A full-screen lightbox. Click a pin to see the whole image, or play the video, with the description, share links and latest comments. Arrow keys move between pins and Escape closes it.
 * Video pins from a direct file link (.mp4, .webm, .m4v, .mov or .ogv) or a YouTube or Vimeo link.
 * A Sideblog for longer pieces. Articles have their own admin menu, an archive at `/articles/` and a page each at `/article/your-title/`, and they work as soon as the theme is active.
-* 5 colour schemes (Vivid, Ocean, Ember, Forest and Mono), each with a dark mode. Every text and control colour is checked against WCAG 2.2 AA in both modes.
+* 10 colour schemes (Vivid, Ocean, Ember, Forest, Mono, Rose Gold, Aurora, Dusk, Copper and Arctic), each with a dark mode. Every text and control colour is checked against WCAG 2.2 AA in both modes. Auto-rotate can show each visitor a different scheme.
+* Hidden tags: posts carrying a tag you pick drop out of the grid, archives, search, feeds and the sitemap, and stay reachable at their own address.
+* Markdown, switched on per post or article, and optional Markdown in comments.
+* Share buttons for WhatsApp, Telegram, Facebook, X, Threads, Mastodon, Pinterest and email, the device's own share sheet, and the post's tags as hashtags.
+* Open Graph and Twitter Card tags, Pinterest Rich Pin meta and an optional Pinterest Tag.
+* 46 social and identity profiles (X to ORCID, ISNI, VIAF and WorldCat), with the first few in the top bar and the rest in a "More profiles" menu.
 * Self-hosted type: EB Garamond for headings, Sabon Next LT for reading, Special Elite for small labels.
 * A sort bar with Latest, Last 7 days, This month and All time, ranked by comment count.
 * A description meta tag on every page and JSON-LD structured data (WebSite, Article, BreadcrumbList, VideoObject, Person, ProfilePage). It switches itself off when Yoast SEO, Rank Math, AIOSEO or SEOPress is active.
@@ -33,7 +38,7 @@ The theme ships its own fonts and icons and loads nothing from a CDN. Avatars co
 
 == Installation ==
 
-1. In WordPress, go to Appearance → Themes → Add New → Upload Theme. Choose `ipin-modern-5.0.0.zip`, click Install Now, then Activate.
+1. In WordPress, go to Appearance → Themes → Add New → Upload Theme. Choose `ipin-modern-5.1.0.zip`, click Install Now, then Activate.
 2. Open Appearance → iPin Settings to pick a colour scheme, write the homepage hero and add your social profiles.
 3. Assign a menu to Top Navigation under Appearance → Menus.
 4. To write a longer piece, go to Sideblog → Add New Article. Once one is published, the theme adds an Articles link to the top bar for you, as long as no menu is assigned. With a menu, add it yourself: Appearance → Menus → Articles → View All → All Articles.
@@ -52,7 +57,19 @@ Edit the post and paste a link into the Video pin box in the sidebar: a direct f
 Yes. Tab to a pin's title and press Shift+Enter. Plain Enter opens the post itself.
 
 = How do I add a colour scheme? =
-Add a `[data-scheme="yourscheme"]` block to `assets/css/tokens.css` with the source colours (the vivid, accent, fill, tint and surface tokens), and a `[data-scheme="yourscheme"][data-theme="dark"]` block for dark mode. Gradients, borders and shadows work themselves out from those. Then add the scheme to `ipin_colour_schemes()` in `inc/admin-options.php` and its browser-bar colours to `ipin_theme_colors()` in `inc/enqueue.php`.
+Add a `[data-scheme="yourscheme"]` block to `assets/css/tokens.css` with the source colours (the vivid, accent, fill, tint and surface tokens), and a `[data-scheme="yourscheme"][data-theme="dark"]` block for dark mode. Gradients, borders and shadows work themselves out from those. Then add the scheme to `ipin_colour_schemes()` in `inc/admin-options.php` and its browser-bar colours to `ipin_theme_color_map()` in `inc/enqueue.php`. Auto-rotate picks it up from that map.
+
+= How do hidden tags work? =
+Tick tags under Appearance → iPin Settings → Visibility. Posts carrying any of them leave the grid, archives, search, feeds, the sitemap and previous/next links, and the tags leave tag lists and clouds. Each post still opens at its own address, and the tag's own archive still lists them, marked noindex.
+
+= How do I write a post in Markdown? =
+Tick "Write in Markdown" in the Markdown box in the editor sidebar, and write in the Classic Editor or the Code editor. The theme uses GitHub-flavoured Markdown: headings, emphasis, strikethrough, links and bare URLs, images, quotes, ordered, unordered and task lists, fenced code, tables, rules and inline HTML.
+
+= How do I control the structured data and sameAs links? =
+Appearance → iPin Settings → Search. Choose whether the site represents a person (pick the user) or an organization (name it; the Custom Logo or Site Icon becomes its logo). Its sameAs links are the Social tab's profiles, the Mastodon handle, and any further URLs you list. A preview shows exactly what is output, and one switch turns all JSON-LD off. When Yoast SEO, Rank Math, AIOSEO or SEOPress is active, the theme leaves all of this to the plugin.
+
+= Can I list Sideblog articles on a page? =
+Yes. Use `[ipin_sideblog]` (options: `count`, `title`), or insert the "Sideblog: Latest Articles" block pattern.
 
 = Can I write my own 404 jokes? =
 Yes. The 404 page picks one of six headlines at random. Add yours, or replace them all, with the `ipin_404_quips` filter in a child theme or a small plugin:
@@ -75,6 +92,13 @@ PHP 8.0 or later.
 Yes. Strings use the `ipin-modern` text domain, and `languages/ipin-modern.pot` ships with the theme. To regenerate it: `wp i18n make-pot . languages/ipin-modern.pot --domain=ipin-modern`
 
 == Changelog ==
+
+= 5.1.0 =
+Brings back the features of the unreleased 4.5.0 line that the 5.0 rebuild never received. Full details are in CHANGELOG.md.
+
+* Added: hidden tags (new Visibility tab), Markdown for posts, articles and comments, five more colour schemes and auto-rotate, card gap, image height, shadow and hover-zoom settings, 46 social and identity profiles with a "More profiles" menu, WhatsApp, Telegram, Threads, Mastodon, email and native share with hashtags, Open Graph and Twitter Card tags, Pinterest Tag and Rich Pin meta, the Pin source box, the [ipin_sideblog] shortcode and block pattern, a previous/next switch, a result count on search, and head clean-up and image preloading.
+* Changed: old /blog/ article addresses from 4.5 now redirect to /article/ and /articles/.
+* Fixed: share bar padding and the bullets on previous/next links on single posts.
 
 = 5.0.0 =
 The front end is rebuilt. Full details are in CHANGELOG.md.
@@ -178,6 +202,9 @@ The front end is rebuilt. Full details are in CHANGELOG.md.
 
 == Upgrade Notice ==
 
+= 5.1.0 =
+Feature release. Restores hidden tags, Markdown, the extra colour schemes and share buttons from the 4.5 line. Settings saved under 4.5 are picked up as they are. Read UPGRADING.md if you are coming from 4.5.
+
 = 5.0.0 =
 Major release. Sidebars, the Ads tab and the Popular Posts widget are gone, and the text domain is now ipin-modern. Read UPGRADING.md before updating a customised site or a child theme.
 
@@ -204,3 +231,20 @@ Major release. Adds lightbox, popular posts sort bar, share buttons, ad slots, a
 
 = 3.0.0 =
 Directory restructure — assets moved to /assets/css/ and /assets/js/, logic split into /inc/ files. Child themes referencing old asset paths must update them. See UPGRADING.md.
+
+== Copyright ==
+
+iPin Modern is distributed under the terms of the GNU GPL v2 or later.
+
+This theme bundles the following third-party resources:
+
+cebe/markdown, Copyright (c) 2014 Carsten Brandt
+License: MIT
+Source: https://github.com/cebe/markdown
+
+Social icons: Minimalist Social Icons Pack 2.8 (assets/img/social/)
+License: GPL; most marks derive from Simple Icons (CC0), https://simpleicons.org
+
+LinkedIn and Scribd icons (assets/img/social/linkedin.svg, scribd.svg)
+Icons by Font Awesome (https://fontawesome.com), CC BY 4.0
+

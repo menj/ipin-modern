@@ -2,6 +2,82 @@
 
 Migration guides for each major version jump, a troubleshooting list, and the roadmap.
 
+## Upgrading to 5.1.0
+
+### From 5.0.0
+
+Nothing to do. Every new setting defaults to 5.0's behaviour, with three
+exceptions that are visible straight away:
+
+1. Single posts and articles show more share buttons (WhatsApp, Telegram,
+   Threads, Mastodon, Email, and "Share via…" on phones).
+2. Pages gain Open Graph, Twitter Card and Rich Pin meta tags, unless an SEO
+   plugin (Yoast SEO, Rank Math, AIOSEO, SEOPress) is active.
+3. `performance.php` removes the emoji script, generator tag and discovery
+   links from `<head>`, and turns Heartbeat off on the front end. If a plugin
+   needs Heartbeat on public pages, add this to a child theme's
+   `functions.php`:
+
+   ```php
+   add_action( 'after_setup_theme', static function () {
+       remove_action( 'init', 'ipin_disable_frontend_heartbeat' );
+   } );
+   ```
+
+Check the new Search tab. By default the site represents a person, the
+first administrator, and every Social-tab profile goes into sameAs; the
+"More sameAs URLs" list from 5.0's Social tab has moved there, contents
+unchanged. Pick an organization instead if the site belongs to one, then
+run a post through Google's Rich Results Test.
+
+After updating, look through the new settings: Appearance (auto-rotate, card
+gap, image height, shadow, hover zoom), Social (46 profiles in six groups, and how many icons show before the "More profiles" menu), Layout
+(previous/next, comment Markdown, Pinterest) and Visibility (hidden tags).
+
+### From the unreleased 4.5.0 build
+
+5.1 is the first release built from both lines, so a 4.5 site moves to it
+directly. Read the 5.0.0 section below as well: sidebars, the Ads tab and the
+Popular Posts widget are gone, and the text domain is now `ipin-modern`.
+
+- **Settings carry over.** 4.5 and 5.1 use the same option names: colour
+  scheme and auto-rotate, card settings, all social URLs, hidden tags,
+  comment Markdown, the Pinterest Tag ID and switches, and the post-nav switch.
+- **Article addresses change** from `/blog/{slug}/` to `/article/{slug}/`,
+  and the archive from `/blog/` to `/articles/`. The old addresses redirect
+  (301). Visit Settings → Permalinks and click Save once so WordPress
+  rebuilds its rewrite rules. Update menu items that point at `/blog/`.
+- **Markdown posts keep working.** The per-post switch (`_ipin_markdown`) is
+  read as before. The parser is now cebe/markdown, bundled with the theme,
+  so each Markdown post re-renders once on its next view. A Parsedown copy
+  in `assets/vendor/` is no longer used and can be deleted. The new parser
+  also handles nested lists, reference-style links and indented code blocks,
+  which 4.x's built-in parser did not.
+- **Pin source and video links carry over** (`_ipin_source_url`,
+  `_ipin_video_embed_url`). The source URL has its own "Pin source" box now;
+  the video URL lives in the "Video pin" box.
+- **One card setting is gone:** "Show avatar on cards"
+  (`ipin_card_show_avatar`). Use "Show author avatars on grid cards" under
+  General, which does the same.
+- **Pages at `/blog/` win.** If the site has a page or category at `/blog/`,
+  it keeps that address, and only unknown `/blog/...` addresses redirect.
+
+### Child themes
+
+- New files: `inc/hidden-tags.php`, `inc/markdown.php`, `inc/opengraph.php`,
+  `inc/pinterest.php`, `inc/performance.php`, `inc/pin-source.php` and
+  `assets/css/markdown.css` (handle `ipin-markdown`, Markdown posts only).
+- `template-parts/share-bar.php` gained buttons. A child copy of that file
+  keeps working but will not show them.
+- `header.php` now loops over `ipin_social_profiles()` (46 profiles) and
+  folds all but the first few into `li.topmenu-social-more > details`. A
+  child copy of the header keeps its own links. `ipin_social_profiles()`
+  returns `option key => [ icon, name, group ]`.
+- Custom `WP_Query` loops can honour hidden tags by passing their arguments
+  through `apply_filters( 'ipin_query_args', $args )`. Loops built with
+  `get_posts()` or the main query are covered already, through
+  `pre_get_posts`.
+
 ## Upgrading to 5.0.0 (from any 4.x)
 
 5.0 rebuilds the front end. Most sites update in place, but a few things were removed on purpose. Check this list first, and back up the site before you update.

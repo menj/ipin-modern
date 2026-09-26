@@ -386,6 +386,11 @@
   color: #fff;
 }
 
+.btn-share-mastodon {
+  background: #563ACC;
+  color: #fff;
+}
+
 .btn-view-post {
   background: var(--grad-brand-btn);
   color: #fff;

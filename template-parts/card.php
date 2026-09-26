@@ -126,7 +126,7 @@ $is_video_pin    = (bool) ipin_post_video( get_the_ID() );
 				<?php endif; ?>
 				<div>
 					<span class="masonry-meta-author"><?php echo esc_html( $comment->comment_author ); ?></span>
-					<?php echo esc_html( wp_trim_words( $comment->comment_content, 12 ) ); ?>
+					<?php echo esc_html( wp_trim_words( ipin_comment_plain_text( $comment->comment_content ), 12 ) ); ?>
 				</div>
 			</div>
 		<?php endforeach;

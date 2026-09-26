@@ -42,7 +42,7 @@ function ipin_lightbox_payload( int $post_id ): ?array {
 
 	$comments = array_map( static fn( \WP_Comment $c ): array => [
 		'author' => ipin_plain( $c->comment_author ),
-		'text'   => ipin_plain( $c->comment_content ),
+		'text'   => ipin_plain( ipin_comment_plain_text( $c->comment_content ) ),
 		'avatar' => (string) get_avatar_url( $c->comment_author_email, [ 'size' => 28 ] ),
 	], get_comments( [
 		'post_id' => $post_id,
@@ -66,6 +66,7 @@ function ipin_lightbox_payload( int $post_id ): ?array {
 		'date'          => ipin_plain( (string) get_the_date( '', $post ) ),
 		'description'   => ipin_plain( get_the_excerpt( $post ) ),
 		'source_url'    => esc_url_raw( (string) get_post_meta( $post_id, '_ipin_source_url', true ) ),
+		'hashtags'      => ipin_share_hashtags( $post_id ),
 		'comments'      => $comments,
 	];
 }

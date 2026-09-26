@@ -7,7 +7,12 @@
  * addressable. Each value is the exact equivalent of the sRGB hex beside it.
  *
  * Every text and control pairing below is machine-verified to WCAG 2.2 AA
- * for all five schemes in light and dark mode; the ratios are in comments.
+ * for all ten schemes in light and dark mode; the ratios are in comments.
+ * The five schemes restored in 5.1 (Rose Gold, Aurora, Dusk, Copper, Arctic)
+ * keep their 4.5 palettes: decorative colours and surfaces as they were,
+ * accents and fills re-solved in OKLCH to the same AA targets. Two surfaces
+ * moved slightly to keep the shared muted text at 4.5:1 or better: Aurora's
+ * light input (#EDE5FF to #F1EBFF) and Arctic's dark input (#002A3C to #012636).
  *
  * Colour tiers
  *   --clr-vivid-*    Decorative: gradients, borders, icon fills. Never text.
@@ -83,7 +88,7 @@
   --bg-footer:         oklch(19.78% 0.0429 304.75);   /* #1A1025 */
   --bg-input:          oklch(95.10% 0.0124 301.28);   /* #F0EDF6 */
 
-  /* Text — ratio on card | body | input (worst scheme surface ≥ 4.6:1) */
+  /* Text — ratio on card | body | input (worst scheme surface ≥ 4.5:1 across all ten schemes) */
   --txt-primary:       oklch(19.78% 0.0429 304.75);   /* #1A1025 — 18.34:1 | 16.80:1 | 15.85:1 */
   --txt-secondary:     oklch(52.57% 0.0251 294.12);   /* #6B6878 — 5.42:1 | 4.96:1 | 4.68:1 */
   --txt-muted:         oklch(52.90% 0.0315 296.76);   /* #6D687C — 5.36:1 | 4.90:1 | 4.63:1 */
@@ -398,4 +403,274 @@
   --shadow-1: 45%;
   --shadow-2: 55%;
   --shadow-3: 65%;
+}
+
+/* ==========================================================
+   SCHEME — "Rose Gold"  (ported from 4.5.0, rebuilt in OKLCH)
+   ========================================================== */
+[data-scheme="rosegold"] {
+  /* Decorative — gradients, borders, icon fills. Never text. */
+  --clr-vivid-1:       oklch(79.45% 0.1027 3.39);   /* #F4A0B5 */
+  --clr-vivid-2:       oklch(65.83% 0.1092 3.88);   /* #C9748A */
+  --clr-vivid-3:       oklch(67.79% 0.0981 83.05);   /* #B5924C */
+
+  /* Text & interactive colour — ratio on card | body */
+  --clr-accent-1:      oklch(49.09% 0.1313 6.11);   /* #9B3A55 — 6.71:1 | 6.34:1 */
+  --clr-accent-2:      oklch(49.56% 0.0740 76.29);   /* #7A5C2E — 6.18:1 | 5.84:1 */
+  --clr-accent-3:      oklch(46.96% 0.1020 352.61);   /* #854060 — 7.24:1 | 6.84:1 */
+  --clr-accent-4:      oklch(53.47% 0.1151 69.67);   /* #975F03 — 5.31:1 | 5.02:1 */
+  --clr-accent-5:      oklch(51.43% 0.1126 156.76);   /* #1B7A4C — 5.34:1 | 5.04:1 */
+
+  /* Solid control backgrounds under --clr-on-fill — label ratio */
+  --clr-fill-1:        oklch(49.09% 0.1313 6.11);   /* #9B3A55 — white label 6.71:1 */
+  --clr-fill-2:        oklch(49.56% 0.0740 76.29);   /* #7A5C2E — white label 6.18:1 */
+  --clr-fill-3:        oklch(46.96% 0.1020 352.61);   /* #854060 — white label 7.24:1 */
+  --clr-fill-4:        oklch(53.47% 0.1151 69.67);   /* #975F03 — white label 5.31:1 */
+  --clr-fill-5:        oklch(51.43% 0.1126 156.76);   /* #1B7A4C — white label 5.34:1 */
+
+  --clr-tint:          oklch(49.09% 0.1313 6.11);   /* #9B3A55 — hue for borders and shadows */
+  --clr-footer-link-hover: oklch(79.45% 0.1027 3.39);   /* #F4A0B5 — 9.72:1 on footer */
+
+  /* Surfaces */
+  --bg-body:           oklch(98.10% 0.0065 5.62);   /* #FDF7F8 */
+  --bg-footer:         oklch(16.63% 0.0334 359.89);   /* #1A080E */
+  --bg-input:          oklch(95.86% 0.0125 358.76);   /* #F9EEF1 */
+}
+
+[data-scheme="rosegold"][data-theme="dark"] {
+  /* Text & interactive tints — ratio on card | body */
+  --clr-accent-1:      oklch(86.38% 0.0794 359.95);   /* #FFBDD0 — 12.08:1 | 12.79:1 */
+  --clr-accent-2:      oklch(84.80% 0.0879 84.45);   /* #E8C98A — 11.82:1 | 12.52:1 */
+  --clr-accent-3:      oklch(80.07% 0.0928 359.42);   /* #F0A5BC — 9.72:1 | 10.29:1 */
+  --clr-accent-4:      oklch(70.50% 0.1101 69.58);   /* #CC934E — 7.06:1 | 7.47:1 */
+  --clr-accent-5:      oklch(68.47% 0.1095 156.80);   /* #5AAE7E — 7.00:1 | 7.42:1 */
+
+  /* Fills stay dark enough for white labels, light enough to read as controls */
+  --clr-fill-1:        oklch(55.89% 0.1323 6.10);   /* #B24E68 — white label 5.02:1 · 3.76:1 vs card */
+  --clr-fill-2:        oklch(54.49% 0.0734 75.49);   /* #896A3D — white label 5.01:1 · 3.77:1 vs card */
+  --clr-fill-3:        oklch(55.60% 0.1010 352.42);   /* #A05979 — white label 5.00:1 · 3.78:1 vs card */
+  --clr-fill-4:        oklch(54.80% 0.1148 69.78);   /* #9B630D — white label 5.02:1 · 3.76:1 vs card */
+  --clr-fill-5:        oklch(52.78% 0.1122 156.88);   /* #217E50 — white label 5.04:1 · 3.74:1 vs card */
+
+  --bg-body:           oklch(14.06% 0.0333 2.77);   /* #140408 */
+  --bg-card:           oklch(18.27% 0.0388 4.45);   /* #200A10 */
+  --bg-nav:            oklch(15.48% 0.0336 13.56);   /* #180608 */
+  --bg-footer:         oklch(10.84% 0.0240 359.77);   /* #0A0204 */
+  --bg-input:          oklch(21.59% 0.0445 1.98);   /* #2A1018 */
+}
+
+/* ==========================================================
+   SCHEME — "Aurora"  (ported from 4.5.0, rebuilt in OKLCH)
+   ========================================================== */
+[data-scheme="aurora"] {
+  /* Decorative — gradients, borders, icon fills. Never text. */
+  --clr-vivid-1:       oklch(61.13% 0.1996 301.79);   /* #9B5DE5 */
+  --clr-vivid-2:       oklch(74.32% 0.1504 231.32);   /* #00BBF9 */
+  --clr-vivid-3:       oklch(86.81% 0.1595 178.20);   /* #00F5D4 */
+
+  /* Text & interactive colour — ratio on card | body */
+  --clr-accent-1:      oklch(41.76% 0.2220 294.37);   /* #5B0DB5 — 9.68:1 | 8.66:1 */
+  --clr-accent-2:      oklch(53.13% 0.1131 235.42);   /* #0175A4 — 5.14:1 | 4.60:1 */
+  --clr-accent-3:      oklch(52.17% 0.0956 178.60);   /* #007B6A — 5.20:1 | 4.65:1 */
+  --clr-accent-4:      oklch(52.22% 0.1129 70.27);   /* #925C00 — 5.60:1 | 5.01:1 */
+  --clr-accent-5:      oklch(50.12% 0.1117 157.06);   /* #157649 — 5.65:1 | 5.05:1 */
+
+  /* Solid control backgrounds under --clr-on-fill — label ratio */
+  --clr-fill-1:        oklch(41.76% 0.2220 294.37);   /* #5B0DB5 — white label 9.68:1 */
+  --clr-fill-2:        oklch(53.13% 0.1131 235.42);   /* #0175A4 — white label 5.14:1 */
+  --clr-fill-3:        oklch(52.17% 0.0956 178.60);   /* #007B6A — white label 5.20:1 */
+  --clr-fill-4:        oklch(52.22% 0.1129 70.27);   /* #925C00 — white label 5.60:1 */
+  --clr-fill-5:        oklch(50.12% 0.1117 157.06);   /* #157649 — white label 5.65:1 */
+
+  --clr-tint:          oklch(41.76% 0.2220 294.37);   /* #5B0DB5 — hue for borders and shadows */
+  --clr-footer-link-hover: oklch(69.99% 0.1899 301.79);   /* #B57CFF — 7.07:1 on footer */
+
+  /* Surfaces */
+  --bg-body:           oklch(96.33% 0.0206 301.15);   /* #F5F0FF */
+  --bg-footer:         oklch(12.59% 0.0649 306.33);   /* #0D001A */
+  --bg-input:          oklch(95.06% 0.0274 299.55);   /* #F1EBFF */
+}
+
+[data-scheme="aurora"][data-theme="dark"] {
+  /* Text & interactive tints — ratio on card | body */
+  --clr-accent-1:      oklch(77.03% 0.1401 301.22);   /* #C49EFF — 9.33:1 | 9.50:1 */
+  --clr-accent-2:      oklch(83.46% 0.1210 219.92);   /* #5DDBFF — 12.56:1 | 12.80:1 */
+  --clr-accent-3:      oklch(90.48% 0.1365 181.80);   /* #5EFDE6 — 16.06:1 | 16.36:1 */
+  --clr-accent-4:      oklch(68.47% 0.1103 70.18);   /* #C58D47 — 7.01:1 | 7.14:1 */
+  --clr-accent-5:      oklch(66.84% 0.1103 156.85);   /* #54A979 — 7.06:1 | 7.19:1 */
+
+  /* Fills stay dark enough for white labels, light enough to read as controls */
+  --clr-fill-1:        oklch(56.68% 0.2210 294.22);   /* #834DE8 — white label 5.01:1 · 4.04:1 vs card */
+  --clr-fill-2:        oklch(53.80% 0.1129 235.38);   /* #0777A6 — white label 5.00:1 · 4.04:1 vs card */
+  --clr-fill-3:        oklch(52.86% 0.0953 178.64);   /* #077D6C — white label 5.05:1 · 4.01:1 vs card */
+  --clr-fill-4:        oklch(54.69% 0.1132 69.95);   /* #9A6310 — white label 5.04:1 · 4.01:1 vs card */
+  --clr-fill-5:        oklch(52.82% 0.1109 157.27);   /* #227E51 — white label 5.03:1 · 4.02:1 vs card */
+
+  --bg-body:           oklch(10.59% 0.0544 307.00);   /* #080012 */
+  --bg-card:           oklch(13.36% 0.0717 299.08);   /* #0D0020 */
+  --bg-nav:            oklch(11.78% 0.0619 302.83);   /* #0A0018 */
+  --bg-footer:         oklch(8.27% 0.0420 309.30);   /* #040009 */
+  --bg-input:          oklch(16.90% 0.0910 298.53);   /* #160030 */
+}
+
+/* ==========================================================
+   SCHEME — "Dusk"  (ported from 4.5.0, rebuilt in OKLCH)
+   ========================================================== */
+[data-scheme="dusk"] {
+  /* Decorative — gradients, borders, icon fills. Never text. */
+  --clr-vivid-1:       oklch(78.71% 0.1187 304.77);   /* #CBA6F7 */
+  --clr-vivid-2:       oklch(54.13% 0.2466 293.01);   /* #7C3AED */
+  --clr-vivid-3:       oklch(35.88% 0.1354 278.70);   /* #312E81 */
+
+  /* Text & interactive colour — ratio on card | body */
+  --clr-accent-1:      oklch(43.20% 0.2106 292.76);   /* #5B21B6 — 8.98:1 | 8.19:1 */
+  --clr-accent-2:      oklch(39.84% 0.1773 277.37);   /* #3730A3 — 9.93:1 | 9.06:1 */
+  --clr-accent-3:      oklch(49.07% 0.2412 292.58);   /* #6D28D9 — 7.10:1 | 6.48:1 */
+  --clr-accent-4:      oklch(52.70% 0.1131 69.53);   /* #945D04 — 5.49:1 | 5.00:1 */
+  --clr-accent-5:      oklch(50.78% 0.1117 157.18);   /* #18784B — 5.49:1 | 5.00:1 */
+
+  /* Solid control backgrounds under --clr-on-fill — label ratio */
+  --clr-fill-1:        oklch(43.20% 0.2106 292.76);   /* #5B21B6 — white label 8.98:1 */
+  --clr-fill-2:        oklch(39.84% 0.1773 277.37);   /* #3730A3 — white label 9.93:1 */
+  --clr-fill-3:        oklch(49.07% 0.2412 292.58);   /* #6D28D9 — white label 7.10:1 */
+  --clr-fill-4:        oklch(52.70% 0.1131 69.53);   /* #945D04 — white label 5.49:1 */
+  --clr-fill-5:        oklch(50.78% 0.1117 157.18);   /* #18784B — white label 5.49:1 */
+
+  --clr-tint:          oklch(43.20% 0.2106 292.76);   /* #5B21B6 — hue for borders and shadows */
+  --clr-footer-link-hover: oklch(78.71% 0.1187 304.77);   /* #CBA6F7 — 9.52:1 on footer */
+
+  /* Surfaces */
+  --bg-body:           oklch(96.91% 0.0161 293.76);   /* #F5F3FF */
+  --bg-footer:         oklch(16.58% 0.0428 285.04);   /* #0D0B20 */
+  --bg-input:          oklch(94.33% 0.0284 294.59);   /* #EDE9FE */
+}
+
+[data-scheme="dusk"][data-theme="dark"] {
+  /* Text & interactive tints — ratio on card | body */
+  --clr-accent-1:      oklch(81.12% 0.1013 293.57);   /* #C4B5FD — 10.37:1 | 10.84:1 */
+  --clr-accent-2:      oklch(78.53% 0.1041 274.71);   /* #A5B4FC — 9.60:1 | 10.04:1 */
+  --clr-accent-3:      oklch(89.43% 0.0549 293.28);   /* #DDD6FE — 13.79:1 | 14.41:1 */
+  --clr-accent-4:      oklch(70.06% 0.1102 70.39);   /* #CA924C — 7.05:1 | 7.36:1 */
+  --clr-accent-5:      oklch(68.11% 0.1101 156.99);   /* #58AD7D — 7.01:1 | 7.33:1 */
+
+  /* Fills stay dark enough for white labels, light enough to read as controls */
+  --clr-fill-1:        oklch(56.53% 0.2113 292.76);   /* #7F51E4 — white label 5.00:1 · 3.83:1 vs card */
+  --clr-fill-2:        oklch(55.32% 0.1773 277.44);   /* #5D61D7 — white label 5.05:1 · 3.79:1 vs card */
+  --clr-fill-3:        oklch(56.86% 0.2422 292.46);   /* #8247F5 — white label 5.04:1 · 3.80:1 vs card */
+  --clr-fill-4:        oklch(54.82% 0.1133 69.10);   /* #9B6312 — white label 5.02:1 · 3.82:1 vs card */
+  --clr-fill-5:        oklch(52.80% 0.1112 157.40);   /* #217E51 — white label 5.04:1 · 3.80:1 vs card */
+
+  --bg-body:           oklch(13.86% 0.0394 286.14);   /* #080618 */
+  --bg-card:           oklch(17.29% 0.0482 283.91);   /* #0E0C24 */
+  --bg-nav:            oklch(15.67% 0.0433 284.61);   /* #0B091E */
+  --bg-footer:         oklch(11.16% 0.0343 284.81);   /* #040310 */
+  --bg-input:          oklch(21.51% 0.0745 282.68);   /* #16123A */
+}
+
+/* ==========================================================
+   SCHEME — "Copper"  (ported from 4.5.0, rebuilt in OKLCH)
+   ========================================================== */
+[data-scheme="copper"] {
+  /* Decorative — gradients, borders, icon fills. Never text. */
+  --clr-vivid-1:       oklch(66.73% 0.1294 46.88);   /* #D4794A */
+  --clr-vivid-2:       oklch(55.23% 0.1486 47.06);   /* #B5500A */
+  --clr-vivid-3:       oklch(59.79% 0.1015 86.60);   /* #9A7B2E */
+
+  /* Text & interactive colour — ratio on card | body */
+  --clr-accent-1:      oklch(45.27% 0.1218 43.72);   /* #8B3A10 — 7.75:1 | 7.21:1 */
+  --clr-accent-2:      oklch(43.43% 0.0901 79.32);   /* #6B4A00 — 8.06:1 | 7.51:1 */
+  --clr-accent-3:      oklch(49.33% 0.0908 83.37);   /* #7A5C18 — 6.23:1 | 5.80:1 */
+  --clr-accent-4:      oklch(53.14% 0.1153 69.71);   /* #965E00 — 5.39:1 | 5.02:1 */
+  --clr-accent-5:      oklch(51.13% 0.1115 157.17);   /* #1A794C — 5.41:1 | 5.04:1 */
+
+  /* Solid control backgrounds under --clr-on-fill — label ratio */
+  --clr-fill-1:        oklch(45.27% 0.1218 43.72);   /* #8B3A10 — white label 7.75:1 */
+  --clr-fill-2:        oklch(43.43% 0.0901 79.32);   /* #6B4A00 — white label 8.06:1 */
+  --clr-fill-3:        oklch(49.33% 0.0908 83.37);   /* #7A5C18 — white label 6.23:1 */
+  --clr-fill-4:        oklch(53.14% 0.1153 69.71);   /* #965E00 — white label 5.39:1 */
+  --clr-fill-5:        oklch(51.13% 0.1115 157.17);   /* #1A794C — white label 5.41:1 */
+
+  --clr-tint:          oklch(45.27% 0.1218 43.72);   /* #8B3A10 — hue for borders and shadows */
+  --clr-footer-link-hover: oklch(70.58% 0.1292 46.92);   /* #E18556 — 7.00:1 on footer */
+
+  /* Surfaces */
+  --bg-body:           oklch(97.56% 0.0085 67.73);   /* #FBF6F1 */
+  --bg-footer:         oklch(17.24% 0.0300 53.83);   /* #1A0C04 */
+  --bg-input:          oklch(94.30% 0.0179 64.93);   /* #F5EAE0 */
+}
+
+[data-scheme="copper"][data-theme="dark"] {
+  /* Text & interactive tints — ratio on card | body */
+  --clr-accent-1:      oklch(85.14% 0.1006 60.49);   /* #FFBF8A — 11.67:1 | 12.35:1 */
+  --clr-accent-2:      oklch(86.76% 0.1056 88.37);   /* #F0D080 — 12.54:1 | 13.26:1 */
+  --clr-accent-3:      oklch(79.41% 0.1109 72.02);   /* #E8B068 — 9.68:1 | 10.24:1 */
+  --clr-accent-4:      oklch(70.50% 0.1101 69.58);   /* #CC934E — 7.01:1 | 7.42:1 */
+  --clr-accent-5:      oklch(68.74% 0.1100 157.06);   /* #5AAF7F — 7.03:1 | 7.44:1 */
+
+  /* Fills stay dark enough for white labels, light enough to read as controls */
+  --clr-fill-1:        oklch(55.44% 0.1216 43.76);   /* #AC5832 — white label 5.00:1 · 3.75:1 vs card */
+  --clr-fill-2:        oklch(54.40% 0.0898 78.68);   /* #8C692C — white label 5.03:1 · 3.73:1 vs card */
+  --clr-fill-3:        oklch(54.24% 0.0909 82.98);   /* #896A29 — white label 5.05:1 · 3.71:1 vs card */
+  --clr-fill-4:        oklch(54.80% 0.1150 69.90);   /* #9B630C — white label 5.02:1 · 3.74:1 vs card */
+  --clr-fill-5:        oklch(52.82% 0.1109 157.27);   /* #227E51 — white label 5.03:1 · 3.73:1 vs card */
+
+  --bg-body:           oklch(14.43% 0.0303 76.30);   /* #110800 */
+  --bg-card:           oklch(18.43% 0.0341 54.70);   /* #1E0E04 */
+  --bg-nav:            oklch(15.96% 0.0293 62.15);   /* #160A02 */
+  --bg-footer:         oklch(11.21% 0.0231 82.32);   /* #080400 */
+  --bg-input:          oklch(22.44% 0.0404 54.27);   /* #2A1608 */
+}
+
+/* ==========================================================
+   SCHEME — "Arctic"  (ported from 4.5.0, rebuilt in OKLCH)
+   ========================================================== */
+[data-scheme="arctic"] {
+  /* Decorative — gradients, borders, icon fills. Never text. */
+  --clr-vivid-1:       oklch(86.03% 0.0809 210.70);   /* #90E0EF */
+  --clr-vivid-2:       oklch(77.89% 0.1165 213.70);   /* #48CAE4 */
+  --clr-vivid-3:       oklch(63.08% 0.1264 230.48);   /* #0096C7 */
+
+  /* Text & interactive colour — ratio on card | body */
+  --clr-accent-1:      oklch(43.87% 0.0887 231.25);   /* #005A7A — 7.65:1 | 7.22:1 */
+  --clr-accent-2:      oklch(53.41% 0.1080 231.30);   /* #0077A0 — 5.06:1 | 4.78:1 */
+  --clr-accent-3:      oklch(45.78% 0.0910 229.78);   /* #006080 — 7.04:1 | 6.64:1 */
+  --clr-accent-4:      oklch(53.47% 0.1151 69.67);   /* #975F03 — 5.31:1 | 5.01:1 */
+  --clr-accent-5:      oklch(51.43% 0.1126 156.76);   /* #1B7A4C — 5.34:1 | 5.03:1 */
+
+  /* Solid control backgrounds under --clr-on-fill — label ratio */
+  --clr-fill-1:        oklch(43.87% 0.0887 231.25);   /* #005A7A — white label 7.65:1 */
+  --clr-fill-2:        oklch(53.41% 0.1080 231.30);   /* #0077A0 — white label 5.06:1 */
+  --clr-fill-3:        oklch(45.78% 0.0910 229.78);   /* #006080 — white label 7.04:1 */
+  --clr-fill-4:        oklch(53.47% 0.1151 69.67);   /* #975F03 — white label 5.31:1 */
+  --clr-fill-5:        oklch(51.43% 0.1126 156.76);   /* #1B7A4C — white label 5.34:1 */
+
+  --clr-tint:          oklch(43.87% 0.0887 231.25);   /* #005A7A — hue for borders and shadows */
+  --clr-footer-link-hover: oklch(86.03% 0.0809 210.70);   /* #90E0EF — 12.24:1 on footer */
+
+  /* Surfaces */
+  --bg-body:           oklch(97.88% 0.0119 223.52);   /* #F0FAFE */
+  --bg-footer:         oklch(19.37% 0.0357 221.76);   /* #001820 */
+  --bg-input:          oklch(95.56% 0.0207 219.69);   /* #E2F4FA */
+}
+
+[data-scheme="arctic"][data-theme="dark"] {
+  /* Text & interactive tints — ratio on card | body */
+  --clr-accent-1:      oklch(84.59% 0.0966 209.74);   /* #7ADEEF — 11.30:1 | 12.57:1 */
+  --clr-accent-2:      oklch(79.18% 0.1067 213.13);   /* #5CCDE4 — 9.45:1 | 10.51:1 */
+  --clr-accent-3:      oklch(89.88% 0.0682 207.60);   /* #A8EBF5 — 13.26:1 | 14.75:1 */
+  --clr-accent-4:      oklch(72.27% 0.1100 70.66);   /* #D19953 — 7.01:1 | 7.80:1 */
+  --clr-accent-5:      oklch(70.61% 0.1107 156.73);   /* #60B584 — 7.05:1 | 7.84:1 */
+
+  /* Fills stay dark enough for white labels, light enough to read as controls */
+  --clr-fill-1:        oklch(53.53% 0.0893 231.86);   /* #2C7698 — white label 5.06:1 · 3.47:1 vs card */
+  --clr-fill-2:        oklch(53.42% 0.1079 231.36);   /* #0177A0 — white label 5.06:1 · 3.47:1 vs card */
+  --clr-fill-3:        oklch(53.70% 0.0916 230.71);   /* #287799 — white label 5.01:1 · 3.50:1 vs card */
+  --clr-fill-4:        oklch(54.80% 0.1148 69.78);   /* #9B630D — white label 5.02:1 · 3.50:1 vs card */
+  --clr-fill-5:        oklch(52.78% 0.1122 156.88);   /* #217E50 — white label 5.04:1 · 3.48:1 vs card */
+
+  --bg-body:           oklch(15.46% 0.0329 235.21);   /* #000E18 */
+  --bg-card:           oklch(21.18% 0.0419 229.30);   /* #001C28 */
+  --bg-nav:            oklch(18.05% 0.0382 234.90);   /* #001420 */
+  --bg-footer:         oklch(12.72% 0.0275 236.28);   /* #000810 */
+  --bg-input:          oklch(25.24% 0.0503 231.82);   /* #012636 */
 }
