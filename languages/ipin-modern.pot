@@ -2,14 +2,14 @@
 # This file is distributed under the GNU General Public License v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: iPin Modern 5.1.0\n"
+"Project-Id-Version: iPin Modern 5.1.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/theme/ipin-modern\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-25T18:36:37+00:00\n"
+"POT-Creation-Date: 2026-10-03T11:33:55+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: ipin-modern\n"
@@ -17,7 +17,7 @@ msgstr ""
 #. Theme Name of the theme
 #: style.css
 #: inc/admin-options.php:314
-#: inc/post-types.php:199
+#: inc/post-types.php:168
 msgid "iPin Modern"
 msgstr ""
 
@@ -144,7 +144,7 @@ msgid "Close navigation menu"
 msgstr ""
 
 #: header.php:81
-#: inc/post-types.php:33
+#: inc/post-types.php:27
 msgid "Articles"
 msgstr ""
 
@@ -932,84 +932,80 @@ msgstr ""
 msgid "Where this pin came from. Shown as a \"View source\" link in the lightbox. Leave blank for none."
 msgstr ""
 
-#: inc/post-types.php:34
+#: inc/post-types.php:28
 msgid "Article"
 msgstr ""
 
-#: inc/post-types.php:35
+#: inc/post-types.php:29
 msgid "Add New Article"
 msgstr ""
 
-#: inc/post-types.php:36
+#: inc/post-types.php:30
 msgid "Edit Article"
 msgstr ""
 
-#: inc/post-types.php:37
+#: inc/post-types.php:31
 msgid "New Article"
 msgstr ""
 
-#: inc/post-types.php:38
+#: inc/post-types.php:32
 msgid "View Article"
 msgstr ""
 
-#: inc/post-types.php:39
+#: inc/post-types.php:33
 msgid "View Articles"
 msgstr ""
 
-#: inc/post-types.php:40
+#: inc/post-types.php:34
 msgid "Search Articles"
 msgstr ""
 
-#: inc/post-types.php:41
+#: inc/post-types.php:35
 msgid "No articles found."
 msgstr ""
 
-#: inc/post-types.php:42
+#: inc/post-types.php:36
 msgid "No articles found in Trash."
 msgstr ""
 
-#: inc/post-types.php:43
+#: inc/post-types.php:37
 msgid "All Articles"
 msgstr ""
 
-#: inc/post-types.php:44
+#: inc/post-types.php:38
 msgid "Article Archives"
 msgstr ""
 
-#: inc/post-types.php:45
+#: inc/post-types.php:39
 msgid "Article published."
 msgstr ""
 
-#: inc/post-types.php:46
+#: inc/post-types.php:40
 msgid "Article updated."
 msgstr ""
 
-#: inc/post-types.php:47
+#: inc/post-types.php:41
 msgid "Sideblog"
 msgstr ""
 
-#: inc/post-types.php:97
-msgid "The Sideblog is now built into iPin Modern. You can deactivate and delete the <em>iPin Sideblog</em> plugin; your articles stay where they are."
-msgstr ""
-
-#: inc/post-types.php:182
-#: inc/post-types.php:240
+#: inc/post-types.php:151
+#: inc/post-types.php:209
 msgid "All articles"
 msgstr ""
 
-#: inc/post-types.php:204
+#: inc/post-types.php:173
 msgid "Sideblog: Latest Articles"
 msgstr ""
 
-#: inc/post-types.php:205
+#: inc/post-types.php:174
 msgid "The five newest Sideblog articles with image, title and date."
 msgstr ""
 
-#: inc/post-types.php:211
+#: inc/post-types.php:180
 msgid "From the Sideblog"
 msgstr ""
 
-#: inc/post-types.php:234
+#: inc/post-types.php:203
 msgid "No articles yet."
 msgstr ""
 

@@ -4,9 +4,10 @@
  *
  * Articles are longer pieces that sit beside the pin grid: their own
  * "Sideblog" menu in the admin, an archive at /articles/ and single pages
- * at /article/{slug}/. The theme registers the post type itself, so the
- * Sideblog works as soon as the theme is active. Articles stay in the
- * database if the theme is ever switched, and reappear when it comes back.
+ * at /article/{slug}/. The Sideblog is part of the theme: it registers
+ * here and works as soon as the theme is active, with nothing else to
+ * install. Articles stay in the database if the theme is ever switched,
+ * and reappear when it comes back.
  *
  * Also here, restored in 5.1 from 4.5:
  *   [ipin_sideblog]   shortcode listing recent articles, for any page
@@ -21,13 +22,6 @@ declare( strict_types = 1 );
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 function ipin_register_sideblog(): void {
-	// The retired "iPin Sideblog" companion plugin registers the same post
-	// type under the same name. If it is still active, let it; the settings
-	// are identical.
-	if ( post_type_exists( 'ipin_article' ) ) {
-		return;
-	}
-
 	register_post_type( 'ipin_article', [
 		'labels' => [
 			'name'                  => __( 'Articles',               'ipin-modern' ),
@@ -75,31 +69,6 @@ function ipin_has_articles(): bool {
 	return post_type_exists( 'ipin_article' )
 		&& (int) ( wp_count_posts( 'ipin_article' )->publish ?? 0 ) > 0;
 }
-
-
-/* -------------------------------------------------------
-   RETIRED COMPANION PLUGIN
-   5.0 pre-releases shipped the post type as a separate
-   "iPin Sideblog" plugin. It is harmless but no longer
-   needed; say so on the Plugins and iPin Settings screens.
-   ------------------------------------------------------- */
-function ipin_sideblog_plugin_notice(): void {
-	if ( ! defined( 'IPIN_SIDEBLOG_LOADED' ) || ! current_user_can( 'activate_plugins' ) ) {
-		return;
-	}
-	$screen = get_current_screen();
-	if ( ! $screen || ! in_array( $screen->id, [ 'plugins', 'appearance_page_ipin-settings' ], true ) ) {
-		return;
-	}
-	printf(
-		'<div class="notice notice-info"><p>%s</p></div>',
-		wp_kses(
-			__( 'The Sideblog is now built into iPin Modern. You can deactivate and delete the <em>iPin Sideblog</em> plugin; your articles stay where they are.', 'ipin-modern' ),
-			[ 'em' => [] ]
-		)
-	);
-}
-add_action( 'admin_notices', 'ipin_sideblog_plugin_notice' );
 
 
 /* -------------------------------------------------------

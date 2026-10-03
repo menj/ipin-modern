@@ -4,7 +4,7 @@ Tags: masonry, grid-layout, photography, portfolio, dark-mode
 Requires at least: 6.5
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 5.1.0
+Stable tag: 5.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,9 @@ PHP 8.0 or later.
 Yes. Strings use the `ipin-modern` text domain, and `languages/ipin-modern.pot` ships with the theme. To regenerate it: `wp i18n make-pot . languages/ipin-modern.pot --domain=ipin-modern`
 
 == Changelog ==
+
+= 5.1.1 =
+* Removed: the leftover notice and code for a separate Sideblog plugin. The Sideblog is part of the theme; nothing changes on your site.
 
 = 5.1.0 =
 Brings back the features of the unreleased 4.5.0 line that the 5.0 rebuild never received. Full details are in CHANGELOG.md.
@@ -201,6 +204,9 @@ The front end is rebuilt. Full details are in CHANGELOG.md.
 * Added: ipin.custom.js.
 
 == Upgrade Notice ==
+
+= 5.1.1 =
+Cleanup release. Nothing to do: the Sideblog keeps working as part of the theme.
 
 = 5.1.0 =
 Feature release. Restores hidden tags, Markdown, the extra colour schemes and share buttons from the 4.5 line. Settings saved under 4.5 are picked up as they are. Read UPGRADING.md if you are coming from 4.5.

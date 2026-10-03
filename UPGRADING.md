@@ -95,7 +95,7 @@ Popular Posts widget are gone, and the text domain is now `ipin-modern`.
 
 1. Clear any page cache and CDN cache. Asset URLs carry the new version number, so browsers fetch fresh files, but cached HTML can still point at the old ones.
 2. Open Appearance → iPin Settings. Check the new Layout tab (homepage hero) and the new Social fields (sameAs list, Mastodon handle).
-3. The Sideblog needs nothing from you: the theme registers it, as it always has. If you installed the iPin Sideblog plugin from an earlier 5.0 build, deactivate and delete it. The theme notices the plugin and says so on the Plugins screen; your articles stay where they are.
+3. The Sideblog needs nothing from you. It is part of the theme, as it always has been: articles are under Sideblog in the admin menu and at `/articles/` on the site.
 4. Optional: regenerate thumbnails (for example `wp media regenerate --yes`) so older uploads get the new 800px `ipin-card` size. Cards work without it; they just use the nearest existing size.
 
 ### Child themes

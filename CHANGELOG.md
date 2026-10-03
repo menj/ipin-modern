@@ -4,6 +4,16 @@ All notable changes to **iPin Modern** are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 Versioning follows [Semantic Versioning](https://semver.org/).
 
+## [5.1.1] - 2026-10-03 - Sideblog cleanup
+
+### Removed
+- The leftover support for a separate "iPin Sideblog" plugin: the admin
+  notice that suggested deleting it, and the check that let such a plugin
+  register the post type in the theme's place. The Sideblog is part of the
+  theme, registered in `inc/post-types.php`, and nothing else is involved.
+  Sites see no change: articles, their addresses and their settings stay
+  as they are.
+
 ## [5.1.0] - 2026-09-26 - The 4.5 features, restored
 
 The 5.0 rebuild started from 4.1.4, so the work of the 4.1.5 to 4.5.0 line,
@@ -189,11 +199,11 @@ Read [UPGRADING.md](UPGRADING.md) before updating a customised site.
 - Keyboard-operable dropdown menus: parent items get a disclosure button
   with `aria-expanded`; Escape closes the open submenu.
 - `ipin/v1/pin/{id}` REST route for lightbox data.
-- The Sideblog is built into the theme and works on activation, with no plugin
-  to install. Articles (`ipin_article`) get an archive at `/articles/` with an
-  "Articles" heading, pages at `/article/{slug}/`, their own editor labels and
-  revisions. With no menu assigned, the top bar lists Articles once one is
-  published. Breadcrumb schema runs Home → Articles → article.
+- The Sideblog is part of the theme and works on activation. Articles
+  (`ipin_article`) get an archive at `/articles/` with an "Articles" heading,
+  pages at `/article/{slug}/`, their own editor labels and revisions. With no
+  menu assigned, the top bar lists Articles once one is published. Breadcrumb
+  schema runs Home → Articles → article.
 - Cards are CSS size containers, so their type follows the card width setting.
 - Cards ease in on a CSS scroll-driven timeline (off under reduced motion).
 - Cross-document View Transitions: a card's image morphs into the post's
